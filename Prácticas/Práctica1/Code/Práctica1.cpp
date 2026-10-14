@@ -7,7 +7,7 @@ Realizar funciones que, dado ese entero(unsigned int):
 #include <iostream>
 
 #define MASK_2 0x00000002
-#define MASK_BALAS 0b000000001111111100000000
+#define MASK_BALAS 0b00000000111111110000000000000000
 
 bool EstaActivoElModoDeBalasInfinito(unsigned int _uMask)
 {
@@ -56,7 +56,7 @@ int GetNumeroBalas(unsigned int _uData)
 	return uTemp;
 }
 
-int AddBalas(unsigned int _uMask, int _iBalasToAdd)
+unsigned int AddBalas(unsigned int _uMask, int _iBalasToAdd)
 {
 	// 10001110001001010010000000000100 <- _uMask
 	// 00100101001000000000010000000000 <- << 8
