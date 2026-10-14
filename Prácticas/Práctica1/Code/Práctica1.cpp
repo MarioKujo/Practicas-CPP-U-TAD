@@ -5,91 +5,81 @@ Realizar funciones que, dado ese entero(unsigned int):
 - Devuelvan si está activo el modo de balas infinitas.
 - Activen el modo de balas infinitas.*/
 #include <iostream>
+#define MASK_BALAS 0x00FF0000
+#define MASK_2 0x00000002 // 0000 0000 0000 0000 0000 0000 0000 0010 <-- la verdadera máscara
 
-#define MASK_2 0x00000002
-#define MASK_BALAS 0b00000000111111110000000000000000
-
-bool EstaActivoElModoDeBalasInfinito(unsigned int _uMask)
+unsigned int NumBalas(unsigned int _uData)
 {
-	bool bEstaActivo = false;
+	// 1000 1110 0010 0101 0010 0000 0000 0100 <-- uMask
+	// 0000 0000 1111 1111 0000 0000 0000 0000 <-- Balas
 
-	// 10001110001001010010000000000100 <- _uMask
-	// 00000000000000000000000000000010 <- MASK_2
-	// -------------------------------- AND
-	// 00000000000000000000000000000000 -> bool FALSE!!!
-
-	// 10001110001001010010000000000100 <- _uMask
-	// 00000000000000000000000000000010 <- MASK_2
-	// // -------------------------------- AND
-	// 00000000000000000000000000000010 -> bool TRUE!!!
-
-	bEstaActivo = _uMask & MASK_2;
-
-	return bEstaActivo;
-}
-
-unsigned int ActivarBalasInfinitas(unsigned int _uMask)
-{
-	// 10001110001001010010000000000100 <- _uMask
-	// 00000000000000000000000000000010 <- MASK_2
-	// -------------------------------- OR
-	// 10001110001001010010000000000110 
-
-	// 10001110001001010010000000000100 <- _uMask
-	// 00000000000000000000000000000010 <- MASK_2
-	// // -------------------------------- OR
-	// 10001110001001010010000000000110
-
-	unsigned int uNewMask = _uMask | MASK_2;
-	return uNewMask;
-}
-
-int GetNumeroBalas(unsigned int _uData)
-{
 	unsigned int uTemp = _uData << 8;
-	uTemp = uTemp >> 24;
 
-	// 10001110001001010010000000000100 <- _uMask
-	// 00100101001000000000010000000000 <- << 8
-	// 00000000000000000000000000100101 <- << 24
+	// 0010 0101 0010 0000 0000 0100 0000 0000 <-- uMask << 8 (valores reales)
+	// 1111 1111 0000 0000 0000 0000 0000 0000 <-- Balas << 8 (desecha los 8 bits de vida)
+
+	uTemp >>= 24;
+
+	// 0000 0000 0000 0000 0000 0000 0010 0101 <-- (uMask << 8) >> 24 (valores reales)
+	// 0000 0000 0000 0000 0000 0000 1111 1111 <-- (Balas << 8) >> 24 (sí, son 24 ceros, no hace falta que los cuentes). Tienen que estar a la derecha del todo para poder ser leídos correctamente.
 
 	return uTemp;
 }
 
-unsigned int AddBalas(unsigned int _uMask, int _iBalasToAdd)
+unsigned int AddBalas(unsigned int _uMask, int _balasToAdd)
 {
-	// 10001110001001010010000000000100 <- _uMask
-	// 00100101001000000000010000000000 <- << 8
-	// 00000000000000000000000000100101 <- << 24
-	
-	unsigned int uNumBalas = GetNumeroBalas(_uMask);
+	// 1000 1110 0010 0101 0010 0000 0000 0100 <-- uMask
+	// 0010 0101 0010 0000 0000 0100 0000 0000 <-- uMask << 8
+	// 0000 0000 0000 0000 0000 0000 0010 0101 <-- (uMask << 8) >> 24
 
-	// 00000000000000000000000000100110 <- + _iBalasToAdd 0x01
-	uNumBalas += _iBalasToAdd;
+	unsigned int uNumBalas = NumBalas(_uMask);
 
-	//Comprobar que no sea mayor que 255 -> 0x000000FF
+	uNumBalas += _balasToAdd;
+
 	if (uNumBalas > 255)
 	{
 		uNumBalas = 255;
 	}
 
-	// 00000000100110000000000000000000 <- << 16
-	uNumBalas = uNumBalas << 16;
-	// 00000000111111110000000000000000 MASK_BALAS
-	// 11111111000000001111111111111111 ~MASK_BALAS
-	
-	// 10001110001001010010000000000100 <- _uMask
-	// 11111111000000001111111111111111 ~MASK_BALAS
-	// -------------------------------- AND
-	// 10001110000000000010000000000100 <- Máscara original con balas a 0
-	unsigned int uNewMask = _uMask & ~MASK_BALAS;
+	// 0000 0000 0010 0110 0000 0000 0000 0000 <-- ((uMask << 8) >> 24) << 16
 
-	// 10001110000000000010000000000100 <- Máscara original con balas a 0
-	// 00000000100110000000000000000000 <- Balas sumadas
-	// -------------------------------- OR
-	uNewMask |= uNumBalas;
+	uNumBalas <<= 16;
 
-	return uNewMask;
+	// 1111 1111 0000 0000 1111 1111 1111 1111 <-- ~MASK_BALAS (primero tengo que borrarlo de la máscara original)
+
+	unsigned int newMask = _uMask & ~MASK_BALAS;
+
+	// 1000 1110 0000 0000 0010 0000 0000 0100 <-- Así queda de momento (vuelven los valores, balas está a cero)
+	// 0000 0000 0010 0110 0000 0000 0000 0000 <-- Ahí van las balas sumadas
+	// --------------------------------------- OR
+
+	newMask |= uNumBalas;
+
+	return newMask;
+}
+
+bool BalasInfinitas(unsigned int _uMask)
+{
+	// 1000 1110 0010 0101 0010 0000 0000 0100 <-- uMask
+	// 0000 0000 0000 0000 0000 0000 0000 0010 <-- MASK_2
+	// --------------------------------------- <-- AND (solo es 1 si ambos son 1)
+	// 0000 0000 0000 0000 0000 0000 0000 0000 <-- Falso
+
+	// 1000 1110 0010 0101 0010 0000 0000 0110 <-- uMask
+	// 0000 0000 0000 0000 0000 0000 0000 0010 <-- MASK_2
+	// --------------------------------------- <-- AND (solo es 1 si ambos son 1)
+	// 0000 0000 0000 0000 0000 0000 0000 0010 <-- Verdadero
+
+	return _uMask & MASK_2;
+}
+
+unsigned int ActivarBalasInfinitas(unsigned int _uMask)
+{
+	// 1000 1110 0010 0101 0010 0000 0000 0100 <-- uMask
+	// 0000 0000 0000 0000 0000 0000 0000 0010 <-- MASK_2
+	// ---- ---- ---- ---- ---- ---- ---- ---- <-- OR
+	// 1000 1110 0010 0101 0010 0000 0000 0110 <-- uMask | MASK_2
+	return _uMask | MASK_2;
 }
 
 int main()
@@ -97,18 +87,19 @@ int main()
 	// LIFE = 142 (8E)
 	// BALAS = 37 (25)
 	// COMPAÑEROS = 2 (200)
-	//unsigned int uData = 0x8E252006; // con balas activas y escudo (último 6)
 	unsigned int uData = 0x8E252004; // con balas inactivas y escudo (último 4)
-		printf("Modo Balas Infinito %s!\n",EstaActivoElModoDeBalasInfinito(uData)?"ACTIVO!":"inactivo");
 
-	uData = ActivarBalasInfinitas(uData);
-
-	printf("Modo Balas Infinito %s!\n", EstaActivoElModoDeBalasInfinito(uData) ? "ACTIVO!" : "inactivo");
-
-	printf("Numero Balas = %d\n", GetNumeroBalas(uData));
+	printf("Numero de balas = %d\n\n", NumBalas(uData));
 
 	uData = AddBalas(uData, 20);
 
-	printf("Numero Balas = %d\n", GetNumeroBalas(uData));
+	printf("Numero de balas = %d\n\n", NumBalas(uData));
 
+	printf("Balas infinitas esta %s\n\n", BalasInfinitas(uData) ? "activo" : "inactivo");
+
+	uData = ActivarBalasInfinitas(uData);
+
+	printf("Balas infinitas esta %s\n\n", BalasInfinitas(uData) ? "activo" : "inactivo");
+
+	return 0;
 }
