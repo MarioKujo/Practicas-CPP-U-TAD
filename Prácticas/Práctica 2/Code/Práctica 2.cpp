@@ -6,7 +6,49 @@
 4 Dada una cadena de caracteres, darle la vuelta.
 */
 #include <iostream>
+/*
+Hacer un bucle que recorra la tabla sText y la imprima en la consola.
+char sText[] = "Hola";
+*/
+void ImprimirTabla()
+{
+	char sText[] = "Hola";
 
+	size_t uSize = strlen(sText);
+	/*
+	unsigned int uIndex = 0;
+	while (sText[uIndex] != '\0')
+	{
+		printf("%c", sText[uIndex]);
+		++uIndex;
+	}*/
+	for (unsigned int uIndex = 0; uIndex < uSize; ++uIndex)
+	{
+		printf("%c", sText[uIndex]);
+	}
+	printf("\n\n");
+}
+/*
+1 Declarar una referencia a una variable y cambiarle el valor.
+
+2 ¿Qué pasa si no inicializamos una referencia?
+
+3 ¿Qué significa esta expresión? int &r = i, r2 = i2;
+*/
+
+/*
+void Referencias()
+{
+	int i = 0;
+	int i2 = 0;
+
+	int& b = i;
+
+	//int& b; // Error: tiene que tener una referencia a otra variable obligatoriamente
+
+	int& r = i, r2 = i2; // r recibe una referencia de i, r2 recibe una copia del valor almacenado en i2
+}
+*/
 void IntBytes(unsigned int _int)
 {
 	unsigned char* p = reinterpret_cast<unsigned char*>(&_int);
@@ -93,31 +135,32 @@ char* Invertir(char* cadena)
 
 int main()
 {
-	unsigned int a = 0x00FF0002;
+	ImprimirTabla();
+	unsigned int intAByte = 0x00FF0002;
 
-	IntBytes(a);
+	IntBytes(intAByte);
 
 	int tabla[] = { 1, 3, 2, 5, 3, static_cast<int>(0xFFFFFFFF), 0x00FF0002, 2 };
 
 	printf("El numero mayor es %d\n\n", Mayor(tabla));
 
 
-	const char* p = ByteMayorSigned(tabla);
+	const char* sMayor = ByteMayorSigned(tabla);
 
 	const char* inicio = reinterpret_cast<const char*>(tabla);
 
-	printf("Byte mayor (signed): %d en la posicion %td\n\n", *p, p - inicio);
+	printf("Byte mayor (signed): %d en la posicion %td\n\n", *sMayor, sMayor - inicio);
 
 
-	const unsigned char* uP = ByteMayorUnsigned(tabla);
+	const unsigned char* uMayor = ByteMayorUnsigned(tabla);
 
 	const unsigned char* uInicio = reinterpret_cast<const unsigned char*>(tabla);
 
-	printf("Byte mayor (unsigned): %d en la posicion %td\n\n", *uP, uP - uInicio);
+	printf("Byte mayor (unsigned): %d en la posicion %td\n\n", *uMayor, uMayor - uInicio);
 
-	char cadena[] = "Hola";
+	char cInversa[] = "Hola";
 
-	printf("%s\n", Invertir(cadena));
+	printf("%s\n", Invertir(cInversa));
 
 	return 0;
 }
