@@ -6,64 +6,6 @@
 #include <iostream>
 #include <crtdbg.h>
 
-#pragma region MiniPracticas
-/*
-void StackOverflow1(int n)
-{
-	char relleno[1024];
-	relleno[0] = (char)n;          // evita que se optimice fuera
-	printf("%d %d\n", n, relleno[0]);
-	StackOverflow1(n + 1);
-}
-*/
-
-/*
-void StackOverflow2()
-{
-	char buffer[2 * 1024 * 1024];   // 2 MB en la pila
-	buffer[0] = 1;
-	printf("%d\n", buffer[0]);
-}
-*/
-
-/*
-char* GetGreeting()
-{
-	char t[] = "Hola";
-	return t; // Sólo vive en el frame de la función. Al devolverlo, apunta a basura
-}
-*/
-
-/*
-// Escribir una función que reciba una variable int y le asigne un valor.
-void ChangeValueRef(int& rValue)
-{
-	rValue = 5;
-}
-*/
-
-/*
-// Lo mismo, pero recibiendo un puntero a un int.
-void ChangeValuePointer(int* pValue)
-{
-	*pValue = 5;
-}
-*/
-
-/*
-// ¿Cómo haríamos para pasar un puntero y que nos lo rellenen con la dirección de una variable?
-void FillPointer(int*& pointer, int& toPoint)
-{
-	pointer = &toPoint;
-}
-
-// ¿Qué dos opciones tenemos?
-void FillDoublePointer(int** pointer, int& toPoint)
-{
-	*pointer = &toPoint;
-}
-*/
-#pragma endregion
 
 const char* s_tTablaDeCadenas[] =
 {

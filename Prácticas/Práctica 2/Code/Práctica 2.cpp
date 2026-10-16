@@ -6,49 +6,7 @@
 4 Dada una cadena de caracteres, darle la vuelta.
 */
 #include <iostream>
-/*
-Hacer un bucle que recorra la tabla sText y la imprima en la consola.
-char sText[] = "Hola";
-*/
-void ImprimirTabla()
-{
-	char sText[] = "Hola";
 
-	size_t uSize = strlen(sText);
-	/*
-	unsigned int uIndex = 0;
-	while (sText[uIndex] != '\0')
-	{
-		printf("%c", sText[uIndex]);
-		++uIndex;
-	}*/
-	for (unsigned int uIndex = 0; uIndex < uSize; ++uIndex)
-	{
-		printf("%c", sText[uIndex]);
-	}
-	printf("\n\n");
-}
-/*
-1 Declarar una referencia a una variable y cambiarle el valor.
-
-2 ¿Qué pasa si no inicializamos una referencia?
-
-3 ¿Qué significa esta expresión? int &r = i, r2 = i2;
-*/
-
-/*
-void Referencias()
-{
-	int i = 0;
-	int i2 = 0;
-
-	int& b = i;
-
-	//int& b; // Error: tiene que tener una referencia a otra variable obligatoriamente
-
-	int& r = i, r2 = i2; // r recibe una referencia de i, r2 recibe una copia del valor almacenado en i2
-}
-*/
 void IntBytes(unsigned int _int)
 {
 	unsigned char* p = reinterpret_cast<unsigned char*>(&_int);
@@ -135,7 +93,6 @@ char* Invertir(char* cadena)
 
 int main()
 {
-	ImprimirTabla();
 	unsigned int intAByte = 0x00FF0002;
 
 	IntBytes(intAByte);

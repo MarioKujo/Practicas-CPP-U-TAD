@@ -1,9 +1,11 @@
-/*Un personaje en 32 bits
+/*
+Un personaje en 32 bits
 Realizar funciones que, dado ese entero(unsigned int):
 - Devuelvan el número de balas.
 - Añadan balas a las existentes (como máximo 255, sin tocar los demás campos)
 - Devuelvan si está activo el modo de balas infinitas.
-- Activen el modo de balas infinitas.*/
+- Activen el modo de balas infinitas.
+*/
 #include <iostream>
 #define MASK_BALAS 0x00FF0000
 #define MASK_2 0x00000002 // 0000 0000 0000 0000 0000 0000 0000 0010 <-- la verdadera máscara
