@@ -14,7 +14,8 @@
 #include <cstdio>
 #include <cstring>
 #include "File.h"
-
+namespace File
+{
 void* FileOpen(const char* pszName, EFileMode eMode)
 {
 	return fopen(pszName, eMode == EFileMode::FILE_READ ? "rb" : "wb");
@@ -48,4 +49,5 @@ unsigned int FileWrite(void* pFile, const char* pBuffer, unsigned int uSize)
 	}
 
 	return static_cast<unsigned int>(fwrite(pBuffer, 1, uSize, static_cast<FILE*>(pFile)));
+}
 }
