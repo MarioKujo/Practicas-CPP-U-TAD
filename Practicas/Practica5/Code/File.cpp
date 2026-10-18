@@ -9,7 +9,7 @@
 
 5 Probar en un main: escribir un fichero, leerlo y mostrarlo, y abrir uno que no existe (→nullptr).
 */
-
+// (Práctica 7) 1 Organizar el código de la práctica 5 usando un namespace.
 #define _CRT_SECURE_NO_WARNINGS // antes de todo
 #include <cstdio>
 #include <cstring>

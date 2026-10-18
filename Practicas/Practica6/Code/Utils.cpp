@@ -7,6 +7,7 @@
 
 4 Probar con texto.txt y numeros.txt: "enemigo" → 3, "Enemigo" → 1, "aa" → 3, "xyz" → 0; la suma es 13245.
 */
+// (Práctica 7) 2 Organizar el código de la práctica 6 usando un namespace.
 #include "Utils.h"
 #include "File.h"
 #include <cstring>
