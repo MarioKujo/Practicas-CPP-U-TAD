@@ -397,7 +397,9 @@ private:
 	static CAudio* s_pInstance;
 };
 CAudio* CAudio::s_pInstance = nullptr;
+
 #pragma endregion
+
 int main()
 {
 #pragma region Sesion 1
