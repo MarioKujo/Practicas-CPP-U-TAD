@@ -12,7 +12,7 @@ int main()
 	printf("'aa' aparece %d %s\n", aa, aa == 1 ? "vez" : "veces");
 	printf("'xyz' aparece %d %s\n", xyz, xyz == 1 ? "vez" : "veces");
 	int a = 0;
-	if(Utils::SumNumbers("numeros.txt", a))
+	if (Utils::SumNumbers("numeros.txt", a))
 	{
 		printf("La suma es %d\n", a);
 	}

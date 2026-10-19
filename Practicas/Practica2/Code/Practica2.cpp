@@ -18,7 +18,7 @@ void IntBytes(unsigned int _int)
 }
 
 template<size_t N>
-int Mayor(const int (&tabla)[N])
+int Mayor(const int(&tabla)[N])
 {
 	const int* mayor = tabla;
 	const int* fin = tabla + N;
