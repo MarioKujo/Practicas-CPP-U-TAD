@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstdarg>
 #include <vector>
+#include <assert.h>
 #pragma region Sesion 1
 //#define PRINT_SIZE(tipo) printf("sizeof(" #tipo ") = %zu\n", sizeof(tipo))
 //// Escribir un programa que pida dos números e imprima su suma.
@@ -365,6 +366,38 @@ private:
 */
 #pragma endregion
 
+#pragma region Sesion 6
+class CAudio
+{
+public:
+	static void Create()
+	{
+		assert(s_pInstance == nullptr);
+		if (s_pInstance == nullptr)
+		{
+			s_pInstance = new CAudio();
+		}
+	}
+	static void Destroy()
+	{
+		assert(s_pInstance == nullptr);
+		if (s_pInstance != nullptr)
+		{
+			delete s_pInstance;
+			s_pInstance = nullptr;
+		}
+	}
+	static CAudio* GetInstance()
+	{
+		assert(s_pInstance == nullptr);
+		return s_pInstance;
+	}
+private:
+	CAudio(){}
+	static CAudio* s_pInstance;
+};
+CAudio* CAudio::s_pInstance = nullptr;
+#pragma endregion
 int main()
 {
 #pragma region Sesion 1
@@ -467,6 +500,10 @@ int main()
 	 struct CTestHack { int m_iX, m_iY; };
 	 reinterpret_cast<CTestHack*>(&t)->m_iX = 7;
 	 */
+#pragma endregion
+
+#pragma region Sesion 6
+
 #pragma endregion
 	return 0;
 }
