@@ -1,0 +1,3 @@
+El enemigo ataca por la izquierda. Otro enemigo aparece arriba.
+Cuidado: el enemigo final no es un Enemigo normal.
+aaaa

@@ -53,7 +53,9 @@ int main()
 
 	// Recorrido completo y final del recorrido
 	for (const char* p = tList.First(); p != nullptr; p = tList.Next())
+	{
 		printf("%s\n", p);
+	}
 	printf("Next tras el final: %s\n", tList.Next() ? "algo" : "nullptr");
 
 	// Pop hasta vaciar

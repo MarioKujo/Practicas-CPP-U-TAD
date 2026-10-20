@@ -112,7 +112,7 @@ TListNode::TListNode(const char* _sText)
 {
 	if (_sText)
 	{
-		unsigned int uLen(strlen(_sText));
+		unsigned int uLen(static_cast<unsigned int>(strlen(_sText)));
 		char*pCopy = new char[uLen + 1];
 		strcpy_s(pCopy, uLen + 1, _sText);
 		m_sCadena = pCopy;
