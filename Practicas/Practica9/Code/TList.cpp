@@ -8,31 +8,17 @@ TList::TList()
 
 TList::~TList()
 {
+	Reset();
 }
 
 int TList::Size()
 {
-	if (m_pFirst == nullptr)
-	{
-		return 0;
-	}
-	else
-	{
-		int iSize = 1;
-		TListNode* pTmp(m_pFirst);
-		while (pTmp->m_pNext)
-		{
-			pTmp = pTmp->m_pNext;
-			iSize++;
-		}
-		return iSize;
-	}
+	return m_iSize;
 }
 
 int TList::Push(const char* psz)
 {
 	TListNode* pNewNode = new TListNode(psz);
-	pNewNode->m_sCadena = psz;
 
 	if (m_pFirst == nullptr)
 	{
@@ -40,13 +26,11 @@ int TList::Push(const char* psz)
 	}
 	else
 	{
-		TListNode* pTmp(m_pFirst);
-		while (pTmp->m_pNext)
-		{
-			pTmp = pTmp->m_pNext;
-		}
+		m_pLast->m_pNext = pNewNode;
 	}
-	return 0;
+	m_pLast = pNewNode;
+	++m_iSize;
+	return m_iSize;
 }
 
 const char* TList::First()
@@ -72,9 +56,31 @@ const char* TList::Next()
 	return nullptr;
 }
 
+// El puntero que devuelve Pop es válido hasta la siguiente llamada a Pop o hasta destruir la lista o hasta Reset.
 const char* TList::Pop()
 {
-	return nullptr;
+	--m_iSize;
+	if (m_pFirst == nullptr)
+	{
+		m_pLast = nullptr;
+		return nullptr;
+	}
+
+	delete[]m_pLastPopped;
+	m_pLastPopped = nullptr;
+
+	TListNode* pRemoved = m_pFirst;
+	m_pFirst = pRemoved->m_pNext;
+	if (m_pIter == pRemoved)
+	{
+		m_pIter = nullptr;
+	}
+
+	m_pLastPopped = pRemoved->m_sCadena;
+	pRemoved->m_sCadena = nullptr;
+	delete pRemoved;
+
+	return m_pLastPopped;
 }
 
 void TList::Reset()
@@ -87,7 +93,12 @@ void TList::Reset()
 		delete pToDelete;
 	}
 	m_pFirst = nullptr;
+	m_pLast = nullptr;
+	m_iSize = 0;
+	m_pIter = nullptr;
 
+	delete[] m_pLastPopped;
+	m_pLastPopped = nullptr;
 	/*
 	delete m_pFirst;
 	m_pFirst = nullptr; // Más elegante pero más peligroso
@@ -95,23 +106,24 @@ void TList::Reset()
 }
 TListNode::TListNode(const char* _sText)
 {
-	/*if (_sText)
+	if (_sText)
 	{
 		unsigned int uLen(strlen(_sText));
-		m_sCadena = new char[uLen + 1];
-		strcpy_s(m_sCadena, uLen + 1, _sText);
-	}*/
+		char*pCopy = new char[uLen + 1];
+		strcpy_s(pCopy, uLen + 1, _sText);
+		m_sCadena = pCopy;
+	}
 }
 TListNode::~TListNode()
 {
-	/*if (m_sCadena)
+	if (m_sCadena)
 	{
-		delete[]m_sCadena;
+		delete[] m_sCadena;
 		m_sCadena = nullptr;
-	}*/
-	if (m_pNext)
+	}
+	/*if (m_pNext)
 	{
 		delete m_pNext;
 		m_pNext = nullptr;
-	}
+	}*/
 }

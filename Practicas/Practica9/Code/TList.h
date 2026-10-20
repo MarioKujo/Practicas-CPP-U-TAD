@@ -61,7 +61,13 @@ public:
 
 private:
     // TODO: los miembros privados los decidís vosotros.
-    TListNode* m_pIter = nullptr;
     TListNode* m_pFirst = nullptr;
+
+    TListNode* m_pIter = nullptr;
+
+    const char* m_pLastPopped = nullptr;
+
+    TListNode* m_pLast = nullptr;
+    unsigned int m_iSize = 0;
 
 };
