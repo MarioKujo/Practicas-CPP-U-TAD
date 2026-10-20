@@ -5,23 +5,25 @@ VisualStudioVersion = 18.6.11822.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MiniPracticas", "MiniPracticas\Project\MiniPracticas.vcxproj", "{04FB7952-AEA9-4544-9EEC-A939103F73C4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica1", "Practica1\Project\Practica1.vcxproj", "{649C6C8B-CEB9-48C4-99CB-9488A524DAA8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica01", "Practica01\Project\Practica01.vcxproj", "{649C6C8B-CEB9-48C4-99CB-9488A524DAA8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica2", "Practica2\Project\Practica2.vcxproj", "{89DD6E1E-5FC7-4F79-9C5B-95AE6E2E648D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica02", "Practica02\Project\Practica02.vcxproj", "{89DD6E1E-5FC7-4F79-9C5B-95AE6E2E648D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica3", "Practica3\Project\Practica3.vcxproj", "{9F8E0598-B7FC-4CFC-A7FD-6EF930A80118}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica03", "Practica03\Project\Practica03.vcxproj", "{9F8E0598-B7FC-4CFC-A7FD-6EF930A80118}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica4", "Practica4\Project\Practica4.vcxproj", "{49D4471D-EFC9-4F03-B2E9-379F16216B83}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica04", "Practica04\Project\Practica04.vcxproj", "{49D4471D-EFC9-4F03-B2E9-379F16216B83}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica5", "Practica5\Project\Practica5.vcxproj", "{B887DB7E-143B-420E-9569-F4C53EA8A62D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica05", "Practica05\Project\Practica05.vcxproj", "{B887DB7E-143B-420E-9569-F4C53EA8A62D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica6", "Practica6\Project\Practica6.vcxproj", "{29FD8A33-EE39-4786-BE43-A4189465B8F0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica06", "Practica06\Project\Practica06.vcxproj", "{29FD8A33-EE39-4786-BE43-A4189465B8F0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica7", "Practica7\Project\Practica7.vcxproj", "{02B76CA8-2E14-4BAE-B6C7-8712BFC5C48B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica07", "Practica07\Project\Practica07.vcxproj", "{02B76CA8-2E14-4BAE-B6C7-8712BFC5C48B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica8", "Practica8\Project\Practica8.vcxproj", "{86C8076D-D6FB-4907-97A3-C13327431C7B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica08", "Practica08\Project\Practica08.vcxproj", "{86C8076D-D6FB-4907-97A3-C13327431C7B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica9", "Practica9\Project\Practica9.vcxproj", "{66DC2EDA-8C28-4FCA-B11F-26E3F93494E2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica09", "Practica09\Project\Practica09.vcxproj", "{66DC2EDA-8C28-4FCA-B11F-26E3F93494E2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Practica12", "Practica12\Practica12.vcxproj", "{2353466E-38D0-44BE-808A-C83286AF57C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +113,14 @@ Global
 		{66DC2EDA-8C28-4FCA-B11F-26E3F93494E2}.Release|x64.Build.0 = Release|x64
 		{66DC2EDA-8C28-4FCA-B11F-26E3F93494E2}.Release|x86.ActiveCfg = Release|Win32
 		{66DC2EDA-8C28-4FCA-B11F-26E3F93494E2}.Release|x86.Build.0 = Release|Win32
+		{2353466E-38D0-44BE-808A-C83286AF57C7}.Debug|x64.ActiveCfg = Debug|x64
+		{2353466E-38D0-44BE-808A-C83286AF57C7}.Debug|x64.Build.0 = Debug|x64
+		{2353466E-38D0-44BE-808A-C83286AF57C7}.Debug|x86.ActiveCfg = Debug|Win32
+		{2353466E-38D0-44BE-808A-C83286AF57C7}.Debug|x86.Build.0 = Debug|Win32
+		{2353466E-38D0-44BE-808A-C83286AF57C7}.Release|x64.ActiveCfg = Release|x64
+		{2353466E-38D0-44BE-808A-C83286AF57C7}.Release|x64.Build.0 = Release|x64
+		{2353466E-38D0-44BE-808A-C83286AF57C7}.Release|x86.ActiveCfg = Release|Win32
+		{2353466E-38D0-44BE-808A-C83286AF57C7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

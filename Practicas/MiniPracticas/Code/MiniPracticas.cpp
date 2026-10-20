@@ -223,6 +223,7 @@ Hacer un bucle que recorra la tabla sText y la imprima en la consola.
 char sText[] = "Hola";
 */
 
+/*
 void ImprimirTabla()
 {
 	char sText[] = "Hola";
@@ -235,12 +236,13 @@ void ImprimirTabla()
 		printf("%c", sText[uIndex]);
 		++uIndex;
 	}
-	/*for (unsigned int uIndex = 0; uIndex < uSize; ++uIndex)
-	{
-		printf("%c", sText[uIndex]);
-	}*/
+	//for (unsigned int uIndex = 0; uIndex < uSize; ++uIndex)
+	//{
+	//	printf("%c", sText[uIndex]);
+	//}
 	printf("\n\n");
 }
+*/
 
 /*
 ¿Cuánto vale el puntero después de ++?
@@ -395,7 +397,7 @@ public:
 		return s_pInstance;
 	}
 private:
-	CAudio(){}
+	CAudio() {}
 	static CAudio* s_pInstance;
 };
 CAudio* CAudio::s_pInstance = nullptr;
