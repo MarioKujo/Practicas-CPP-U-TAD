@@ -59,7 +59,6 @@ const char* TList::Next()
 // El puntero que devuelve Pop es válido hasta la siguiente llamada a Pop o hasta destruir la lista o hasta Reset.
 const char* TList::Pop()
 {
-	--m_iSize;
 	if (m_pFirst == nullptr)
 	{
 		m_pLast = nullptr;
@@ -71,6 +70,11 @@ const char* TList::Pop()
 
 	TListNode* pRemoved = m_pFirst;
 	m_pFirst = pRemoved->m_pNext;
+	--m_iSize;
+	if (m_pFirst == nullptr)
+	{
+		m_pLast = nullptr; // La lista se ha vaciado: la cola ya no existe
+	}
 	if (m_pIter == pRemoved)
 	{
 		m_pIter = nullptr;
