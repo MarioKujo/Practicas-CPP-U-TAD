@@ -297,12 +297,14 @@ void StackOverflow2() // Este warning es exactamente lo que necesita para hacer 
 }
 */
 
+/*
 // ¿Hay algún problema en este código?
 char* GetGreeting()
 {
 	char t[] = "Hola";
 	return t; // Sólo vive en el frame de la función. Al devolverlo, apunta a basura
 }
+*/
 
 // 1 Escribir una función que reciba una variable int y le asigne un valor.
 void ChangeValueRef(int& rValue)

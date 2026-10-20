@@ -5,7 +5,7 @@ int main()
 {
 	TFile archivo;
 	// --- Escritura ---
-	FILE* pFile = static_cast<FILE*>(archivo.Open("Prueba.bin", TFileMode::FILE_WRITE));
+	void* pFile = archivo.Open("Prueba.bin", TFileMode::FILE_WRITE);
 	if (pFile == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
@@ -15,24 +15,21 @@ int main()
 
 	const char* numeros = "1 2 3 4 5 6 7 8 9 10";
 	unsigned int pedidos = static_cast<unsigned int>(strlen(numeros));
-	unsigned int escritos = File::FileWrite(pFile, numeros, pedidos);
+	unsigned int escritos = archivo.Write(numeros, pedidos);
 	if (pedidos != escritos)
 	{
 		fprintf(stderr, "Error: se escribieron %u de %u bytes\n", escritos, pedidos);
-		File::FileClose(pFile);
 		return 1;
 	}
 	printf("Correcto! Se escribieron %u de %u bytes\n", escritos, pedidos);
 
-	if (!File::FileClose(pFile))
+	if (archivo.Close())
 	{
-		fprintf(stderr, "Error: no se ha cerrado el archivo.\n");
-		return 1;
+		printf("Cerrado correctamente.\n\n");
 	}
-	printf("Cerrado correctamente.\n\n");
 
 	// --- Lectura ---
-	pFile = File::FileOpen("Prueba.bin", File::EFileMode::FILE_READ);
+	pFile = archivo.Open("Prueba.bin", TFileMode::FILE_READ);
 	if (pFile == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
@@ -41,22 +38,22 @@ int main()
 	printf("Archivo abierto en modo de lectura.\n");
 
 	char buffer[128];
-	unsigned int leidos = File::FileRead(pFile, buffer, static_cast<unsigned int>(sizeof(buffer) - 1));
-	if (leidos != pedidos)
-	{
-		fprintf(stderr, "Error: se leyeron %u de %u bytes\n", leidos, pedidos);
-		File::FileClose(pFile);
-		return 1;
-	}
+	unsigned int leidos = archivo.Read(buffer, static_cast<unsigned int>(sizeof(buffer) - 1));
 	buffer[leidos] = '\0';
 	printf("Leidos: %s\n", buffer);
-	File::FileClose(pFile);
-	printf("Cerrado correctamente.\n\n");
+	if (archivo.Close())
+	{
+		printf("Cerrado correctamente.\n\n");
+	}
 
 	// --- Archivo inexistente ---
-	if (File::FileOpen("Error.bin", File::EFileMode::FILE_READ) == nullptr)
+	if (archivo.Open("Error.bin", TFileMode::FILE_READ) == nullptr)
 	{
-		printf("Correcto: el archivo inexistente 'Error.bin' devuelve nullptr.\n");
+		printf("Correcto: el archivo inexistente 'Error.bin' devuelve nullptr.\n\n");
 	}
+
+	// --- Doble liberación ---
+	TFile archivo2 = archivo;
+	printf("Copia hecha. Ahora se destruyen los dos...\n\n");
 	return 0;
 }

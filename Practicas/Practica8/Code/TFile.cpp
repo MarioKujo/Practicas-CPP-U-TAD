@@ -9,14 +9,19 @@ TFile::TFile(TFile& tOther)
 {
 	pFile = tOther.pFile;
 }
-
+/* Copia solo el valor del puntero, no el archivo.Dos objetos son entonces "dueños" del mismo FILE*, y cada destructor
+lo cierra: doble liberación. La solución es que un recurso tenga un único dueño: prohibir la copia ( = delete) o
+transferirlo con semántica de movimiento.
+*/
 TFile::~TFile()
 {
-	fclose(pFile);
+	printf("Destructor: direccion de pFile = %p\n", (void*)pFile);
+	Close();
 }
 
 void* TFile::Open(const char* pszName, TFileMode eMode)
 {
+	Close();
 	pFile = fopen(pszName, eMode == TFileMode::FILE_READ ? "rb" : "wb");
 	return pFile;
 }
@@ -27,7 +32,9 @@ bool TFile::Close()
 	{
 		return false;
 	}
-	return fclose(static_cast<FILE*>(pFile)) == 0;
+	const bool ok = (fclose(pFile) == 0);
+	pFile = nullptr;
+	return ok;
 }
 
 unsigned int TFile::Read(char* pBuffer, unsigned int uSize)

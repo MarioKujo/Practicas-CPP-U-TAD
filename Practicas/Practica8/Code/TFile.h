@@ -6,7 +6,7 @@
 3 ¿Qué pasa si se copia un TFile (TFile oCopia = oOriginal;) y después se destruyen los dos? Probarlo y explicarlo.
 */
 #pragma once
-#include <iostream>
+#include <cstdio>
 
 enum class TFileMode { FILE_READ, FILE_WRITE };
 
