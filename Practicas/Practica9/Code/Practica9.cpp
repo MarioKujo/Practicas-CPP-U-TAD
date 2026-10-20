@@ -1,14 +1,15 @@
 /*
 1 Partir de TList.h e implementar todos sus métodos en TList.cpp, sin cambiar la parte pública. La parte privada la decidís vosotros.
 
-2 Push añade al final y retorna el no de elementos. First/Next recorren la lista; Pop quita y retorna el primero. Sin elementos → nullptr.
+2 Push añade al final y retorna el nº de elementos. First/Next recorren la lista; Pop quita y retorna el primero. Sin elementos → nullptr.
 
 3 El destructor libera toda la memoria. Reset vacía la lista, que se puede seguir usando.
 
 4 Probar en un main los casos límite (lista vacía, final del recorrido, Pop hasta vaciarla).
 
 5 Añadir una cadena desde un buffer local y modificar después el buffer: ¿qué devuelve la lista? ¿Por qué?
-Devuelve lo que le hemos pasado, ya que TList hace una copia propia reservando memoria con new char[] y luego con strcpy_s. No guarda la dirección del buffer, guarda la dirección de su propia copia, así que da igual si lo modificas en el main.
+
+Devuelve lo que le hemos pasado al push, ya que TList hace una copia propia reservando memoria con new char[] y luego con strcpy_s. No guarda la dirección del buffer, guarda la dirección de su propia copia, así que da igual si modificas la variable local en el main.
 */
 #include <iostream>
 #include "TList.h"
