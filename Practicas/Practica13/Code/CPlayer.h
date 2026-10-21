@@ -7,7 +7,7 @@ AddScore() Heal()
 #pragma once
 #include "CEntity.h"
 #include <iostream>
-class CPlayer :public CEntity
+class CPlayer :public CEntityVirtual
 {
 public:
 	CPlayer(const char* _nombre, int _iX, int _iY, unsigned int _uVida = 100);

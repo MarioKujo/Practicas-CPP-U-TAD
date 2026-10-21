@@ -11,27 +11,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Code\CEntity.h">
+    <ClInclude Include="..\Code\CEnemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\CPlayer.h">
+    <ClInclude Include="..\Code\CEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Code\CEnemy.h">
+    <ClInclude Include="..\Code\CPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Code\CEntity.cpp">
+    <ClCompile Include="..\Code\CEnemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\CPlayer.cpp">
+    <ClCompile Include="..\Code\CEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\CEnemy.cpp">
+    <ClCompile Include="..\Code\CPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Practica13.cpp">
+    <ClCompile Include="..\Code\Practica13.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

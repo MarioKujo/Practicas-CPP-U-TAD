@@ -14,11 +14,11 @@ De CPlayer: AddScore() y Heal(), de CEnemy Attack(), es decir, cualquier menció
 */
 #pragma once
 #include <iostream>
-class CEntity
+class CEntityVirtual
 {
 public:
-	CEntity(const char* _nombre, int _iX, int _iY, unsigned int _uVida);
-	~CEntity();
+	CEntityVirtual(const char* _nombre, int _iX, int _iY, unsigned int _uVida);
+	~CEntityVirtual();
 	void Move(int iDX, int iDY);
 	void TakeDamage(int iDamage);
 	bool IsAlive() const;

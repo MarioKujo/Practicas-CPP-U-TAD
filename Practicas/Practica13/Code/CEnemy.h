@@ -8,12 +8,12 @@ Attack(CEntity&)
 #pragma once
 #include "CEntity.h"
 #include <iostream>
-class CEnemy:public CEntity
+class CEnemy:public CEntityVirtual
 {
 public:
 	CEnemy(const char* _nombre, int _iX, int _iY, int _iDamage, unsigned int _uVida = 30);
 	~CEnemy();
-	void Attack(CEntity& other);
+	void Attack(CEntityVirtual& other);
 private:
 	int iDamage;
 };

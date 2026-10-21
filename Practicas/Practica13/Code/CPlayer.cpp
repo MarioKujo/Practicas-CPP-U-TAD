@@ -1,6 +1,6 @@
 #include "CPlayer.h"
 
-CPlayer::CPlayer(const char* _nombre, int _iX, int _iY, unsigned int _uVida):CEntity(_nombre, _iX, _iY, _uVida), puntos(0)
+CPlayer::CPlayer(const char* _nombre, int _iX, int _iY, unsigned int _uVida):CEntityVirtual(_nombre, _iX, _iY, _uVida), puntos(0)
 {
 	printf("Constructor de CPlayer\n");
 }
