@@ -1,7 +1,7 @@
-#include "File.h"
+#include "File07.h"
 #include <cstdio>
 #include <cstring>
-#include "Utils.h"
+#include "Utils07.h"
 #include "TList.h"
 #include <iostream>
 int main()
@@ -78,25 +78,5 @@ int main()
 	{
 		printf("La suma es %d\n", a);
 	}
-
-	// TList
-	/*
-	Práctica 10:
-	2 Sacar por consola los números leídos.
-	*/
-	TList lNumeros;
-	if (Utils::ReadNumbers("numeros.txt", lNumeros))
-	{
-		printf("Numeros leidos (%d):\n", lNumeros.Size());
-		for (const char* p = lNumeros.First(); p != nullptr; p = lNumeros.Next())
-		{
-			printf("%s\n", p);
-		}
-	}
-	else
-	{
-		fprintf(stderr, "Error: no se ha podido abrir numeros.txt\n");
-	}
-
 	return 0;
 }

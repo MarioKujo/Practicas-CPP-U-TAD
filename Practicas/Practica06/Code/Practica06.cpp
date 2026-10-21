@@ -1,4 +1,4 @@
-#include "Utils.h"
+#include "Utils06.h"
 #include <iostream>
 // Probar con texto.txt y numeros.txt: "enemigo" → 3, "Enemigo" → 1, "aa" → 3, "xyz" → 0; la suma es 13245.
 int main()

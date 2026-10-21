@@ -144,12 +144,12 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\Utils.h" />
+    <ClInclude Include="..\Code\Utils06.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Practica05\Code\File.cpp" />
+    <ClCompile Include="..\..\Practica05\Code\File05.cpp" />
     <ClCompile Include="..\Code\Practica06.cpp" />
-    <ClCompile Include="..\Code\Utils.cpp" />
+    <ClCompile Include="..\Code\Utils06.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

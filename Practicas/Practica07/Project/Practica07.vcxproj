@@ -143,14 +143,13 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\File.h" />
-    <ClInclude Include="..\Code\Utils.h" />
+    <ClInclude Include="..\Code\File07.h" />
+    <ClInclude Include="..\Code\Utils07.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Practica09\Code\TList.cpp" />
-    <ClCompile Include="..\Code\File.cpp" />
+    <ClCompile Include="..\Code\File07.cpp" />
     <ClCompile Include="..\Code\Practica07.cpp" />
-    <ClCompile Include="..\Code\Utils.cpp" />
+    <ClCompile Include="..\Code\Utils07.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

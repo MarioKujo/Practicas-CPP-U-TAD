@@ -11,24 +11,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\File.h">
+    <ClInclude Include="..\Code\File07.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Utils.h">
+    <ClInclude Include="..\Code\Utils07.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Code\File.cpp">
+    <ClCompile Include="..\Code\File07.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Practica07.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Practica09\Code\TList.cpp">
+    <ClCompile Include="..\Code\Utils07.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

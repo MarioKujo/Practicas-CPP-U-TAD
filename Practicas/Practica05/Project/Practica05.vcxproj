@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\File.h" />
+    <ClInclude Include="..\Code\File05.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Code\File.cpp" />
+    <ClCompile Include="..\Code\File05.cpp" />
     <ClCompile Include="..\Code\Practica05.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
