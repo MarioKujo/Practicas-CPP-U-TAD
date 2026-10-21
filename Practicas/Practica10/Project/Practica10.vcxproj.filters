@@ -17,7 +17,7 @@
     <ClCompile Include="..\Code\Practica10.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Practica09\Code\TList.cpp">
+    <ClCompile Include="..\..\Practica09\Code\TList09.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Practica07\Code\File07.cpp">

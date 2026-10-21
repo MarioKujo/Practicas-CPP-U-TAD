@@ -1,9 +1,29 @@
-#include "TList.h"
+#include "TList11.h"
 #include <cstring>
 #include <cstdio>
 
 TList::TList()
 {
+
+}
+
+TList::TList(const TList& other)
+{
+	printf("Constructor de copia de TList\n");
+	for (const TListNode* p = other.m_pFirst; p != nullptr; p = p->m_pNext)
+	{
+		Push(p->m_sCadena);
+	}
+}
+
+TList GetReverseList(TList lstSrc)
+{
+	TList reversed;
+	for (const TListNode* p = lstSrc.m_pFirst; p != nullptr; p = p->m_pNext)
+	{
+		reversed.PushFront(p->m_sCadena);
+	}
+	return reversed;
 }
 
 TList::~TList()
@@ -29,6 +49,22 @@ int TList::Push(const char* psz)
 		m_pLast->m_pNext = pNewNode;
 	}
 	m_pLast = pNewNode;
+	++m_iSize;
+	return m_iSize;
+}
+
+int TList::PushFront(const char* psz)
+{
+	TListNode* pNewNode = new TListNode(psz);
+
+	pNewNode->m_pNext = m_pFirst;
+	m_pFirst = pNewNode;
+
+	if (m_pLast == nullptr)
+	{
+		m_pLast = pNewNode;
+	}
+
 	++m_iSize;
 	return m_iSize;
 }
@@ -113,7 +149,7 @@ TListNode::TListNode(const char* _sText)
 	if (_sText)
 	{
 		unsigned int uLen(static_cast<unsigned int>(strlen(_sText)));
-		char*pCopy = new char[uLen + 1];
+		char* pCopy = new char[uLen + 1];
 		strcpy_s(pCopy, uLen + 1, _sText);
 		m_sCadena = pCopy;
 	}

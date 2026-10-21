@@ -2,11 +2,11 @@
 #include <cstdio>
 #include <cstring>
 #include "Utils07.h"
-#include "TList.h"
+#include "TList09.h"
 #include <iostream>
 int main()
 {
-	// File
+#pragma region File
 	
 	// --- Escritura ---
 	void* archivo = File::FileOpen("Prueba.bin", File::EFileMode::FILE_WRITE);
@@ -62,8 +62,9 @@ int main()
 	{
 		printf("Correcto: el archivo inexistente 'Error.bin' devuelve nullptr.\n");
 	}
+#pragma endregion
 
-	// Utils
+#pragma region Utils
 
 	int enemigo1 = Utils::CountOccurrences("texto.txt", "enemigo");
 	int enemigo2 = Utils::CountOccurrences("texto.txt", "Enemigo");
@@ -78,5 +79,6 @@ int main()
 	{
 		printf("La suma es %d\n", a);
 	}
+#pragma endregion
 	return 0;
 }

@@ -11,7 +11,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\TList.h">
+    <ClInclude Include="..\Code\TList09.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -19,7 +19,7 @@
     <ClCompile Include="..\Code\Practica09.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\TList.cpp">
+    <ClCompile Include="..\Code\TList09.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

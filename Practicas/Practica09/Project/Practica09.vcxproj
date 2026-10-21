@@ -19,11 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\TList.h" />
+    <ClInclude Include="..\Code\TList09.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Practica09.cpp" />
-    <ClCompile Include="..\Code\TList.cpp" />
+    <ClCompile Include="..\Code\TList09.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
