@@ -10,7 +10,7 @@ fichero. Diseñar la declaración de la función.
 namespace Utils
 {
 
-	bool ReadNumbers(const char* pszFileName, TList& tList)
+	bool ReadNumbers(const char* pszFileName, Practica09::TList& tList)
 	{
 		tList.Reset();
 		if (pszFileName == nullptr)

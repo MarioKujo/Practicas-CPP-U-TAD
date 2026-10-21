@@ -2,7 +2,7 @@
 #include <iostream>
 int main()
 {
-	TList lNumeros;
+	Practica11::TList lNumeros;
 	lNumeros.Push("uno");
 	lNumeros.Push("dos");
 	lNumeros.Push("tres");
@@ -18,15 +18,22 @@ int main()
 	{
 		printf("%s\n", p);
 	}
-	TList lNumeros2(lNumeros);
+	Practica11::TList lNumeros2(lNumeros);
 	printf("Numeros leidos (copia) (%d):\n", lNumeros2.Size());
 	for (const char* p = lNumeros2.First(); p != nullptr; p = lNumeros2.Next())
 	{
 		printf("%s\n", p);
 	}
-	TList lNumeros3(GetReverseList(lNumeros));
+	Practica11::TList lNumeros3(GetReverseList(lNumeros));
 	printf("Numeros leidos (invertido) (%d):\n", lNumeros3.Size());
 	for (const char* p = lNumeros3.First(); p != nullptr; p = lNumeros3.Next())
+	{
+		printf("%s\n", p);
+	}
+	Practica11::TList lNumeros4;
+	lNumeros4 = lNumeros3;
+	printf("Numeros leidos (operator=) (%d):\n", lNumeros4.Size());
+	for (const char* p = lNumeros4.First(); p != nullptr; p = lNumeros4.Next())
 	{
 		printf("%s\n", p);
 	}

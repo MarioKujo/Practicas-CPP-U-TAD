@@ -15,7 +15,7 @@ Devuelve lo que le hemos pasado al push, ya que TList hace una copia propia rese
 #include "TList09.h"
 int main()
 {
-	TList tList;
+	Practica09::TList tList;
 
 	// Lista vacía
 	printf("Size vacia: %d\n", tList.Size());                    // 0

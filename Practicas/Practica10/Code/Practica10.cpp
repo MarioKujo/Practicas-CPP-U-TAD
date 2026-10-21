@@ -3,7 +3,7 @@
 #include <iostream>
 int main()
 {
-	TList lNumeros;
+	Practica09::TList lNumeros;
 	if (Utils::ReadNumbers("numeros.txt", lNumeros))
 	{
 		printf("Numeros leidos (%d):\n", lNumeros.Size());

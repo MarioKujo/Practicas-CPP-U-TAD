@@ -1,14 +1,9 @@
 /*
-▸ TVector2 con float x, y públicos; TVector2() deja (0,
-0) y TVector2(x, y).
-▸ Métodos: +=, -= y *= (por un float). Retornan
-TVector2&.
-▸ No miembro: + y - entre vectores, * con float en los
-dos órdenes, - unario, == y !=; operator<<.
-▸ Pista: implementar + con +=. ¿Por qué 2.0f * v no
-puede ser método?
-▸ Además: añadir operator= a la TList de la práctica
-11 (regla de tres).
+▸ TVector2 con float x, y públicos; TVector2() deja (0, 0) y TVector2(x, y).
+▸ Métodos: +=, -= y *= (por un float). Retornan TVector2&.
+▸ No miembro: + y - entre vectores, * con float en los dos órdenes, - unario, == y !=; operator<<.
+▸ Pista: implementar + con +=. ¿Por qué 2.0f * v no puede ser método?
+▸ Además: añadir operator= a la TList de la práctica 11 (regla de tres).
 */
 #pragma once
 #include <iostream>
