@@ -140,11 +140,11 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Code\Tlist11.h" />
+    <ClInclude Include="Code\TList11.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Practica11.cpp" />
-    <ClCompile Include="Code\Tlist11.cpp" />
+    <ClCompile Include="Code\TList11.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
