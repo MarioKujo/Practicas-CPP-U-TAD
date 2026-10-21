@@ -17,5 +17,22 @@
     <ClCompile Include="..\..\Practica04\Code\Consola.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\CEntityNoVirtual.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\CBall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\CEntityVirtual.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\CBall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

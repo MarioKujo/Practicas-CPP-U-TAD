@@ -144,7 +144,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Practica04\Code\Consola.cpp" />
+    <ClCompile Include="..\Code\CBall.cpp" />
+    <ClCompile Include="..\Code\CEntityNoVirtual.h" />
     <ClCompile Include="..\Code\Practica14.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\CBall.h" />
+    <ClInclude Include="..\Code\CEntityVirtual.h" />
+    <ClInclude Include="..\Code\Constants.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

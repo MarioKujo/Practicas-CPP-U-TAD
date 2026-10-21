@@ -26,89 +26,10 @@ llamada indirecta a ese registro
 #include <conio.h>      // _kbhit, _getch
 #include <windows.h>    // Sleep
 #include "consola.h"    // gotoxy, hidecursor, clear
-
-// ---------------------------------------------------------------------------------------
-// El mundo: un rectángulo de la consola con borde.
-// ---------------------------------------------------------------------------------------
-const int WORLD_WIDTH = 60;
-const int WORLD_HEIGHT = 20;
-const int FRAME_MS = 100;
-
-// ---------------------------------------------------------------------------------------
-// CEntity: Clase base con funciones virtuales (aquí se genera la vtable automáticamente)
-// ---------------------------------------------------------------------------------------
-class CEntityVirtual
-{
-public:
-    int m_ix, m_iy;    // posición
-    int m_idx, m_idy;   // dirección de movimiento (-1, 0 o 1)
-    int m_iWidth, m_iHeight;
-
-    CEntityVirtual(int x, int y, int dx = 0, int dy = 0, int width = 1, int height = 1)
-    {
-        //Move();
-        m_ix = x;   m_iy = y;
-        m_idx = dx; m_idy = dy;
-        m_iWidth = width;
-        m_iHeight = height;
-    }
-
-    // Destructor virtual para asegurar que se destruyen bien las clases derivadas
-    virtual ~CEntityVirtual()
-    {
-        //Move();
-    }
-
-    // Funciones virtuales (sustituyen a la tabla m_funcs[] de punteros a función)
-    virtual void Move() = 0;
-    virtual void Draw() = 0;
-};
-
-class CEntityNoVirtual
-{
-public:
-    int m_ix, m_iy;    // posición
-    int m_idx, m_idy;   // dirección de movimiento (-1, 0 o 1)
-    int m_iWidth, m_iHeight;
-
-    CEntityNoVirtual(int x, int y, int dx = 0, int dy = 0, int width = 1, int height = 1)
-    {
-        m_ix = x;   m_iy = y;
-        m_idx = dx; m_idy = dy;
-        m_iWidth = width;
-        m_iHeight = height;
-    }
-
-    // Destructor
-    ~CEntityNoVirtual() {}
-
-    // Funciones
-    void Move();
-    void Draw();
-};
-
-// ***************************************************************************************
-// Clase derivada "CBall" (reemplaza a MoveHorizontal y DrawBall)
-// ***************************************************************************************
-class CBall : public CEntityVirtual
-{
-public:
-    CBall(int x, int y, int dx = 0, int dy = 0) : CEntityVirtual(x, y, dx, dy, 1, 1) {}
-
-    void Move() override
-    {
-        m_ix += m_idx;
-        if (m_ix <= 1 || m_ix >= WORLD_WIDTH - 2)
-            m_idx = -m_idx;               // en el borde, cambia de sentido
-    }
-
-    void Draw() override
-    {
-        int color = (rand() % 256);
-        gotoxy(m_ix, m_iy);
-        printf("\033[38;5;%dmO\033[0m", color);
-    }
-};
+#include "CEntityVirtual.h"
+#include "CEntityNoVirtual.h"
+#include "CBall.h"
+#include "Constants.h"
 
 void DrawWorld()
 {
