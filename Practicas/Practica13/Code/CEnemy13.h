@@ -6,14 +6,17 @@ Los constructores llaman al de CEntity. Con un printf en constructores y destruc
 Attack(CEntity&)
 */
 #pragma once
-#include "CEntity.h"
+#include "CEntity13.h"
 #include <iostream>
-class CEnemy:public CEntityVirtual
+namespace Practica13
 {
-public:
-	CEnemy(const char* _nombre, int _iX, int _iY, int _iDamage, unsigned int _uVida = 30);
-	~CEnemy();
-	void Attack(CEntityVirtual& other);
-private:
-	int iDamage;
-};
+	class CEnemy :public CEntity
+	{
+	public:
+		CEnemy(const char* _nombre, int _iX, int _iY, int _iDamage, unsigned int _uVida = 30);
+		~CEnemy();
+		void Attack(CEntity& other);
+	private:
+		int iDamage;
+	};
+}

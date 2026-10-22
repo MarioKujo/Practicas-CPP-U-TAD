@@ -19,14 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\CEnemy.h" />
-    <ClInclude Include="..\Code\CEntity.h" />
-    <ClInclude Include="..\Code\CPlayer.h" />
+    <ClInclude Include="..\Code\CEnemy13.h" />
+    <ClInclude Include="..\Code\CEntity13.h" />
+    <ClInclude Include="..\Code\CPlayer13.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Code\CEnemy.cpp" />
-    <ClCompile Include="..\Code\CEntity.cpp" />
-    <ClCompile Include="..\Code\CPlayer.cpp" />
+    <ClCompile Include="..\Code\CEnemy13.cpp" />
+    <ClCompile Include="..\Code\CEntity13.cpp" />
+    <ClCompile Include="..\Code\CPlayer13.cpp" />
     <ClCompile Include="..\Code\Practica13.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
