@@ -10,12 +10,13 @@ recibe el de Pop lo borra.
 #pragma once
 namespace Practica16
 {
-	class IListItem
+	class IListItem // Todo lo que antes era const char* ahora es IListItem
 	{
 	public:
 		virtual ~IListItem() {}
-		virtual IListItem* Clone() const = 0; // copia
-		virtual void Print() const = 0; // consola
+		virtual IListItem* Clone() const = 0; // Clonarlo para que se pueda copiar y no esté apuntando varias veces a
+        // la misma dirección de memoria (da errores al hacerle delete)
+		virtual void Print() const = 0;
 	};
 
     
@@ -62,7 +63,7 @@ namespace Practica16
         public:
             TListNode(IListItem* _iListItem = nullptr);
             ~TListNode();
-            IListItem* pListItem = nullptr;
+            IListItem* pListItem = nullptr; // <-- Este es el cambio más tocapelotas
             TListNode* m_pNext = nullptr;
         };
         // TODO: los miembros privados los decidís vosotros.

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "TList16.h"
 #include <crtdbg.h>
-class CText : public Practica16::IListItem
+class CText : public Practica16::IListItem // <-- Es una interfaz, así que siempre tiene que heredar alguien
 {
 public:
 	virtual void Print() const override
@@ -10,7 +10,7 @@ public:
 	}
 	virtual Practica16::IListItem* Clone() const override
 	{
-		return new CText(*this);
+		return new CText(*this); // <-- new, te jodes
 	}
 	const char* sText = "";
 };
@@ -24,7 +24,7 @@ public:
 	}
 	virtual Practica16::IListItem* Clone() const override
 	{
-		return new CNumber(*this);
+		return new CNumber(*this); // <-- new, te jodes
 	}
 	int iValue = 0;
 };

@@ -16,7 +16,8 @@ namespace Practica16
 		printf("Constructor de copia de TList\n");
 		for (const TListNode* p = other.m_pFirst; p != nullptr; p = p->m_pNext)
 		{
-			Push(p->pListItem);
+			Push(p->pListItem); // <-- Estas se mantienen exactamente igual porque se basan en TListNode* no en el
+			// const char* ni en qué tiene TListNode* por dentro
 		}
 	}
 
@@ -27,7 +28,8 @@ namespace Practica16
 			Reset();
 			for (const TListNode* p = other.m_pFirst; p != nullptr; p = p->m_pNext)
 			{
-				Push(p->pListItem);
+				Push(p->pListItem);// <-- Estas se mantienen exactamente igual porque se basan en TListNode* no en el
+			// const char* ni en qué tiene TListNode* por dentro
 			}
 		}
 		return *this;
@@ -38,7 +40,8 @@ namespace Practica16
 		TList reversed;
 		for (const TList::TListNode* p = lstSrc.m_pFirst; p != nullptr; p = p->m_pNext)
 		{
-			reversed.PushFront(p->pListItem);
+			reversed.PushFront(p->pListItem);// <-- Estas se mantienen exactamente igual porque se basan en TListNode*
+			// no en el const char* ni en qué tiene TListNode* por dentro
 		}
 		return reversed;
 	}
@@ -56,7 +59,8 @@ namespace Practica16
 	int TList::Push(IListItem* psz)
 	{
 		TListNode* pNewNode = new TListNode;
-		pNewNode->pListItem = psz->Clone();
+		pNewNode->pListItem = psz->Clone(); // pListItem era m_sCadena antes, y psz->Clone() hace lo que digo en el .h,
+		// para que no apunte al mismo puntero y no haga delete múltiple (el resto del código es igual, es sólo esto)
 		if (m_pFirst == nullptr)
 		{
 			m_pFirst = pNewNode;
@@ -129,7 +133,8 @@ namespace Practica16
 		{
 			m_pIter = nullptr;
 		}
-		IListItem* pRet = pRemoved->pListItem;
+		IListItem* pRet = pRemoved->pListItem; // Se tiene que guardar antes de que se elimine el nodo para poder
+		// liberar la memoria correctamente porque si no se pierde el puntero y hay memory leak
 		delete pRemoved;
 		return pRet;
 	}
@@ -141,7 +146,7 @@ namespace Practica16
 		{
 			TListNode* pToDelete(pTmp);
 			pTmp = pTmp->m_pNext;
-			delete pToDelete->pListItem;
+			delete pToDelete->pListItem; // <-- Aquí se hace el delete de IListItem
 			delete pToDelete;
 		}
 		m_pFirst = nullptr;
