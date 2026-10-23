@@ -1,3 +1,5 @@
+// No le hagáis caso a esto, no es relevante
+
 #include <iostream>
 #include <cmath>
 #include <cstdarg>
