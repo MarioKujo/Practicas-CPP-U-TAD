@@ -23,7 +23,8 @@ unsigned int NumBalas(unsigned int _uData)
 	uTemp >>= 24;
 
 	// 0000 0000 0000 0000 0000 0000 0010 0101 <-- (uMask << 8) >> 24 (valores reales)
-	// 0000 0000 0000 0000 0000 0000 1111 1111 <-- (Balas << 8) >> 24 (sí, son 24 ceros, no hace falta que los cuentes). Tienen que estar a la derecha del todo para poder ser leídos correctamente.
+	// 0000 0000 0000 0000 0000 0000 1111 1111 <-- (Balas << 8) >> 24 (sí, son 24 ceros, no hace falta que los cuentes).
+	// Tienen que estar a la derecha del todo para poder ser leídos correctamente.
 
 	return uTemp;
 }
