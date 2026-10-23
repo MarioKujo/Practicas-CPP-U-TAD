@@ -373,6 +373,7 @@ private:
 #pragma endregion
 
 #pragma region Sesion 6
+/*
 class CAudio
 {
 public:
@@ -402,10 +403,88 @@ private:
 	CAudio() {}
 	static CAudio* s_pInstance;
 };
-CAudio* CAudio::s_pInstance = nullptr;
+CAudio* CAudio::s_pInstance = nullptr;*/
 
 #pragma endregion
 
+#pragma region Sesion NaN
+/*
+template <typename T>
+struct CUniquePtr
+{
+	CUniquePtr(T*p):m_p(p){}
+	~CUniquePtr() { if (m_p)delete m_p; }
+	T& operator*() { return m_pPtr; }
+	T* operator->() { return m_pPtr; }
+
+	CUniquePtr& operator=(const CUniquePtr&) = delete;
+	CUniquePtr(CUniquePtr&) = delete;
+private:
+	T* m_p = nullptr;
+};
+*/
+
+class CCounter
+{
+public:
+	CCounter(){}
+
+	void operator--() { m_uCounter--; }
+	void operator--(int) { m_uCounter--; }
+private:
+	unsigned int m_uCounter = 0u;
+};
+
+/*
+template<typename T>
+struct CSharedPtr
+{
+	CSharedPtr(T* _pPtr = nullptr)
+	{
+		m_pPtr = _pPtr;
+		m_pCounter = new CCounter();
+		if (m_pPtr)
+		{
+			(*m_pCounter)++;
+		}
+	}
+
+	CSharedPtr(const CSharedPtr<T>& _spOther)
+	{
+		m_pPtr = _spOther.m_pPtr;
+		m_pCounter = _spOther.m_pCounter;
+		if(m_pPtr)
+		{
+			(*m_pCounter)++;
+		}
+	}
+
+	~CSharedPtr()
+	{
+		(*m_pCounter)--;
+		if (m_pCounter->Get() == 0)
+		{
+			delete m_pCounter;
+			delete m_pPtr;
+		}
+	}
+
+	T& operator*() { return *m_pPtr; }
+
+
+private:
+	T* m_pPtr = nullptr;
+	CCounter* m_pCounter = nullptr;
+};
+*/
+
+struct MyClass
+{
+	MyClass() { std::cout << "MyClass::MyClass\n"; }
+	~MyClass() { std::cout << "MyClass::~MyClass\n"; }
+	void bar() { std::cout << "MyClass::bar\n"; }
+};
+#pragma endregion
 int main()
 {
 #pragma region Sesion 1
@@ -511,6 +590,19 @@ int main()
 #pragma endregion
 
 #pragma region Sesion 6
+
+#pragma endregion
+
+#pragma region Sesion NaN
+// Me cago en la puta me ha faltao el CUniquePtr
+{
+	/*
+	CSharedPtr<int> sp = new int(99);
+	{
+		CSharedPtr<int>sp2 = sp;
+	}
+	*/
+}
 
 #pragma endregion
 	return 0;
