@@ -11,7 +11,7 @@ namespace Practica15
 	{
 	public:
 		CTurret(const char* _nombre, int _iX, int _iY, int _iDamage = 5, unsigned int _uVida = 50);
-		virtual ~CTurret() override;
+		virtual ~CTurret() override; // Hace override del override de CEnemy, sigue siendo válido
 		virtual void Update() override;
 	};
 }

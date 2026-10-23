@@ -16,7 +16,7 @@ int main()
 	const char* numeros = "1 2 3 4 5 6 7 8 9 10";
 	unsigned int pedidos = static_cast<unsigned int>(strlen(numeros));
 	unsigned int escritos = FileWrite(archivo, numeros, pedidos);
-	if (pedidos != escritos)
+	if (pedidos != escritos) // Por fallos de disco, pueden llegar a ser distintos (caso muy límite)
 	{
 		fprintf(stderr, "Error: se escribieron %u de %u bytes\n", escritos, pedidos);
 		FileClose(archivo);
@@ -41,8 +41,8 @@ int main()
 	printf("Archivo abierto en modo de lectura.\n");
 
 	char buffer[128];
-	unsigned int leidos = FileRead(archivo, buffer, static_cast<unsigned int>(sizeof(buffer) - 1));
-	if (leidos != pedidos)
+	unsigned int leidos = FileRead(archivo, buffer, static_cast<unsigned int>(sizeof(buffer) - 1));// Quita el '\0'
+	if (leidos != pedidos) // Por fallos de disco, pueden llegar a ser distintos (caso muy límite)
 	{
 		fprintf(stderr, "Error: se leyeron %u de %u bytes\n", leidos, pedidos);
 		FileClose(archivo);

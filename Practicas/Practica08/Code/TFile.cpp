@@ -3,16 +3,20 @@
 #include <cstring>
 #include "TFile.h"
 
+// Si tienes alguna duda, revisa los comentarios de la práctica 5
+
 TFile::TFile(){}
+
+/*
+3. Si se copia un TFile (TFile oCopia = oOriginal;) y después se destruyen los dos, Copia solo el valor del puntero, no
+el archivo.Dos objetos son entonces "dueños" del mismo FILE*, y cada destructor lo cierra: doble liberación. La solución
+es que un recurso tenga un único dueño: prohibir la copia ( = delete) o transferirlo con semántica de movimiento.
+*/
 
 TFile::TFile(TFile& tOther)
 {
 	pFile = tOther.pFile;
 }
-/* Copia solo el valor del puntero, no el archivo.Dos objetos son entonces "dueños" del mismo FILE*, y cada destructor
-lo cierra: doble liberación. La solución es que un recurso tenga un único dueño: prohibir la copia ( = delete) o
-transferirlo con semántica de movimiento.
-*/
 TFile::~TFile()
 {
 	printf("Destructor: direccion de pFile = %p\n", (void*)pFile);
@@ -21,7 +25,7 @@ TFile::~TFile()
 
 void* TFile::Open(const char* pszName, TFileMode eMode)
 {
-	Close();
+	Close(); // Si había algo abierto antes, se jode el que estaba abierto y así Open no revienta
 	pFile = fopen(pszName, eMode == TFileMode::FILE_READ ? "rb" : "wb");
 	return pFile;
 }
@@ -32,7 +36,7 @@ bool TFile::Close()
 	{
 		return false;
 	}
-	const bool ok = (fclose(pFile) == 0);
+	const bool ok = (fclose(static_cast<FILE*>(pFile)) == 0);
 	pFile = nullptr;
 	return ok;
 }

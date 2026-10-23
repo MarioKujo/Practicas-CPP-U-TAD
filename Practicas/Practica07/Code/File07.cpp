@@ -3,6 +3,9 @@
 #include <cstdio>
 #include <cstring>
 #include "File07.h"
+
+// Si tienes dudas de este código, lee los comentarios de las prácticas 5 y 6, es exactamente lo mismo
+
 namespace File
 {
 	void* FileOpen(const char* pszName, EFileMode eMode)

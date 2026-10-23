@@ -1,4 +1,7 @@
 #include "CPlayer13.h"
+
+// Se explica solo, la verdad
+
 namespace Practica13
 {
 	CPlayer::CPlayer(const char* _nombre, int _iX, int _iY, unsigned int _uVida) :CEntity(_nombre, _iX, _iY, _uVida), puntos(0)

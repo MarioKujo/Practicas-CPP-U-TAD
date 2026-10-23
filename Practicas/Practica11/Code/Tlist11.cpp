@@ -1,6 +1,9 @@
 #include "TList11.h"
 #include <cstring>
 #include <cstdio>
+
+// Si tienes dudas de cómo funciona algo, lee los comentarios de la práctica 9
+
 namespace Practica11
 {
 	TList::TList()
@@ -13,15 +16,16 @@ namespace Practica11
 		printf("Constructor de copia de TList\n");
 		for (const TListNode* p = other.m_pFirst; p != nullptr; p = p->m_pNext)
 		{
-			Push(p->m_sCadena);
+			Push(p->m_sCadena); // Hace push a la lista vacía por cada nodo que tiene la otra lista de la que se copia.
 		}
 	}
 
 	TList& TList::operator=(const TList& other)
 	{
-		if (this != &other)
+		if (this != &other) // Si no es él mismo (porque sería una gilipollez lista1 = lista1)
 		{
-			Reset();
+			Reset(); // En esto se diferencia con el constructor de copia, que el objeto ya está creado. El resto es
+			// igual
 			for (const TListNode* p = other.m_pFirst; p != nullptr; p = p->m_pNext)
 			{
 				Push(p->m_sCadena);
@@ -33,7 +37,7 @@ namespace Practica11
 	TList GetReverseList(TList lstSrc)
 	{
 		TList reversed;
-		for (const TListNode* p = lstSrc.m_pFirst; p != nullptr; p = p->m_pNext)
+		for (const TList::TListNode* p = lstSrc.m_pFirst; p != nullptr; p = p->m_pNext)
 		{
 			reversed.PushFront(p->m_sCadena);
 		}
@@ -66,17 +70,19 @@ namespace Practica11
 		++m_iSize;
 		return m_iSize;
 	}
-
-	int TList::PushFront(const char* psz)
+	// Nueva función que me he tenido que inventar para invertir la cadena: un push que mete los nuevos nodos hacia la
+	// izquierda
+	int TList::PushFront(const char* psz) 
 	{
 		TListNode* pNewNode = new TListNode(psz);
 
-		pNewNode->m_pNext = m_pFirst;
-		m_pFirst = pNewNode;
+		pNewNode->m_pNext = m_pFirst; // Esto hace que por ejemplo m_pNext sea la posición 2 y pNewNode sea la 1)
+		m_pFirst = pNewNode; // El primero se mueve hacia la izquierda (PushFront(3);PushFront(2);PushFront(1); quedaría
+		// 1, 2, 3)
 
 		if (m_pLast == nullptr)
 		{
-			m_pLast = pNewNode;
+			m_pLast = pNewNode; // Este solo se cambia con el primer nodo que entra (la última posición no se mueve)
 		}
 
 		++m_iSize;
@@ -158,7 +164,7 @@ namespace Practica11
 		m_pFirst = nullptr; // Más elegante pero más peligroso
 		*/
 	}
-	TListNode::TListNode(const char* _sText)
+	TList::TListNode::TListNode(const char* _sText)
 	{
 		if (_sText)
 		{
@@ -168,7 +174,7 @@ namespace Practica11
 			m_sCadena = pCopy;
 		}
 	}
-	TListNode::~TListNode()
+	TList::TListNode::~TListNode()
 	{
 		if (m_sCadena)
 		{

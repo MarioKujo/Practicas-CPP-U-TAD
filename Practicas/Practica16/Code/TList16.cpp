@@ -5,8 +5,8 @@ namespace Practica16
 {
 	TList::TList()
 		: m_pFirst(nullptr)
-		, m_pLast(nullptr)
 		, m_pIter(nullptr)
+		, m_pLast(nullptr)
 		, m_iSize(0)
 	{
 	}

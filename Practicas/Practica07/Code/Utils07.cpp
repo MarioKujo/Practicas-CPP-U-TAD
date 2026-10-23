@@ -2,6 +2,9 @@
 #include "Utils07.h"
 #include "File07.h"
 #include <cstring>
+
+// Si tienes dudas de este código, lee los comentarios de las prácticas 5 y 6, es exactamente lo mismo
+
 namespace Utils
 {
 	int CountOccurrences(const char* pszFileName, const char* pszText)

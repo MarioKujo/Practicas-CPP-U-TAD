@@ -1,5 +1,6 @@
 /*
-1 Con código documentado que lo demuestre, en Visual Studio x64: ¿cuánto ocupa la vtable? ¿Dónde está? (Pista: compara su dirección, en los primeros 8 bytes del objeto, con una global, una local y una de new.)
+1 Con código documentado que lo demuestre, en Visual Studio x64: ¿cuánto ocupa la vtable? ¿Dónde está? (Pista: compara
+su dirección, en los primeros 8 bytes del objeto, con una global, una local y una de new.)
 
 - La vtable ocupa 32 bits, y está en la memoria estática.
 
@@ -17,7 +18,10 @@ se llamaría a su versión (si es pura sin cuerpo, también peta).
 
 4 Virtual vs no virtual: ¿cuántos pasos más hacen falta? (Pista: Depurar → Ventanas → Desensamblado.)
 
-- Hacen falta 3 pasos más para la clase virtual, donde tiene que cargar el puntero, buscar en la tabla y hacer la
+- Hacen falta 3 pasos más para la clase virtual, donde tiene que 
+1. cargar el puntero,
+2. buscar en la tabla
+y 3. hacer la
 llamada indirecta a ese registro
 
 */
@@ -74,7 +78,8 @@ int main()
     // Imprimimos todas las direcciones en hexadecimal (%p) usando punteros void*
     printf("--------------------------------------------------\n");
     printf("Direccion de la VTABLE:    %p\n", direccionVTable);
-    printf("Direccion variable GLOBAL: %p\n", (void*)&g_variableGlobal);
+    printf("Direccion variable GLOBAL: %p\n", (void*)&g_variableGlobal); // %p imprime una dirección; el cast a void* es
+    // el tipo que %p exige
     printf("Direccion variable LOCAL:  %p\n", (void*)&l_variableLocal);
     printf("Direccion variable NEW:    %p\n\n", (void*)h_variableNew);
     printf("sizeof(CEntityVirutal) = %zu\n", sizeof(CEntityVirtual));

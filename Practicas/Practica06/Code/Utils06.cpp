@@ -10,27 +10,32 @@
 #include "Utils06.h"
 #include "File05.h"
 #include <cstring>
+
+// RECORDATORIO: DENTRO DE LA CARPETA DONDE ESTÉ EL .VCXPROJ TIENES QUE PONER EL DOCUMENTO DE TEXTO DE NOMBRE
+// "numeros.txt" O DEL NOMBRE DEL ARCHIVO QUE QUIERAS ABRIR. SI NO, OBVIAMENTE NO LO VA A ABRIR, PORQUE NO HAY NADA
+
 int CountOccurrences(const char* pszFileName, const char* pszText)
 {
-	if (pszFileName == nullptr || pszText == nullptr)
+	if (pszFileName == nullptr || pszText == nullptr) // Si todo es null, no hay nada que hacer
 	{
 		return -1;
 	}
-	FILE* archivo = static_cast<FILE*>(FileOpen(pszFileName, EFileMode::FILE_READ));
+	void* archivo = FileOpen(pszFileName, EFileMode::FILE_READ); // Lo abre
 	if (archivo == nullptr)
 	{
 		return -1;
 	}
 
-	const unsigned int textSize = static_cast<unsigned int>(strlen(pszText));
-	const unsigned int BufferSize = textSize * 2 + 256;// siempre cabe un bloque nuevo tras el arrastre
-	char* buffer = new char[BufferSize];
+	const unsigned int textSize = static_cast<unsigned int>(strlen(pszText)); // Tamaño completo del texto
+	// El buffer guarda un bloque, no el archivo entero: sitio para los bytes arrastrados + datos nuevos
+	const unsigned int BufferSize = textSize * 2 + 256;
+	char* buffer = new char[BufferSize]; // <-- NEW
 
-	if (textSize == 0 || textSize >= BufferSize)
+	if (textSize == 0 || textSize >= BufferSize) // Si lo que buscas es mayor o no le has pasado nada, cierra
 	{
 		FileClose(archivo);
-		delete[]buffer;
-		buffer = nullptr;
+		delete[]buffer; // <-- DELETE
+		buffer = nullptr; // <-- TAMBIÉN IMPORTANTE
 		return 0;
 	}
 
@@ -39,24 +44,29 @@ int CountOccurrences(const char* pszFileName, const char* pszText)
 
 	while (true)
 	{
+		// Lee a continuación de los bytes arrastrados; BufferSize - carried es el espacio libre
 		unsigned int leidos = FileRead(archivo, buffer + carried, BufferSize - carried);
-		if (leidos == 0)
+		if (leidos == 0)   // fin del archivo: no queda nada que procesar
 		{
 			break;
 		}
 
+		// Bytes válidos en el buffer: los arrastrados + los recién leídos
 		const unsigned int total = carried + leidos;
 
+		// Prueba cada posición donde cabe el texto; i avanza de 1 en 1, así cuenta las solapadas
 		for (unsigned int i = 0; i + textSize <= total; ++i)
 		{
-			if (memcmp(buffer + i, pszText, textSize) == 0)
+			if (memcmp(buffer + i, pszText, textSize) == 0) // compara la información guardada en ambos punteros y si es
+				// exactamente igual ( == 0), suma 1 a la cuenta de ocurrencias
 			{
 				++count;
 			}
 		}
-
+		// Conserva los últimos textSize-1 bytes: una aparición cortada por la frontera del bloque
+		// se completará con los primeros bytes del siguiente bloque
 		carried = (total >= textSize - 1) ? textSize - 1 : total;
-		memmove(buffer, buffer + total - carried, carried);
+		memmove(buffer, buffer + total - carried, carried);  // memmove: origen y destino pueden solaparse
 	}
 
 	FileClose(archivo);
@@ -67,23 +77,23 @@ int CountOccurrences(const char* pszFileName, const char* pszText)
 
 bool SumNumbers(const char* pszFileName, int& iSum_)
 {
-	if (pszFileName == nullptr)
+	if (pszFileName == nullptr) // Si no existe, devuelve
 	{
 		return false;
 	}
-	FILE* archivo = static_cast<FILE*>(FileOpen(pszFileName, EFileMode::FILE_READ));
+	void* archivo = FileOpen(pszFileName, EFileMode::FILE_READ);
 	if (archivo == nullptr)
 	{
 		return false;
 	}
-	constexpr unsigned int BufferSize = 256;
-	char buffer[BufferSize];
+	constexpr unsigned int BufferSize = 256; // Estándar
+	char buffer[BufferSize]; // No puntero porque no hace falta (es un iterador para leer todo el texto en bloques)
 	int suma = 0;
 	int actual = 0;
 	bool negativo = false;
 	bool hayDigitos = false;
 	unsigned int leidos;
-	while ((leidos = FileRead(archivo, buffer, BufferSize)) > 0)
+	while ((leidos = FileRead(archivo, buffer, BufferSize)) > 0) // Mientras que siga habiendo texto que leer
 	{
 		for (unsigned int i = 0;i < leidos;++i)
 		{
@@ -92,13 +102,15 @@ bool SumNumbers(const char* pszFileName, int& iSum_)
 			{
 			case '-':
 			{
-				negativo = true;
+				negativo = true; // Si hay un -, el número que va delante es negativo
 				break;
 			}
 			case '0': case '1': case '2': case '3':	case '4':
 			case '5': case '6':	case '7': case '8': case '9':
 			{
-				actual = actual * 10 + (c - '0');
+				actual = actual * 10 + (c - '0'); // Todo número que viene se va poniendo hacia la izquierda.
+				// Ejemplo con 120: actual = 0 * 10 + ('1' - '0') = 1; actual = 1 * 10 + ('2' - '0') = 12;
+				// actual = 12 * 10 + ('0' - '0') = 120;
 				hayDigitos = true;
 				break;
 			}
@@ -106,7 +118,7 @@ bool SumNumbers(const char* pszFileName, int& iSum_)
 			{
 				if (hayDigitos)
 				{
-					suma += negativo ? -actual : actual;
+					suma += negativo ? -actual : actual; // Creo que se entiende
 				}
 				actual = 0;
 				negativo = false;
@@ -122,7 +134,7 @@ bool SumNumbers(const char* pszFileName, int& iSum_)
 	}
 	if (hayDigitos)
 	{
-		suma += negativo ? -actual : actual;
+		suma += negativo ? -actual : actual; // OJO: El último dígito no va seguido de coma
 	}
 	FileClose(archivo);
 	iSum_ = suma;

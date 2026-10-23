@@ -13,7 +13,9 @@ namespace Practica15
 	{
 	public:
 		CPlayer(const char* _nombre, int _iX, int _iY, unsigned int _uVida = 100);
-		virtual ~CPlayer() override;
+		virtual ~CPlayer() override; // <-- virtual no hace falta aquí, con solo poner override es suficiente, pero el
+		// profe recomienda ponerlo. Además, override es sólo en el .h, en el .cpp hay que tratarlo como una función
+		// normal
 		virtual void Update() override;
 		virtual void Print() const override;
 		void AddScore(int _puntos);

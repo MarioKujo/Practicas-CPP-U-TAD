@@ -13,6 +13,6 @@
 #include <iostream>
 enum EFileMode { FILE_READ, FILE_WRITE };
 void* FileOpen(const char* pszName, EFileMode eMode); // nullptr si falla
-bool FileClose(void* pFile);
+bool FileClose(void* pFile); // Cerrar (nunca puede dar error, siempre y cuando haya algo abierto)
 unsigned int FileRead(void* pFile, char* pBuffer, unsigned int uSize); // leídos
 unsigned int FileWrite(void* pFile, const char* pBuffer, unsigned int uSize); // escritos

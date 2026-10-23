@@ -1,5 +1,7 @@
 #include "TVector2.h"
 
+// Creo que no es necesario comentar nada, todo se entiende muy fácil
+
 TVector2::TVector2(float _fX, float _fY):x(_fX), y(_fY)
 {
 }
@@ -37,7 +39,8 @@ TVector2 operator-(TVector2 _v1, const TVector2& _v2)
 
 TVector2 operator-(const TVector2& _v1)
 {
-	return { -_v1.x, -_v1.y };
+	return { -_v1.x, -_v1.y }; // En estos casos, lo que hay entre {} son los parámetros del constructor (porque
+	// TVector2 recibe (float x, float y)
 }
 
 TVector2 operator*(TVector2 _v1, float _f1)

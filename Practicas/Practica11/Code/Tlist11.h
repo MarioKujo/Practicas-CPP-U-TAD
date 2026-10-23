@@ -8,21 +8,15 @@ lstSrc);
 maximizar su rendimiento. Pista: referencias. ¿Por qué no puede ser const TList&?
 // La función GetReverseList no podrá recibir const TList& si usa First()/Next()/Pop() sobre la lista de entrada, porque esos métodos no son const. Si quisiersa const TList&, tendrías que hacerlos const (o recorrer los nodos por otro camino)
 
-// Práctica 12
+// Práctica 12 <-- OJO, AQUÍ ESTÁ LA PRÁCTICA 12
 // ▸ Además: añadir operator= a la TList de la práctica 11 (regla de tres).
 */
+
+// Si tienes dudas de cómo funciona algo, lee los comentarios de la práctica 9
+
 #pragma once
 namespace Practica11
 {
-    class TListNode
-    {
-    public:
-        TListNode(const char* _sText = nullptr);
-        TListNode(const TListNode&) = delete;
-        ~TListNode();
-        const char* m_sCadena = nullptr;
-        TListNode* m_pNext = nullptr;
-    };
 
     class TList
     {
@@ -60,6 +54,15 @@ namespace Practica11
         void Reset();
 
     private:
+        class TListNode
+        {
+        public:
+            TListNode(const char* _sText = nullptr);
+            TListNode(const TListNode&) = delete;
+            ~TListNode();
+            const char* m_sCadena = nullptr;
+            TListNode* m_pNext = nullptr;
+        };
         // TODO: los miembros privados los decidís vosotros.
         TListNode* m_pFirst = nullptr;
 

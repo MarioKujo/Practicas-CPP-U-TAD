@@ -17,7 +17,7 @@ namespace Practica15
 		CEnemy(const char* _nombre, int _iX, int _iY, int _iDamage, unsigned int _uVida = 30);
 		virtual ~CEnemy() override;
 		void SetTarget(CEntity* other);
-		virtual void Update();
+		virtual void Update() override;
 		virtual void Print() const override;
 		void Attack(CEntity& other);
 	protected:

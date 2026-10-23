@@ -72,29 +72,29 @@ void MoveVertical(TEntity* e)
 {
     e->m_iy += e->m_idy;
     if (e->m_iy <= 1 || e->m_iy >= WORLD_HEIGHT - 2)
-        e->m_idy = -e->m_idy;               // en el borde, cambia de sentido
+        e->m_idy = -e->m_idy;
 }
 
 void MoveDiagonal(TEntity* e)
 {
     e->m_ix += e->m_idx;
     if (e->m_ix <= 1 || e->m_ix >= WORLD_WIDTH - 2)
-        e->m_idx = -e->m_idx;               // en el borde, cambia de sentido
+        e->m_idx = -e->m_idx;
 
     e->m_iy += e->m_idy;
     if (e->m_iy <= 1 || e->m_iy >= WORLD_HEIGHT - 2)
-        e->m_idy = -e->m_idy;               // en el borde, cambia de sentido
+        e->m_idy = -e->m_idy;
 }
 
 void MoveDiagonalDVD(TEntity* e)
 {
     e->m_ix += e->m_idx;
     if (e->m_ix <= 1 || e->m_ix + e->m_iWidth - 1 >= WORLD_WIDTH - 2)
-        e->m_idx = -e->m_idx;               // en el borde, cambia de sentido
+        e->m_idx = -e->m_idx;
 
     e->m_iy += e->m_idy;
     if (e->m_iy <= 1 || e->m_iy + e->m_iHeight - 1 >= WORLD_HEIGHT - 2)
-        e->m_idy = -e->m_idy;               // en el borde, cambia de sentido
+        e->m_idy = -e->m_idy;
 }
 
 int RandomColor()
@@ -108,7 +108,9 @@ void DrawBall(TEntity* e)
 {
     int color = RandomColor();
     gotoxy(e->m_ix, e->m_iy);
-    printf("\033[38;5;%dm0\033[0m", color);
+    // \033[38;5;Nm: 38 = color de texto extendido, 5 = modo paleta de 256 colores, N = índice (0-255).
+    // \033[0m restaura el color por defecto para que el resto de cosas después de esto se impriman en blanco.
+    printf("\033[38;5;%dm0\033[0m", color);  
 }
 
 void DrawLegs(TEntity* e)
@@ -130,11 +132,18 @@ void DrawDVDLogo(TEntity* e)
     int color = RandomColor();
     gotoxy(e->m_ix, e->m_iy);
     printf("\033[38;5;%dm----\033[0m", color);
-    gotoxy(e->m_ix, e->m_iy + 1);
+    gotoxy(e->m_ix, e->m_iy + 1); // Mueve el cursor a uno justo debajo
     printf("\033[38;5;%dm|DVD|\033[0m", color);
-    gotoxy(e->m_ix, e->m_iy + 2);
+    gotoxy(e->m_ix, e->m_iy + 2); // Mueve el cursor a 2 posiciones justo debajo
     printf("\033[38;5;%dm----\033[0m", color);
 }
+/*
+Resultado final:
+----
+|DVD|
+----
+*/
+
 
 // ***************************************************************************************
 // TODO: añade al menos 3 tipos más. Cada tipo = sus funciones + su tabla.

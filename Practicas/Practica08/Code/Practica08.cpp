@@ -1,6 +1,8 @@
 #include "TFile.h"
 #include <iostream>
 
+// Si tienes alguna duda, revisa los comentarios de la práctica 5
+
 int main()
 {
 	TFile archivo;

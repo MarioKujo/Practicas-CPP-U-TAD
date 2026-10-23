@@ -4,6 +4,7 @@
 #include "Utils07.h"
 #include "TList09.h"
 #include <iostream>
+// Si tienes dudas de este código, lee los comentarios de las prácticas 5 y 6, es exactamente lo mismo
 int main()
 {
 #pragma region File

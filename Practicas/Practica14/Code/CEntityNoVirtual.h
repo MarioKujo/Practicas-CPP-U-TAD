@@ -16,7 +16,8 @@ public:
     }
 
     // Destructor
-    ~CEntityNoVirtual() {}
+    ~CEntityNoVirtual() {} // Esta clase es solo para esto en específico, el destructor no virtual y los problemas que
+    // causa
 
     // Funciones
     void Move();

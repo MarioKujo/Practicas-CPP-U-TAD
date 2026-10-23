@@ -21,14 +21,6 @@
 #pragma once
 namespace Practica09
 {
-    class TListNode
-    {
-    public:
-        TListNode(const char* _sText);
-        ~TListNode();
-        const char* m_sCadena = nullptr;
-        TListNode* m_pNext = nullptr;
-    };
 
     class TList
     {
@@ -62,15 +54,22 @@ namespace Practica09
         void Reset();
 
     private:
+        class TListNode // Clase anidada (sí, esto se puede)
+        {
+        public:
+            TListNode(const char* _sText);
+            ~TListNode();
+            const char* m_sCadena = nullptr;
+            TListNode* m_pNext = nullptr;
+        };
         // TODO: los miembros privados los decidís vosotros.
-        TListNode* m_pFirst = nullptr;
+        TListNode* m_pFirst = nullptr; // Primero de la lista
+        TListNode* m_pIter = nullptr; // Iterador (bucle for o lo que sea)
+        TListNode* m_pLast = nullptr; // Último de la lista
 
-        TListNode* m_pIter = nullptr;
+        const char* m_pLastPopped = nullptr; // Guarda la última cadena que hizo Pop hasta el siguiente Pop/Reset
 
-        const char* m_pLastPopped = nullptr;
-
-        TListNode* m_pLast = nullptr;
-        unsigned int m_iSize = 0;
+        unsigned int m_iSize = 0; 
 
     };
 }

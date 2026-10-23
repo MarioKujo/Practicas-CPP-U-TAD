@@ -9,6 +9,8 @@ AddScore() Heal()
 #include <iostream>
 namespace Practica13
 {
+	// Gracias a que CEntity tiene sus miembros protected, CEnemy recibe nombre, iX, iY, uVida sin tener que declararlos
+	// aquí, además de las funciones públicas de CEntity (Move, TakeDamage, IsAlive, Print)
 	class CPlayer :public CEntity
 	{
 	public:

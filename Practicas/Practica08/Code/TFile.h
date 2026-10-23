@@ -21,5 +21,5 @@ public:
 	unsigned int Read(char* pBuffer, unsigned int uSize); // leídos
 	unsigned int Write(const char* pBuffer, unsigned int uSize); // escritos
 private:
-	FILE* pFile = nullptr;
+	void* pFile = nullptr;
 };

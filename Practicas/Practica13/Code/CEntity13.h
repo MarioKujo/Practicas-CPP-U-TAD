@@ -6,11 +6,12 @@ IsAlive() Print()
 ▸ CEntity con los miembros protected; la vida no baja de 0.
 Los constructores llaman al de CEntity. Con un printf en constructores y destructores: ¿en qué orden salen?
 
-Primero CEntity y luego el hijo que sea (CEnemy o CPlayer)
+- Primero CEntity y luego el hijo que sea (CEnemy o CPlayer)
 
 ¿Qué deja de compilar si los miembros de CEntity son private?
 
-De CPlayer: AddScore() y Heal(), de CEnemy Attack(), es decir, cualquier mención a los artributos privados de la clase (nombre, iX, iY, uVida)
+- De CPlayer: AddScore() y Heal(), de CEnemy Attack(), es decir, cualquier mención a los artributos privados de la clase (nombre, iX, iY, uVida)
+
 */
 #pragma once
 #include <iostream>
