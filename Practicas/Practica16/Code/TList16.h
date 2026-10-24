@@ -19,8 +19,6 @@ namespace Practica16
 		virtual void Print() const = 0;
 	};
 
-    
-
     class TList
     {
     public:

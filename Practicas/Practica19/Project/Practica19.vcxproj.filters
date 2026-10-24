@@ -11,15 +11,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Code\TFile19.h">
+    <ClInclude Include="..\Code\TList19.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Practica19.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\TFile19.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
