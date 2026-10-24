@@ -35,7 +35,7 @@ do                                                   \
 	printf(__VA_ARGS__);                             \
 	printf("\n");                                    \
 } while (0)
-// __FILE__ es el archivo (Practica18.h) y __LINE__ es la línea de la izquierda (como esta, que es la línea 30)
+// __FILE__ es el archivo (Practica18.cpp) y __LINE__ es la línea de la izquierda (como esta, que es la línea 30)
 #define ASSERT(cond)                                 \
 do                                                   \
 {                                                    \
