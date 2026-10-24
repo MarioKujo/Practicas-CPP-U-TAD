@@ -1,18 +1,20 @@
 #include "EnumClass.h"
 #include <cstring>
 
-const char* s_tColorNames[] = {
+const char* s_tColorNames[] = // Es la única manera de transformar Enum a cadena
+{
 	"Rojo",
 	"Azul",
 	"Verde",
-	"Amarillo" };
+	"Amarillo"
+};
 
 const char* CEnum::AsStr(EColor _eEnum)
 {
 	unsigned int uIndex = static_cast<unsigned int>(_eEnum); // Técnicamente un enum es un número por debajo, así que...
 	if (uIndex < sizeof(s_tColorNames) / sizeof(s_tColorNames[0]))
 	{
-		return s_tColorNames[uIndex];
+		return s_tColorNames[uIndex]; // Pilla el índice (el enum y el array de cadenas tiene que estar en el mismo orden)
 	}
 	return "Invalido";
 }
@@ -21,9 +23,9 @@ EColor CEnum::AsEnum(const char* _sEnum)
 {
 	if (_sEnum != nullptr)
 	{
-		for (size_t i = 0; i < sizeof(s_tColorNames) / sizeof(s_tColorNames[0]);i++)
+		for (size_t i = 0; i < sizeof(s_tColorNames) / sizeof(s_tColorNames[0]); i++) 
 		{
-			if (strcmp(_sEnum, s_tColorNames[i]) == 0)
+			if (strcmp(_sEnum, s_tColorNames[i]) == 0) // Si las cadenas son exactamente iguales, devuelve el índice
 			{
 				return static_cast<EColor>(i);
 			}
