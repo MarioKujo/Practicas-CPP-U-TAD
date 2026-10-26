@@ -18,6 +18,13 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Code\Practica11.cpp" />
+    <ClCompile Include="..\Code\Tlist11.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\Tlist11.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -148,13 +155,6 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="Code\TList11.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Code\Practica11.cpp" />
-    <ClCompile Include="Code\TList11.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
