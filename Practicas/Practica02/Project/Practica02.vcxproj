@@ -72,10 +72,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>../../Binaries/Debug/</OutDir>
+    <OutDir>../../Binaries/$(Configuration)/$(ProjectName)/</OutDir>
+    <IntDir>../../Binaries/Intermediate/$(Configuration)/$(ProjectName)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>../../Binaries/Release/</OutDir>
+    <OutDir>../../Binaries/$(Configuration)/$(ProjectName)/</OutDir>
+    <IntDir>../../Binaries/Intermediate/$(Configuration)/$(ProjectName)/</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
