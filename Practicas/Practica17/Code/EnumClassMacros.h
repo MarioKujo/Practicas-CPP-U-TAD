@@ -1,11 +1,18 @@
 /*
-2 Mediante macros, generalizar el código anterior para que sea más
-fácil crear enumerados con esa funcionalidad.
+2 Mediante macros, generalizar el código anterior para que sea más fácil crear enumerados con esa funcionalidad.
+
+Técnica ("X-macro"): escribimos la lista de colores UNA sola vez y a partir de ella el preprocesador
+genera el enum y la tabla de textos. Así nunca se desordenan y para añadir un color solo se toca un sitio.
+Una macro es texto que el preprocesador sustituye por otro texto ANTES de compilar.
 */
 #pragma once
 
-// Es una macro que recibe otra macro como parámetro (x) y la llama una vez por cada color. Sólo dice "aplica X a Rojo, a Azul, a
-// Verde y a Amarillo"
+/*
+La lista de colores. Recibe como parámetro(X) OTRA macro y la llama una vez por cada color :
+por sí sola no hace nada, solo dice "aplica X a Rojo, a Azul, a Verde y a Amarillo".
+La "\" al final de cada línea significa "la macro sigue en la línea siguiente".
+Para añadir un color, basta con otra línea X(NuevoColor) aquí.
+*/
 
 #define COLOR_LIST(X) \
 X(Rojo)               \
@@ -14,26 +21,25 @@ X(Verde)              \
 X(Amarillo)           \
 X(Morado)
 
-// Dado un nombre, lo deja seguido de una coma. AS_ENUMERATOR(Rojo) se convierte en "Rojo, " (sin comillas)
-
-#define AS_ENUMERATOR(name) name,
-
-// AS_ENUMERATOR es una línea aislada, no incluye el enum class de debajo ni lo modifica
-
-enum class EColorM
-{
-	// Se expande a AS_ENUMERATOR(Rojo) AS_ENUMERATOR(Azul) AS_ENUMERATOR(Verde) AS_ENUMERATOR(Amarillo), como decíamos, sustituye la X donde la otra macro
-
-	COLOR_LIST(AS_ENUMERATOR)
-
-	Invalido
-};
-// Borra la macro auxiliar para que no contamine el resto del código y para poder definirlo otra vez con otro significado
-#undef AS_ENUMERATOR
 
 class CEnumM
 {
 public:
-	const char* AsStr(EColorM _eEnum);
-	EColorM AsEnum(const char* _sEnum);
+// Macro auxiliar: deja el nombre seguido de una coma. AS_ENUMERATOR(Rojo) se convierte en: Rojo,
+#define AS_ENUMERATOR(name) name,
+
+enum class EColorM
+{
+	// COLOR_LIST(AS_ENUMERATOR) se expande a:
+	//   AS_ENUMERATOR(Rojo) AS_ENUMERATOR(Azul) ... AS_ENUMERATOR(Morado)
+	// y cada una a su vez a "Rojo," "Azul," ..., o sea, el contenido normal de un enum.
+	COLOR_LIST(AS_ENUMERATOR)
+
+	Invalido // Siempre el último y fuera de la lista
+};
+// Borramos la macro auxiliar: ya no hace falta y así no molesta al resto del código
+// (además, en el .cpp volveremos a usar COLOR_LIST con otra macro distinta).
+#undef AS_ENUMERATOR
+	const char* AsStr(EColorM _eColor);
+	EColorM AsEnum(const char* _pszNombre);
 };

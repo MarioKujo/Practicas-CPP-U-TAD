@@ -6,13 +6,16 @@ lstSrc);
 
 3 Contar las llamadas al constructor de copia (un printf dentro) y rediseñar la función, cambiando su prototipo, para
 maximizar su rendimiento. Pista: referencias. ¿Por qué no puede ser const TList&?
-// La función GetReverseList no podrá recibir const TList& si usa First()/Next()/Pop() sobre la lista de entrada, porque esos métodos no son const. Si quisiersa const TList&, tendrías que hacerlos const (o recorrer los nodos por otro camino)
+
+- GetReverseList no podrá recibir const TList& si usa First()/Next()/Pop() sobre la lista de entrada, porque esos
+métodos no son const. Si quisiéramos const TList&, tendríamos que hacerlos const (o recorrer los nodos por otro camino).
 
 // Práctica 12 <-- OJO, AQUÍ ESTÁ LA PRÁCTICA 12
 // ▸ Además: añadir operator= a la TList de la práctica 11 (regla de tres).
 */
 
-// Si tienes dudas de cómo funciona algo, lee los comentarios de la práctica 9
+// Es la TList de la práctica 9 con añadidos. Si tienes dudas de cómo funciona algo que no esté comentado aquí,
+// lee los comentarios de TList09.h y TList09.cpp
 
 #pragma once
 namespace Practica11
@@ -21,62 +24,55 @@ namespace Practica11
     class TList
     {
     public:
-        // Crea una lista vacía.
         TList();
-        // 1 Realizar un constructor de copia para la lista enlazada de la práctica 9.
-        TList(const TList& other);
-        TList& operator=(const TList& other);
-        // Libera toda la memoria que haya reservado la lista.
+
+        // Regla de tres: si una clase reserva memoria con new, necesita las TRES cosas a la vez:
+        // constructor de copia, operator= y destructor. Si falta alguna, copiar la lista haría que dos listas
+        // compartieran los mismos nodos y los dos destructores los liberasen (el problema de TFile en la práctica 8).
+
+        // 1 Constructor de copia: se ejecuta con TList oB(oA); o TList oB = oA;
+        // Hace una copia PROFUNDA: crea nodos nuevos, así cada lista tiene los suyos.
+        TList(const TList& oOther);
+
+        // Se ejecuta con oB = oA; cuando oB ya existe (por eso primero tiene que vaciarse)
+        TList& operator=(const TList& oOther);
+
         ~TList();
 
-        // Número de elementos de la lista (0 si está vacía).
         int Size();
-
-        // Añade la cadena AL FINAL de la lista.
-        // Retorna el número de elementos que tiene la lista después de añadirla.
         int Push(const char* psz);
 
+        // NUEVO: añade la cadena AL PRINCIPIO de la lista (se añadió para poder invertir). Retorna el nuevo tamaño.
         int PushFront(const char* psz);
 
-        // Retorna el primer elemento de la lista, o nullptr si está vacía.
-        // Además, deja la lista preparada para que Next() devuelva el segundo.
         const char* First();
-
-        // Retorna el elemento siguiente al último devuelto por First() o Next().
-        // Retorna nullptr cuando ya no quedan más elementos (o si no se ha llamado a First()).
         const char* Next();
-
-        // Quita el primer elemento de la lista y lo retorna.
-        // Retorna nullptr si la lista está vacía.
         const char* Pop();
-
-        // Elimina todos los elementos. La lista queda vacía (Size() == 0) y se puede seguir usando.
         void Reset();
 
     private:
-        class TListNode
+        class TListNode // Igual que en la práctica 9
         {
         public:
-            TListNode(const char* _sText = nullptr);
-            TListNode(const TListNode&) = delete;
+            TListNode(const char* _pszText = nullptr);
+            TListNode(const TListNode&) = delete; // NUEVO: prohibido copiar un nodo suelto, solo lo crea la lista
             ~TListNode();
-            const char* m_sCadena = nullptr;
+            const char* m_pszCadena = nullptr;
             TListNode* m_pNext = nullptr;
         };
-        // TODO: los miembros privados los decidís vosotros.
+
         TListNode* m_pFirst = nullptr;
-
         TListNode* m_pIter = nullptr;
-
-        const char* m_pLastPopped = nullptr;
-
         TListNode* m_pLast = nullptr;
-        unsigned int m_iSize = 0;
+        const char* m_pszLastPopped = nullptr;
+        unsigned int m_uSize = 0;
+
+        // NUEVO: GetReverseList no es un método de la clase, pero con "friend" se le permite ver la parte privada
+        // (aquí, recorrer los nodos directamente)
         friend TList GetReverseList(TList lstSrc);
 
     };
 
-    // 2 Realizar una función que reciba una lista y retorne otra con los elementos invertidos: TList GetReverseList
-    // TList lstSrc);
+    // 2 Devuelve otra lista con los elementos en orden inverso
     TList GetReverseList(TList lstSrc);
 }

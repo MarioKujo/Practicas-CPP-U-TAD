@@ -1,10 +1,11 @@
 #include "CEnemy13.h"
 
-// Se explica solo, la verdad
-
 namespace Practica13
 {
-	CEnemy::CEnemy(const char* _nombre, int _iX, int _iY, int _iDamage, unsigned int _uVida) :CEntity(_nombre, _iX, _iY, _uVida), iDamage(_iDamage)
+	// Primero se construye la parte CEntity (la llamamos en la lista de inicialización) y luego el atributo propio,
+	// iDamage
+	CEnemy::CEnemy(const char* _pszNombre, int _iX, int _iY, int _iDamage, unsigned int _uVida)
+		: CEntity(_pszNombre, _iX, _iY, _uVida), iDamage(_iDamage)
 	{
 		printf("Constructor de CEnemy\n");
 	}
@@ -14,10 +15,12 @@ namespace Practica13
 		printf("Destructor de CEnemy\n");
 	}
 
-	void CEnemy::Attack(CEntity& other)
+	void CEnemy::Attack(CEntity& _oObjetivo)
 	{
-		other.TakeDamage(iDamage); // other es un CEntity&: una clase derivada solo puede acceder a los miembros
-		// protegidos a través de objetos de su propio tipo (CEnemy), no de la base. Por eso se usa TakeDamage().
-		printf("%s ha hecho %d de damage.\n", nombre, iDamage);
+		// _oObjetivo es una referencia: otro nombre para el objeto original (CPlayer u otro CEnemy), sin copiarlo.
+		// No podemos tocar _oObjetivo.uVida directamente: una clase hija solo accede a los miembros protected
+		// de sí misma, no a los de otro objeto declarado como CEntity. Por eso se llama a TakeDamage().
+		_oObjetivo.TakeDamage(iDamage);
+		printf("%s ha hecho %d de damage.\n", pszNombre, iDamage);
 	}
 }

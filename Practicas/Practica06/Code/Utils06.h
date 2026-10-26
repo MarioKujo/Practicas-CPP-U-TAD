@@ -9,5 +9,8 @@
 */
 #pragma once
 #include <iostream>
-int CountOccurrences(const char* pszFileName, const char* pszText);
+
+int CountOccurrences(const char* pszFileName, const char* pszText); // Devuelve -1 si no se puede abrir el archivo
+// iSum_ es una referencia: la función escribe el resultado directamente en la variable que le pases.
+// El _ del final del nombre indica que es un parámetro de salida. Devuelve false si no se puede abrir el archivo
 bool SumNumbers(const char* pszFileName, int& iSum_);

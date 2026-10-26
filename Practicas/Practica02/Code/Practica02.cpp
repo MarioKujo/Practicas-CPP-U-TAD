@@ -1,140 +1,180 @@
 /*
-1 Dado un entero, obtener por separado cada uno de sus bytes con «casting» y aritmética de punteros.Probarlo con 0x00FF0002: ¿por qué salen en el orden 02 00 FF 00 ?
+1 Dado un entero, obtener por separado cada uno de sus bytes con «casting» y aritmética de punteros. Probarlo con 0x00FF0002: ¿por qué salen en el orden 02 00 FF 00 ?
 
-2 Dada int tabla[] = { 1, 3, 2, 5, 3, static_cast<int>(0xFFFFFFFF), 0x00FF0002, 2 }; obtener el entero mayor con un puntero y aritmética de punteros.¿Por qué 0xFFFFFFFF no es el mayor?
+- Se imprime al revés porque los bytes se recorren de final a inicio (de derecha a izquierda), lo que viene a ser
+"little endian"
+
+2 Dada int aTabla[] = { 1, 3, 2, 5, 3, static_cast<int>(0xFFFFFFFF), 0x00FF0002, 2 }; obtener el entero mayor con un puntero y aritmética de punteros.¿Por qué 0xFFFFFFFF no es el mayor?
+
+- 0xFFFFFFFF no es el mayor porque en un int con signo ese patrón de bits no vale 4.294.967.295, vale -1
+
 3 Como el anterior, pero obtener el byte mayor(usar casting) y la posición en bytes donde aparece por primera vez.Recorrerla con char* y con unsigned char* : ¿coinciden ? ¿Por qué ?
+
+- char y unsigned char no coinciden porque signed char va de -128 a 127 y unsigned char va de 0 a 255, y el byte FF
+  es 255, el cual no entra en signed char, por lo que el valor se le queda en -1
+
 4 Dada una cadena de caracteres, darle la vuelta.
 */
 #include <iostream>
 
-void IntBytes(unsigned int _int) // Unsigned int para que quepan números más grandes, no por otra cosa
+// Convención de nombres: p = puntero, a = array, n = tamaño/cantidad, u = unsigned, c = char
+// Ejemplos: pcInicio = puntero a char, pucByte = puntero a unsigned char, aTabla = array
+
+void IntBytes(unsigned int uValor)
 {
-	unsigned char* p = reinterpret_cast<unsigned char*>(&_int); // Lo reinterpreta a char (1 byte)
-	for (size_t i = 0; i < sizeof(_int); i++) // Itera para cada byte
+	// Un puntero es una variable que, en vez de guardar un número normal, guarda una DIRECCIÓN de memoria
+	// (el "número de casilla" donde vive un dato). &uValor significa "la dirección de uValor".
+	// Un int ocupa 4 bytes seguidos en memoria. Para poder mirarlos de uno en uno, usamos un puntero que
+	// avanza de 1 en 1 byte (unsigned char*) y con reinterpret_cast le decimos al compilador:
+	// "trata esa dirección como si fueran bytes sueltos".
+	unsigned char* pucByte = reinterpret_cast<unsigned char*>(&uValor);
+	for (size_t nIndice = 0; nIndice < sizeof(uValor); nIndice++) // Una vuelta por cada byte (4 en un int)
 	{
-		printf("Byte %zu: %02X\n\n", i, *(p + i)); // Lo imprime en formato hexadecimal(%02X). *(p + i) porque le añade 
-		// su mismo tamaño en memoria, entonces *(p + 0) avanzará 0 bytes respecto al puntero y estará apuntando al
-		// primer byte,*(p + 1) avanzará 1 byte respecto al puntero y estará apuntando al segundo byte, *(p + 2)
-		// avanzará 2 bytes respecto al puntero y estará apuntando al tercer byte, etc
+		// Sumarle un número a un puntero lo hace avanzar ESA cantidad de elementos de su tipo. Como unsigned char
+		// mide 1 byte, (pucByte + 1) es "la dirección del byte siguiente", (pucByte + 2) la del siguiente, etc.
+		// El * de delante significa "dame lo que hay guardado en esa dirección".
+		// %02X imprime el valor en hexadecimal con 2 dígitos.
+		printf("Byte %zu: %02X\n\n", nIndice, *(pucByte + nIndice));
 	}
-	// Se imprime al revés porque los bytes se recorren de final a inicio (de derecha a izquierda), lo que viene a ser
-	// "little endian"
 }
 
-template<size_t N> // Para tener el tamaño del array, no hay otra manera de sacarlo
-int Mayor(const int(&tabla)[N])
+template<size_t N> // Así la función sabe cuántos elementos tiene el array (N), sin pasárselo a mano
+int Mayor(const int(&aTabla)[N])
 {
-	const int* mayor = tabla; // Apunta al principio
-	const int* fin = tabla + N; // Apunta al final (justo el problema es ese N, que no hay otra manera de sacarle el
-	// tamaño si queremos que sean const para no modificar nada de la tabla y recibirla por referencia, no por copia
+	const int* piMayor = aTabla; // Un array "es" la dirección de su primer elemento, así que apunta al principio
+	const int* piFin = aTabla + N; // Dirección JUSTO DESPUÉS del último elemento (no se lee nunca, solo marca el final)
 
-	for (const int* slider = tabla + 1; slider != fin; ++slider) // Ya que el mayor es la primera posición, se lo puede
-		// saltar
+	for (const int* piActual = aTabla + 1; piActual != piFin; ++piActual) // Empieza en el 2º elemento, porque el 1º ya
+		// es el "mayor" de momento
 	{
-		if (*slider > *mayor)
+		if (*piActual > *piMayor) // Compara los VALORES (con el *), no las direcciones
 		{
-			mayor = slider; // Se explica por sí solo: si el número es mayor, se pone como el mayor
+			// Sin asterisco cambiamos A QUÉ DIRECCIÓN apunta piMayor (ahora apunta al nuevo mayor).
+			// Con asterisco (*piMayor = *piActual) estaríamos machacando el valor guardado en el array.
+			piMayor = piActual;
 		}
 	}
-	return *mayor;
-	// 0xFFFFFFFF no es el mayor porque en un int con signo ese patrón de bits no vale 4.294.967.295, vale -1
+	return *piMayor;
 }
 
-const char* ByteMayorSigned(const int* tabla) // Aquí sí se puede sacar bien el tamaño
+// Igual que en Mayor: N lo deduce el compilador a partir del array, así que siempre es el tamaño real
+template<size_t N>
+const char* ByteMayorSigned(const int(&aTabla)[N])
 {
-	size_t n = sizeof(tabla); // Se saca a un size_t
-	const char* inicio = reinterpret_cast<const char*>(tabla); // Se reinterpreta de const int* a const char* para poder
-	// iterar entre los bits
-	const char* mayor = inicio; // Primera posición (me salto una iteración)
-	const char* fin = inicio + n * sizeof(int); // Aquí si puede ser sizeof(int), ya que, como const char* es de 1 byte
-	// e int de 4, al multiplicar size * 4 te aseguras de que esté apuntando realmente a la verdadera posición fuera del 
-	// array (donde suele estar el caracter de salida '\0')
+	// Pasamos de "puntero a int" (avanza de 4 en 4 bytes) a "puntero a char" (avanza de 1 en 1 byte)
+	const char* pcInicio = reinterpret_cast<const char*>(aTabla);
+	const char* pcMayor = pcInicio; // De momento el mayor es el primer byte
 
-	for (const char* slider = inicio + 1; slider != fin; ++slider) // Volvemos a iterar
+	// El array tiene N ints y cada int ocupa sizeof(int) bytes (4), así que en total son N * 4 bytes.
+	// Sumándolo al inicio llegamos a la dirección justo después del último byte (no se lee, solo marca el final)
+	const char* pcFin = pcInicio + N * sizeof(int);
+
+	for (const char* pcActual = pcInicio + 1; pcActual != pcFin; ++pcActual) // Recorre byte a byte
 	{
-		if (*slider > *mayor)
+		if (*pcActual > *pcMayor)
 		{
-			mayor = slider; // Igual que el de arriba
+			pcMayor = pcActual; // Igual que en Mayor: movemos el puntero, no tocamos los valores
 		}
 	}
-	return mayor;
+	return pcMayor;
 }
 
-const unsigned char* ByteMayorUnsigned(const int* tabla) // Lo mismo que arriba pero con unsigned char*
+// Idéntica a la anterior, pero con unsigned char: aquí el byte FF vale 255 y no -1
+template<size_t N>
+const unsigned char* ByteMayorUnsigned(const int(&aTabla)[N])
 {
-	size_t n = sizeof(tabla);
-	const unsigned char* inicio = reinterpret_cast<const unsigned char*>(tabla);
-	const unsigned char* mayor = inicio;
-	const unsigned char* fin = inicio + n * sizeof(int);
+	const unsigned char* pucInicio = reinterpret_cast<const unsigned char*>(aTabla);
+	const unsigned char* pucMayor = pucInicio;
+	const unsigned char* pucFin = pucInicio + N * sizeof(int);
 
-	for (const unsigned char* slider = inicio + 1; slider != fin; ++slider)
+	for (const unsigned char* pucActual = pucInicio + 1; pucActual != pucFin; ++pucActual)
 	{
-		if (*slider > *mayor)
+		if (*pucActual > *pucMayor)
 		{
-			mayor = slider;
+			pucMayor = pucActual;
 		}
 	}
-	return mayor;
-	// char y unsigned char no coinciden porque signed char va de -128 a 127 y unsigned char va de 0 a 255, y el byte FF 
-	// es 255, el cual no entra en signed char, por lo que el valor se le queda en -1
+	return pucMayor;
 }
 
-char* Invertir(const char* cadena) // Devuelve la cadena invertida 
+// AVISO: FUGA DE MEMORIA. EL QUE LA LLAME TIENE QUE HACER DELETE[]
+
+char* InvertirFuga(const char* pcCadena) // Devuelve la cadena invertida
 {
-	size_t longitudCopia = strlen(cadena) + 1;
-	char* invertida = new char[longitudCopia]; // AVISO: FUGA DE MEMORIA. EL QUE LA LLAME TIENE QUE HACER DELETE[]
-	strcpy_s(invertida, longitudCopia, cadena);
-	invertida[longitudCopia] = '\0'; // Lo de siempre, para marcar el final (necesario)
-	size_t longitud = strlen(cadena); // Longitud real (sin el '\0')
-	if (longitud < 2) // Si mide 0 o 1 no se puede hacer nada
+	size_t nLongitudCopia = strlen(pcCadena) + 1; // +1 para el '\0', el carácter invisible que marca el final de una
+	// cadena
+	// new reserva memoria que NO se libera sola al salir de la función; quien reciba el puntero debe hacer delete[]
+	char* pcInvertida = new char[nLongitudCopia];
+	strcpy_s(pcInvertida, nLongitudCopia, pcCadena);
+	pcInvertida[nLongitudCopia] = '\0'; // Lo de siempre, para marcar el final (necesario)
+	size_t nLongitud = strlen(pcCadena); // Longitud real (sin el '\0')
+	if (nLongitud < 2) // Si mide 0 o 1 no se puede hacer nada
 	{
-		return invertida;
+		return pcInvertida;
 	}
 
-	char* inicio = invertida; // Apunta al primer byte
-	char* final = invertida + longitud - 1; // Apunta al último byte escrito del array (-1 porque final empieza
-	// apuntando al primer byte del array, entonces si le suma longitud entera, apunta al '\0')
+	char* pcInicio = pcInvertida; // Apunta al primer carácter
+	
+	char* pcFinal = pcInvertida + nLongitud - 1;// Apunta al último carácter. Si le sumáramos nLongitud entera caeríamos
+	// en el '\0', por eso el -1
 
-	while (inicio < final)
+	// Intercambia el primero con el último, luego el segundo con el penúltimo, etc., acercándose
+	// desde los dos extremos hasta que los punteros se cruzan
+	while (pcInicio < pcFinal)
 	{
-		char temp = *inicio;
-		*inicio = *final;
-		*final = temp;
-		++inicio;
-		--final;
-	}// Creo que se entiende
-	return invertida;
+		char cTemp = *pcInicio;
+		*pcInicio = *pcFinal;
+		*pcFinal = cTemp;
+		++pcInicio; // Avanza un carácter hacia la derecha
+		--pcFinal; // Retrocede un carácter hacia la izquierda
+	}
+	return pcInvertida;
+}
+
+void Invertir(const char* pcOrigen, char* pcDestino)
+{
+	const char* pcFin = pcOrigen + strlen(pcOrigen); // Apunta al '\0' del final
+
+	while (pcFin > pcOrigen)
+	{
+		// --pcFin retrocede ANTES de leer (si no, leeríamos el '\0'). Así copiamos la cadena de atrás hacia delante.
+		*pcDestino = *--pcFin;
+		++pcDestino;
+	}
+	*pcDestino = '\0';
 }
 
 int main()
 {
-	unsigned int intAByte = 0x00FF0002;
+	unsigned int uNumero = 0x00FF0002;
 
-	IntBytes(intAByte);
+	IntBytes(uNumero);
 
-	int tabla[] = { 1, 3, 2, 5, 3, static_cast<int>(0xFFFFFFFF), 0x00FF0002, 2 };
+	int aTabla[] = { 1, 3, 2, 5, 3, static_cast<int>(0xFFFFFFFF), 0x00FF0002, 2 };
 
-	printf("El numero mayor es %d\n\n", Mayor(tabla));
-
-
-	const char* sMayor = ByteMayorSigned(tabla);
-
-	const char* inicio = reinterpret_cast<const char*>(tabla);
-
-	printf("Byte mayor (signed): %d en la posicion %td\n\n", *sMayor, sMayor - inicio);
+	printf("El numero mayor es %d\n\n", Mayor(aTabla));
 
 
-	const unsigned char* uMayor = ByteMayorUnsigned(tabla);
+	const char* pcMayor = ByteMayorSigned(aTabla);
 
-	const unsigned char* uInicio = reinterpret_cast<const unsigned char*>(tabla);
+	const char* pcInicio = reinterpret_cast<const char*>(aTabla);
 
-	printf("Byte mayor (unsigned): %d en la posicion %td\n\n", *uMayor, uMayor - uInicio);
+	// Restar dos punteros da cuántos elementos hay entre ellos; con char* eso son bytes, o sea, la posición
+	printf("Byte mayor (signed): %d en la posicion %td\n\n", *pcMayor, pcMayor - pcInicio);
 
-	char cInversa[] = "Hola";
-	char* pInvertida = Invertir(cInversa);
-	printf("%s\n", pInvertida);
-	delete[]pInvertida;
-	pInvertida = nullptr;
-	printf("cInversa normal (no se ha modificado): %s\n", cInversa);
+
+	const unsigned char* pucMayor = ByteMayorUnsigned(aTabla);
+
+	const unsigned char* pucInicio = reinterpret_cast<const unsigned char*>(aTabla);
+
+	printf("Byte mayor (unsigned): %d en la posicion %td\n\n", *pucMayor, pucMayor - pucInicio);
+
+	const char acOriginal[] = "Hola";
+	char acInversa[100];
+	Invertir(acOriginal, acInversa);
+
+	printf("acInversa es: %s\n", acInversa);
+
+	printf("acOriginal (no se ha modificado): %s\n", acOriginal);
 	return 0;
 }

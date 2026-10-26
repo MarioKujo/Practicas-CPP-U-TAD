@@ -1,18 +1,21 @@
 #include <iostream>
 #include "TList16.h"
 #include <crtdbg.h>
-class CText : public Practica16::IListItem // <-- Es una interfaz, así que siempre tiene que heredar alguien
+
+// Una interfaz no se puede instanciar, así que las clases que la implementan heredan de ella
+// y están obligadas a hacer override de todas sus funciones virtuales puras.
+class CText : public Practica16::IListItem
 {
 public:
 	virtual void Print() const override
 	{
-		printf("%s\n", sText);
+		printf("%s\n", pszText);
 	}
 	virtual Practica16::IListItem* Clone() const override
 	{
-		return new CText(*this); // <-- new, te jodes
+		return new CText(*this); // new: la copia vive en el heap hasta que alguien le haga delete (la lista, en Reset)
 	}
-	const char* sText = "";
+	const char* pszText = "";
 };
 
 class CNumber : public Practica16::IListItem
@@ -24,72 +27,70 @@ public:
 	}
 	virtual Practica16::IListItem* Clone() const override
 	{
-		return new CNumber(*this); // <-- new, te jodes
+		return new CNumber(*this);
 	}
 	int iValue = 0;
 };
+
 int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	CText oText1;
-	oText1.sText = "uno";
-	CText oText2;
-	oText2.sText = "dos";
-	CText oText3;
-	oText3.sText = "tres";
-	CText oText4;
-	oText4.sText = "cuatro";
-	CText oText5;
-	oText5.sText = "cinco";
 
-	CNumber oNumber1;
-	oNumber1.iValue = 1;
-	CNumber oNumber2;
-	oNumber2.iValue = 2;
-	CNumber oNumber3;
-	oNumber3.iValue = 3;
-	CNumber oNumber4;
-	oNumber4.iValue = 4;
-	CNumber oNumber5;
-	oNumber5.iValue = 5;
-	Practica16::TList lNumeros;
-	lNumeros.Push(&oText1);
-	lNumeros.Push(&oNumber1);
-	lNumeros.Push(&oText2);
-	lNumeros.Push(&oNumber2);
-	lNumeros.Push(&oText3);
-	lNumeros.Push(&oNumber3);
-	lNumeros.Push(&oText4);
-	lNumeros.Push(&oNumber4);
-	lNumeros.Push(&oText5);
-	lNumeros.Push(&oNumber5);
-	printf("Numeros leidos (%d):\n", lNumeros.Size());
-	for (Practica16::IListItem* p = lNumeros.First(); p != nullptr; p = lNumeros.Next())
+	// Los textos van en una tabla; los números salen del propio contador del bucle (1, 2, 3...)
+	const char* tpszTextos[] =
 	{
-		p->Print();
+		"uno",
+		"dos",
+		"tres",
+		"cuatro",
+		"cinco"
+	};
+	const int NUM_PARES = 5; // Cuántos pares texto + número metemos (tiene que coincidir con el tamaño de la tabla)
+
+	// Textos y números mezclados en la misma lista: Push guarda una copia de cada uno
+	Practica16::TList lstItems;
+	for (int iIndex = 0; iIndex < NUM_PARES; ++iIndex)
+	{
+		// Estos dos objetos solo viven durante esta vuelta del bucle; no pasa nada
+		// porque la lista ya tiene sus propias copias hechas con Clone()
+		CText oText;
+		oText.pszText = tpszTextos[iIndex];
+		CNumber oNumber;
+		oNumber.iValue = iIndex + 1;
+
+		lstItems.Push(oText);
+		lstItems.Push(oNumber);
+	}
+
+	printf("Numeros leidos (%d):\n", lstItems.Size());
+	// Recorrido con First/Next; Print() es el de cada tipo (CText o CNumber) sin que main sepa cuál es
+	for (Practica16::IListItem* pItem = lstItems.First(); pItem != nullptr; pItem = lstItems.Next())
+	{
+		pItem->Print();
 	}
 	printf("\n");
-	Practica16::TList lNumeros2(lNumeros);
-	printf("Numeros leidos (copia) (%d):\n", lNumeros2.Size());
-	for (Practica16::IListItem* p = lNumeros2.First(); p != nullptr; p = lNumeros2.Next())
-	{
-		p->Print();
-	}
+
+	Practica16::TList lstCopia(lstItems);
+	printf("Numeros leidos (copia) (%d):\n", lstCopia.Size());
+	lstCopia.Print();
 	printf("\n");
-	Practica16::TList lNumeros3(GetReverseList(lNumeros));
-	printf("Numeros leidos (invertido) (%d):\n", lNumeros3.Size());
-	for (Practica16::IListItem* p = lNumeros3.First(); p != nullptr; p = lNumeros3.Next())
-	{
-		p->Print();
-	}
+
+	Practica16::TList lstInvertida(GetReverseList(lstItems));
+	printf("Numeros leidos (invertido) (%d):\n", lstInvertida.Size());
+	lstInvertida.Print();
 	printf("\n");
-	Practica16::TList lNumeros4;
-	lNumeros4 = lNumeros3;
-	printf("Numeros leidos (operator=) (%d):\n", lNumeros4.Size());
-	for (Practica16::IListItem* p = lNumeros4.First(); p != nullptr; p = lNumeros4.Next())
-	{
-		p->Print();
-	}
+
+	Practica16::TList lstAsignada;
+	lstAsignada = lstInvertida;
+	printf("Numeros leidos (operator=) (%d):\n", lstAsignada.Size());
+	lstAsignada.Print();
 	printf("\n");
+
+	// Pop saca el primer elemento de la lista y nos lo entrega: ahora es responsabilidad nuestra hacer delete
+	Practica16::IListItem* pItemQuitado = lstAsignada.Pop();
+	printf("Pop: ");
+	pItemQuitado->Print();
+	delete pItemQuitado;
+
 	return 0;
 }

@@ -1,81 +1,83 @@
 /*
-Interfaces: una lista de IListItem
+Práctica 16 - Interfaces: una lista de IListItem
 
-▸ Una lista con la funcionalidad de TList que guarde cualquier objeto que implemente IListItem.
-▸ Push recibe un const IListItem& y guarda una copia hecha con Clone(). First, Next y Pop retornan IListItem*; quien
-recibe el de Pop lo borra.
-▸ Al menos dos clases que implementen la interfaz (un número, un texto...), mezcladas en la misma lista.
-▸ Un método Print() de la lista que muestre todos sus elementos.
+1 Una lista con la funcionalidad de TList que guarde cualquier objeto que implemente IListItem.
+
+2 Push recibe un const IListItem& y guarda una copia hecha con Clone(). First, Next y Pop retornan IListItem*;
+quien recibe el de Pop lo borra.
+
+3 Al menos dos clases que implementen la interfaz (un número, un texto...), mezcladas en la misma lista.
+
+4 Un método Print() de la lista que muestre todos sus elementos.
 */
 #pragma once
 namespace Practica16
 {
-	class IListItem // Todo lo que antes era const char* ahora es IListItem
+	// Interfaz: clase sin atributos ni código, solo funciones virtuales puras. Es un "contrato": cualquier clase
+	// que la herede se compromete a implementar Clone y Print. Así la lista guarda objetos de tipos distintos
+	// (texto, número...) sin saber cuál es cuál. Todo lo que antes era const char* ahora es IListItem.
+	class IListItem
 	{
 	public:
-		virtual ~IListItem() {}
-		virtual IListItem* Clone() const = 0; // Clonarlo para que se pueda copiar y no esté apuntando varias veces a
-        // la misma dirección de memoria (da errores al hacerle delete)
+		virtual ~IListItem() {} // Virtual para que el delete a través de un IListItem* destruya bien al objeto hijo
+
+		// Devuelve una copia del objeto creada con new. La lista guarda esa copia y no el original: si dos sitios
+		// apuntaran al mismo objeto, el delete de uno dejaría al otro apuntando a memoria ya liberada.
+		virtual IListItem* Clone() const = 0;
 		virtual void Print() const = 0;
 	};
 
-    class TList
-    {
-    public:
-        // Crea una lista vacía.
-        TList();
-        // 1 Realizar un constructor de copia para la lista enlazada de la práctica 9.
-        TList(const TList& other);
-        TList& operator=(const TList& other);
-        // Libera toda la memoria que haya reservado la lista.
-        ~TList();
+	class TList
+	{
+	public:
+		TList();
+		TList(const TList& _lstOther);
+		TList& operator=(const TList& _lstOther);
+		~TList();
 
-        // Número de elementos de la lista (0 si está vacía).
-        int Size();
+		int Size();
 
-        // Añade la cadena AL FINAL de la lista.
-        // Retorna el número de elementos que tiene la lista después de añadirla.
-        int Push(IListItem* psz);
+		// Añade una copia del elemento AL FINAL de la lista. Retorna el nº de elementos tras añadirlo.
+		int Push(const IListItem& _oItem);
 
-        int PushFront(IListItem* psz);
+		// Igual, pero AL PRINCIPIO de la lista.
+		int PushFront(const IListItem& _oItem);
 
-        // Retorna el primer elemento de la lista, o nullptr si está vacía.
-        // Además, deja la lista preparada para que Next() devuelva el segundo.
-        IListItem* First();
+		// Retorna el primer elemento (o nullptr si está vacía) y deja la lista preparada para que Next() devuelva el
+		// segundo.
+		IListItem* First();
 
-        // Retorna el elemento siguiente al último devuelto por First() o Next().
-        // Retorna nullptr cuando ya no quedan más elementos (o si no se ha llamado a First()).
-        IListItem* Next();
+		// Retorna el siguiente al último devuelto por First() o Next(), o nullptr cuando no quedan más.
+		IListItem* Next();
 
-        // Quita el primer elemento de la lista y lo retorna.
-        // Retorna nullptr si la lista está vacía.
-        IListItem* Pop();
+		// Quita el primer elemento y lo retorna (nullptr si está vacía). Quien lo recibe es responsable de hacer delete.
+		IListItem* Pop();
 
-        // Elimina todos los elementos. La lista queda vacía (Size() == 0) y se puede seguir usando.
-        void Reset();
+		// Elimina todos los elementos; la lista queda vacía pero se puede seguir usando.
+		void Reset();
 
-    private:
+		// Llama a Print() de cada elemento, en orden.
+		void Print() const;
 
-        class TListNode
-        {
-        public:
-            TListNode(IListItem* _iListItem = nullptr);
-            ~TListNode();
-            IListItem* pListItem = nullptr; // <-- Este es el cambio más tocapelotas
-            TListNode* m_pNext = nullptr;
-        };
-        // TODO: los miembros privados los decidís vosotros.
-        TListNode* m_pFirst = nullptr;
+	private:
+		class TListNode
+		{
+		public:
+			TListNode(IListItem* _pListItem = nullptr);
+			~TListNode();
+			IListItem* m_pListItem = nullptr; // Antes era el const char*; ahora es el elemento clonado
+			TListNode* m_pNext = nullptr;
+		};
 
-        TListNode* m_pIter = nullptr;
+		TListNode* m_pFirst = nullptr;
+		TListNode* m_pIter = nullptr; // Por dónde va el recorrido con First/Next
+		TListNode* m_pLast = nullptr;
+		unsigned int m_uSize = 0;
 
-        TListNode* m_pLast = nullptr;
-        unsigned int m_iSize = 0;
-        friend TList GetReverseList(TList lstSrc);
+		// friend: esta función externa puede acceder a los miembros privados de la lista
+		friend TList GetReverseList(TList _lstSrc);
+	};
 
-    };
-
-    // 2 Realizar una función que reciba una lista y retorne otra con los elementos invertidos: TList GetReverseList
-    // TList lstSrc);
-    TList GetReverseList(TList lstSrc);
+	// Retorna una lista nueva con los elementos de _lstSrc en orden inverso
+	TList GetReverseList(TList _lstSrc);
 }

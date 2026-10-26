@@ -54,22 +54,28 @@ namespace Practica09
         void Reset();
 
     private:
-        class TListNode // Clase anidada (sí, esto se puede)
+        // Una lista enlazada es una cadena de "nodos": cada nodo guarda una cadena y la dirección del
+        // siguiente nodo. El último apunta a nullptr. Así la lista crece sin tener que reservar un array grande.
+        //
+        //   m_pFirst ──► [ "uno" | ●──]──► [ "dos" | ●──]──► [ "tres" | nullptr ] ◄── m_pLast
+        class TListNode // Clase anidada: vive dentro de TList y solo se puede usar desde ella
         {
         public:
-            TListNode(const char* _sText);
-            ~TListNode();
-            const char* m_sCadena = nullptr;
-            TListNode* m_pNext = nullptr;
+            TListNode(const char* _pszText); // Hace una COPIA propia de la cadena
+            ~TListNode(); // Libera esa copia
+            const char* m_pszCadena = nullptr; // La copia de la cadena (el nodo es su dueño)
+            TListNode* m_pNext = nullptr; // Siguiente nodo (nullptr si es el último)
         };
-        // TODO: los miembros privados los decidís vosotros.
-        TListNode* m_pFirst = nullptr; // Primero de la lista
-        TListNode* m_pIter = nullptr; // Iterador (bucle for o lo que sea)
-        TListNode* m_pLast = nullptr; // Último de la lista
 
-        const char* m_pLastPopped = nullptr; // Guarda la última cadena que hizo Pop hasta el siguiente Pop/Reset
+        TListNode* m_pFirst = nullptr; // Primer nodo de la lista
+        TListNode* m_pIter = nullptr; // Nodo por el que va el recorrido de First()/Next()
+        TListNode* m_pLast = nullptr; // Último nodo: así Push añade al final sin recorrer toda la lista
 
-        unsigned int m_iSize = 0; 
+        // Pop saca la cadena del nodo y borra el nodo, pero la cadena tiene que seguir viva para que el
+        // llamador la lea. Se guarda aquí, y se libera en el siguiente Pop o en Reset
+        const char* m_pszLastPopped = nullptr;
+
+        unsigned int m_uSize = 0; // Número de elementos
 
     };
 }

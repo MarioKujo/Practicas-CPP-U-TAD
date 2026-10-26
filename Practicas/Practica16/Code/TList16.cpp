@@ -7,43 +7,42 @@ namespace Practica16
 		: m_pFirst(nullptr)
 		, m_pIter(nullptr)
 		, m_pLast(nullptr)
-		, m_iSize(0)
+		, m_uSize(0)
 	{
 	}
 
-	TList::TList(const TList& other)
+	// Copiar, invertir y asignar funcionan igual que en la práctica 9: lo único que cambia es que
+	// Push y PushFront ahora reciben el elemento (por referencia, de ahí el "*") y hacen su propio Clone().
+	TList::TList(const TList& _lstOther)
 	{
 		printf("Constructor de copia de TList\n");
-		for (const TListNode* p = other.m_pFirst; p != nullptr; p = p->m_pNext)
+		for (const TListNode* pNode = _lstOther.m_pFirst; pNode != nullptr; pNode = pNode->m_pNext)
 		{
-			Push(p->pListItem); // <-- Estas se mantienen exactamente igual porque se basan en TListNode* no en el
-			// const char* ni en qué tiene TListNode* por dentro
+			Push(*pNode->m_pListItem);
 		}
 	}
 
-	TList& TList::operator=(const TList& other)
+	TList& TList::operator=(const TList& _lstOther)
 	{
-		if (this != &other)
+		if (this != &_lstOther)
 		{
 			Reset();
-			for (const TListNode* p = other.m_pFirst; p != nullptr; p = p->m_pNext)
+			for (const TListNode* pNode = _lstOther.m_pFirst; pNode != nullptr; pNode = pNode->m_pNext)
 			{
-				Push(p->pListItem);// <-- Estas se mantienen exactamente igual porque se basan en TListNode* no en el
-			// const char* ni en qué tiene TListNode* por dentro
+				Push(*pNode->m_pListItem);
 			}
 		}
 		return *this;
 	}
 
-	TList GetReverseList(TList lstSrc)
+	TList GetReverseList(TList _lstSrc)
 	{
-		TList reversed;
-		for (const TList::TListNode* p = lstSrc.m_pFirst; p != nullptr; p = p->m_pNext)
+		TList lstReversed;
+		for (const TList::TListNode* pNode = _lstSrc.m_pFirst; pNode != nullptr; pNode = pNode->m_pNext)
 		{
-			reversed.PushFront(p->pListItem);// <-- Estas se mantienen exactamente igual porque se basan en TListNode*
-			// no en el const char* ni en qué tiene TListNode* por dentro
+			lstReversed.PushFront(*pNode->m_pListItem);
 		}
-		return reversed;
+		return lstReversed;
 	}
 
 	TList::~TList()
@@ -53,14 +52,13 @@ namespace Practica16
 
 	int TList::Size()
 	{
-		return m_iSize;
+		return m_uSize;
 	}
 
-	int TList::Push(IListItem* psz)
+	int TList::Push(const IListItem& _oItem)
 	{
 		TListNode* pNewNode = new TListNode;
-		pNewNode->pListItem = psz->Clone(); // pListItem era m_sCadena antes, y psz->Clone() hace lo que digo en el .h,
-		// para que no apunte al mismo puntero y no haga delete múltiple (el resto del código es igual, es sólo esto)
+		pNewNode->m_pListItem = _oItem.Clone(); // Guardamos una copia propia, no el original
 		if (m_pFirst == nullptr)
 		{
 			m_pFirst = pNewNode;
@@ -70,14 +68,14 @@ namespace Practica16
 			m_pLast->m_pNext = pNewNode;
 		}
 		m_pLast = pNewNode;
-		++m_iSize;
-		return m_iSize;
+		++m_uSize;
+		return m_uSize;
 	}
 
-	int TList::PushFront(IListItem* psz)
+	int TList::PushFront(const IListItem& _oItem)
 	{
 		TListNode* pNewNode = new TListNode;
-		pNewNode->pListItem = psz->Clone();
+		pNewNode->m_pListItem = _oItem.Clone();
 		pNewNode->m_pNext = m_pFirst;
 		m_pFirst = pNewNode;
 
@@ -86,8 +84,8 @@ namespace Practica16
 			m_pLast = pNewNode;
 		}
 
-		++m_iSize;
-		return m_iSize;
+		++m_uSize;
+		return m_uSize;
 	}
 
 	IListItem* TList::First()
@@ -95,7 +93,7 @@ namespace Practica16
 		m_pIter = m_pFirst;
 		if (m_pIter)
 		{
-			return m_pIter->pListItem;
+			return m_pIter->m_pListItem;
 		}
 		return nullptr;
 	}
@@ -108,12 +106,11 @@ namespace Practica16
 		}
 		if (m_pIter)
 		{
-			return m_pIter->pListItem;
+			return m_pIter->m_pListItem;
 		}
 		return nullptr;
 	}
 
-	// El puntero que devuelve Pop es válido hasta la siguiente llamada a Pop o hasta destruir la lista o hasta Reset.
 	IListItem* TList::Pop()
 	{
 		if (m_pFirst == nullptr)
@@ -122,57 +119,56 @@ namespace Practica16
 			return nullptr;
 		}
 
-		TListNode* pRemoved = m_pFirst;
-		m_pFirst = pRemoved->m_pNext;
-		--m_iSize;
+		TListNode* pNodeQuitado = m_pFirst;
+		m_pFirst = pNodeQuitado->m_pNext;
+		--m_uSize;
 		if (m_pFirst == nullptr)
 		{
 			m_pLast = nullptr; // La lista se ha vaciado: la cola ya no existe
 		}
-		if (m_pIter == pRemoved)
+		if (m_pIter == pNodeQuitado)
 		{
 			m_pIter = nullptr;
 		}
-		IListItem* pRet = pRemoved->pListItem; // Se tiene que guardar antes de que se elimine el nodo para poder
-		// liberar la memoria correctamente porque si no se pierde el puntero y hay memory leak
-		delete pRemoved;
-		return pRet;
+		// Hay que guardar el elemento antes de borrar el nodo; si no, perdemos su dirección y queda sin liberar.
+		// Ya no es de la lista: quien llame a Pop() debe hacer delete.
+		IListItem* pItemQuitado = pNodeQuitado->m_pListItem;
+		delete pNodeQuitado;
+		return pItemQuitado;
 	}
 
 	void TList::Reset()
 	{
-		TListNode* pTmp(m_pFirst);
-		while (pTmp)
+		TListNode* pNodeActual = m_pFirst;
+		while (pNodeActual)
 		{
-			TListNode* pToDelete(pTmp);
-			pTmp = pTmp->m_pNext;
-			delete pToDelete->pListItem; // <-- Aquí se hace el delete de IListItem
-			delete pToDelete;
+			TListNode* pNodeABorrar = pNodeActual;
+			pNodeActual = pNodeActual->m_pNext; // Avanzamos antes de borrar, si no perderíamos el resto de la lista
+			delete pNodeABorrar->m_pListItem; // Aquí se libera la copia hecha con Clone()
+			delete pNodeABorrar;
 		}
 		m_pFirst = nullptr;
 		m_pLast = nullptr;
-		m_iSize = 0;
+		m_uSize = 0;
 		m_pIter = nullptr;
-		/*
-		delete m_pFirst;
-		m_pFirst = nullptr; // Más elegante pero más peligroso
-		*/
 	}
-	TList::TListNode::TListNode(IListItem* _iListItem)
+
+	void TList::Print() const
 	{
-			pListItem = _iListItem;
+		// Recorre con su propio puntero para no alterar m_pIter (el recorrido de First/Next)
+		for (const TListNode* pNode = m_pFirst; pNode != nullptr; pNode = pNode->m_pNext)
+		{
+			pNode->m_pListItem->Print();
+		}
 	}
+
+	TList::TListNode::TListNode(IListItem* _pListItem)
+	{
+		m_pListItem = _pListItem;
+	}
+
+	// El destructor del nodo no borra nada a propósito: el delete de m_pListItem y de los nodos lo hace Reset()
 	TList::TListNode::~TListNode()
 	{
-		//if (pListItem)
-		//{
-		//	delete pListItem;
-		//	pListItem = nullptr;
-		//}
-		/*if (m_pNext)
-		{
-			delete m_pNext;
-			m_pNext = nullptr;
-		}*/
 	}
 }

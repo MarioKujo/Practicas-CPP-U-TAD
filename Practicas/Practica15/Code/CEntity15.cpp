@@ -1,7 +1,11 @@
 #include "CEntity15.h"
 namespace Practica15
 {
-	CEntity::CEntity(const char* _nombre, int _iX, int _iY, unsigned int _uVida) :nombre(_nombre), iX(_iX), iY(_iY), uVida(_uVida)
+	CEntity::CEntity(const char* _pszNombre, int _iX, int _iY, unsigned int _uVida)
+		:pszNombre(_pszNombre)
+		, iX(_iX)
+		, iY(_iY)
+		, uVida(_uVida)
 	{
 	}
 
@@ -9,21 +13,22 @@ namespace Practica15
 	{
 	}
 
-	void CEntity::Move(int iDX, int iDY)
+	void CEntity::Move(int _iDX, int _iDY)
 	{
-		iX = iDX;
-		iY = iDY;
+		// Asigna la posición, no la suma: por eso las hijas pasan "iX + 1" o "iX - 1" para avanzar o retroceder
+		iX = _iDX;
+		iY = _iDY;
 	}
 
-	void CEntity::TakeDamage(int iDamage)
+	void CEntity::TakeDamage(int _iDamage)
 	{
-		uVida -= iDamage;
+		uVida -= _iDamage;
 	}
 
 	bool CEntity::IsAlive() const
 	{
-		bool isAlive = uVida > 0;
-		printf("%s %s vivo\n", nombre, isAlive ? "sigue" : "no sigue");
-		return uVida > 0;
+		bool bIsAlive = uVida > 0;
+		printf("%s %s vivo\n", pszNombre, bIsAlive ? "sigue" : "no sigue");
+		return bIsAlive;
 	}
 }

@@ -1,7 +1,9 @@
 /*
-1 Partir de TList.h e implementar todos sus métodos en TList.cpp, sin cambiar la parte pública. La parte privada la decidís vosotros.
+1 Partir de TList.h e implementar todos sus métodos en TList.cpp, sin cambiar la parte pública. La parte privada la
+decidís vosotros.
 
-2 Push añade al final y retorna el nº de elementos. First/Next recorren la lista; Pop quita y retorna el primero. Sin elementos → nullptr.
+2 Push añade al final y retorna el nº de elementos. First/Next recorren la lista; Pop quita y retorna el primero. Sin
+elementos → nullptr.
 
 3 El destructor libera toda la memoria. Reset vacía la lista, que se puede seguir usando.
 
@@ -9,53 +11,58 @@
 
 5 Añadir una cadena desde un buffer local y modificar después el buffer: ¿qué devuelve la lista? ¿Por qué?
 
-Devuelve lo que le hemos pasado al push, ya que TList hace una copia propia reservando memoria con new char[] y luego con strcpy_s. No guarda la dirección del buffer, guarda la dirección de su propia copia, así que da igual si modificas la variable local en el main.
+Devuelve lo que le hemos pasado al push, ya que TList hace una copia propia reservando memoria con new char[] y luego
+con strcpy_s. No guarda la dirección del buffer, guarda la dirección de su propia copia, así que da igual si modificas 
+la variable local en el main.
 */
+
 #include <iostream>
+#include <cstdio>
+#include <cstring>
 #include "TList09.h"
 int main()
 {
-	Practica09::TList tList;
+	Practica09::TList oLista;
 
-	// Lista vacía
-	printf("Size vacia: %d\n", tList.Size());                    // 0
-	printf("First vacia: %s\n", tList.First() ? "algo" : "nullptr");
-	printf("Next sin First: %s\n", tList.Next() ? "algo" : "nullptr");
-	printf("Pop vacia: %s\n", tList.Pop() ? "algo" : "nullptr");
+	// Lista vacía: todo tiene que devolver 0 o nullptr, y no romperse
+	printf("Size vacia: %d\n", oLista.Size());                    // 0
+	printf("First vacia: %s\n", oLista.First() ? "algo" : "nullptr");
+	printf("Next sin First: %s\n", oLista.Next() ? "algo" : "nullptr");
+	printf("Pop vacia: %s\n", oLista.Pop() ? "algo" : "nullptr");
 
-	// Push y retorno
-	printf("Push: %d\n", tList.Push("uno"));                     // 1
-	printf("Push: %d\n", tList.Push("dos"));                     // 2
-	printf("Push: %d\n", tList.Push("tres"));                    // 3
+	// Push devuelve el tamaño de la lista tras añadir
+	printf("Push: %d\n", oLista.Push("uno"));                     // 1
+	printf("Push: %d\n", oLista.Push("dos"));                     // 2
+	printf("Push: %d\n", oLista.Push("tres"));                    // 3
 
 	// Recorrido completo y final del recorrido
-	for (const char* p = tList.First(); p != nullptr; p = tList.Next())
+	for (const char* pszCadena = oLista.First(); pszCadena != nullptr; pszCadena = oLista.Next())
 	{
-		printf("%s\n", p);
+		printf("%s\n", pszCadena);
 	}
-	printf("Next tras el final: %s\n", tList.Next() ? "algo" : "nullptr");
+	printf("Next tras el final: %s\n", oLista.Next() ? "algo" : "nullptr");
 
-	// Pop hasta vaciar
-	while (tList.Size() > 0)
+	// Pop hasta vaciar. La cadena se imprime ANTES del siguiente Pop, porque ese Pop la liberaría
+	while (oLista.Size() > 0)
 	{
-		const char* p = tList.Pop();
-		printf("Pop: %s (quedan %d)\n", p, tList.Size());
+		const char* pszCadena = oLista.Pop();
+		printf("Pop: %s (quedan %d)\n", pszCadena, oLista.Size());
 	}
-	printf("Pop con la lista ya vacia: %s\n", tList.Pop() ? "algo" : "nullptr");
+	printf("Pop con la lista ya vacia: %s\n", oLista.Pop() ? "algo" : "nullptr");
 
 	// Reutilizar tras vaciar, y Reset
-	tList.Push("otra");
-	tList.Reset();
-	printf("Size tras Reset: %d\n", tList.Size());               // 0
-	tList.Push("de nuevo");
-	printf("Reutilizada: %s\n", tList.First());
+	oLista.Push("otra");
+	oLista.Reset();
+	printf("Size tras Reset: %d\n", oLista.Size());               // 0
+	oLista.Push("de nuevo");
+	printf("Reutilizada: %s\n", oLista.First());
 
-	// Punto 5
-	char buffer[16] = "hola";
-	tList.Push(buffer);
-	strcpy_s(buffer, "XXXX");
-	tList.First();
-	printf("Ultimo: %s\n", tList.Next());                        // hola
+	// Punto 5: se cambia el buffer después del Push y la lista conserva el valor original
+	char acBuffer[16] = "hola";
+	oLista.Push(acBuffer);
+	strcpy_s(acBuffer, "XXXX");
+	oLista.First(); // Coloca el recorrido en "de nuevo"
+	printf("Ultimo: %s\n", oLista.Next());                        // hola
 	printf("\n");
 	return 0;
 }

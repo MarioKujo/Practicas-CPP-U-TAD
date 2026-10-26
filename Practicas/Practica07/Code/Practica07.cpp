@@ -4,32 +4,34 @@
 #include "Utils07.h"
 #include "TList09.h"
 #include <iostream>
-// Si tienes dudas de este código, lee los comentarios de las prácticas 5 y 6, es exactamente lo mismo
+// Si tienes dudas de este código, lee los comentarios de las prácticas 5 y 6, es exactamente lo mismo.
+// Lo único que cambia es que ahora hay que escribir File:: o Utils:: delante de cada función y del enum
 int main()
 {
 #pragma region File
-	
+
 	// --- Escritura ---
-	void* archivo = File::FileOpen("Prueba.bin", File::EFileMode::FILE_WRITE);
-	if (archivo == nullptr)
+	printf("--- FILE ---\n\n");
+	void* pArchivo = File::FileOpen("Prueba.bin", File::EFileMode::FILE_WRITE);
+	if (pArchivo == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
 		return 1;
 	}
 	printf("Archivo abierto en modo de escritura.\n");
 
-	const char* numeros = "1 2 3 4 5 6 7 8 9 10";
-	unsigned int pedidos = static_cast<unsigned int>(strlen(numeros));
-	unsigned int escritos = File::FileWrite(archivo, numeros, pedidos);
-	if (pedidos != escritos)
+	const char* pszNumeros = "1 2 3 4 5 6 7 8 9 10";
+	unsigned int uPedidos = static_cast<unsigned int>(strlen(pszNumeros));
+	unsigned int uEscritos = File::FileWrite(pArchivo, pszNumeros, uPedidos);
+	if (uPedidos != uEscritos)
 	{
-		fprintf(stderr, "Error: se escribieron %u de %u bytes\n", escritos, pedidos);
-		File::FileClose(archivo);
+		fprintf(stderr, "Error: se escribieron %u de %u bytes\n", uEscritos, uPedidos);
+		File::FileClose(pArchivo);
 		return 1;
 	}
-	printf("Correcto! Se escribieron %u de %u bytes\n", escritos, pedidos);
+	printf("Correcto! Se escribieron %u de %u bytes\n", uEscritos, uPedidos);
 
-	if (!File::FileClose(archivo))
+	if (!File::FileClose(pArchivo))
 	{
 		fprintf(stderr, "Error: no se ha cerrado el archivo.\n");
 		return 1;
@@ -37,48 +39,52 @@ int main()
 	printf("Cerrado correctamente.\n\n");
 
 	// --- Lectura ---
-	archivo = File::FileOpen("Prueba.bin", File::EFileMode::FILE_READ);
-	if (archivo == nullptr)
+	pArchivo = File::FileOpen("Prueba.bin", File::EFileMode::FILE_READ);
+	if (pArchivo == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
 		return 1;
 	}
 	printf("Archivo abierto en modo de lectura.\n");
 
-	char buffer[128];
-	unsigned int leidos = File::FileRead(archivo, buffer, static_cast<unsigned int>(sizeof(buffer) - 1));
-	if (leidos != pedidos)
+	char acBuffer[128];
+	unsigned int uLeidos = File::FileRead(pArchivo, acBuffer, static_cast<unsigned int>(sizeof(acBuffer) - 1));
+	if (uLeidos != uPedidos)
 	{
-		fprintf(stderr, "Error: se leyeron %u de %u bytes\n", leidos, pedidos);
-		File::FileClose(archivo);
+		fprintf(stderr, "Error: se leyeron %u de %u bytes\n", uLeidos, uPedidos);
+		File::FileClose(pArchivo);
 		return 1;
 	}
-	buffer[leidos] = '\0';
-	printf("Leidos: %s\n", buffer);
-	File::FileClose(archivo);
+	acBuffer[uLeidos] = '\0';
+	printf("Leidos: %s\n", acBuffer);
+	File::FileClose(pArchivo);
 	printf("Cerrado correctamente.\n\n");
 
 	// --- Archivo inexistente ---
 	if (File::FileOpen("Error.bin", File::EFileMode::FILE_READ) == nullptr)
 	{
-		printf("Correcto: el archivo inexistente 'Error.bin' devuelve nullptr.\n");
+		printf("Correcto: el archivo inexistente 'Error.bin' devuelve nullptr.\n\n");
 	}
 #pragma endregion
 
 #pragma region Utils
 
-	int enemigo1 = Utils::CountOccurrences("texto.txt", "enemigo");
-	int enemigo2 = Utils::CountOccurrences("texto.txt", "Enemigo");
-	int aa = Utils::CountOccurrences("texto.txt", "aa");
-	int xyz = Utils::CountOccurrences("texto.txt", "xyz");
-	printf("'enemigo' aparece %d %s\n", enemigo1, enemigo1 == 1 ? "vez" : "veces");
-	printf("'Enemigo' aparece %d %s\n", enemigo2, enemigo2 == 1 ? "vez" : "veces");
-	printf("'aa' aparece %d %s\n", aa, aa == 1 ? "vez" : "veces");
-	printf("'xyz' aparece %d %s\n", xyz, xyz == 1 ? "vez" : "veces");
-	int a = 0;
-	if (Utils::SumNumbers("numeros.txt", a))
+	printf("--- UTILS ---\n\n");
+	const char* apszTextos[] =
 	{
-		printf("La suma es %d\n", a);
+		"enemigo", "Enemigo", "aa", "xyz"
+	}; // Array de cadenas a buscar
+	for (const char* pszTexto : apszTextos) // Recorre el array de uno en uno
+	{
+		printf("'%s' aparece %d veces\n", pszTexto, Utils::CountOccurrences("texto.txt", pszTexto));
+	}
+
+	printf("\n");
+
+	int iSuma = 0;
+	if (Utils::SumNumbers("numeros.txt", iSuma))
+	{
+		printf("La suma es %d\n", iSuma);
 	}
 #pragma endregion
 	return 0;

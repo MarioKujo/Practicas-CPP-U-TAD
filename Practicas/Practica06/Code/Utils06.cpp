@@ -1,142 +1,149 @@
-/*
-1 int CountOccurrences(const char* pszFileName, const char* pszText): veces que aparece el texto (-1 si no se abre). Distingue mayúsculas y cuenta las solapadas: "aa" en "aaaa" → 3.
-
-2 bool SumNumbers(const char* pszFileName, int& iSum_): suma de los enteros separados por comas (puede haber negativos, espacios y saltos de línea).
-
-3 Declarar en Utils.h, definir en Utils.cpp y leer con las funciones de la práctica 5, por bloques de 16 caracteres.
-
-4 Probar con texto.txt y numeros.txt: "enemigo" → 3, "Enemigo" → 1, "aa" → 3, "xyz" → 0; la suma es 13245.
-*/
+// El enunciado está en Utils06.h
 #include "Utils06.h"
 #include "File05.h"
 #include <cstring>
 
-// RECORDATORIO: DENTRO DE LA CARPETA DONDE ESTÉ EL .VCXPROJ TIENES QUE PONER EL DOCUMENTO DE TEXTO DE NOMBRE
-// "numeros.txt" O DEL NOMBRE DEL ARCHIVO QUE QUIERAS ABRIR. SI NO, OBVIAMENTE NO LO VA A ABRIR, PORQUE NO HAY NADA
+// Los archivos texto.txt y numeros.txt tienen que estar en la carpeta del proyecto (donde está el .vcxproj).
+// Si no están, FileOpen devuelve nullptr y las funciones devuelven -1 / false.
+
+// El enunciado pide leer el archivo por bloques de 16 caracteres: cada FileRead pide como máximo esta cantidad
+constexpr unsigned int s_uTamBloque = 16;
 
 int CountOccurrences(const char* pszFileName, const char* pszText)
 {
-	if (pszFileName == nullptr || pszText == nullptr) // Si todo es null, no hay nada que hacer
+	if (pszFileName == nullptr || pszText == nullptr) // Sin nombre o sin texto no hay nada que buscar
 	{
 		return -1;
 	}
-	void* archivo = FileOpen(pszFileName, EFileMode::FILE_READ); // Lo abre
-	if (archivo == nullptr)
+	void* pArchivo = FileOpen(pszFileName, EFileMode::FILE_READ);
+	if (pArchivo == nullptr)
 	{
 		return -1;
 	}
 
-	const unsigned int textSize = static_cast<unsigned int>(strlen(pszText)); // Tamaño completo del texto
-	// El buffer guarda un bloque, no el archivo entero: sitio para los bytes arrastrados + datos nuevos
-	const unsigned int BufferSize = textSize * 2 + 256;
-	char* buffer = new char[BufferSize]; // <-- NEW
+	const unsigned int uTamTexto = static_cast<unsigned int>(strlen(pszText)); // Sin contar el '\0'
 
-	if (textSize == 0 || textSize >= BufferSize) // Si lo que buscas es mayor o no le has pasado nada, cierra
+	if (uTamTexto == 0) // Texto vacío: no hay nada que contar
 	{
-		FileClose(archivo);
-		delete[]buffer; // <-- DELETE
-		buffer = nullptr; // <-- TAMBIÉN IMPORTANTE
+		FileClose(pArchivo);
 		return 0;
 	}
 
-	int count = 0;
-	unsigned int carried = 0;
+	// No cargamos el archivo entero: lo leemos por bloques y reutilizamos el mismo buffer.
+	// Su tamaño es lo máximo que puede haber a la vez: hasta (uTamTexto - 1) bytes arrastrados del bloque
+	// anterior + un bloque nuevo de 16. Con uTamTexto + s_uTamBloque sobra un byte, pero así es más fácil de leer
+	const unsigned int uTamBuffer = uTamTexto + s_uTamBloque;
+	char* pcBuffer = new char[uTamBuffer]; // Memoria dinámica: hay que liberarla con delete[]
+
+	int iCuenta = 0;
+	unsigned int uArrastrados = 0; // Bytes del bloque anterior que se conservan al principio del buffer
 
 	while (true)
 	{
-		// Lee a continuación de los bytes arrastrados; BufferSize - carried es el espacio libre
-		unsigned int leidos = FileRead(archivo, buffer + carried, BufferSize - carried);
-		if (leidos == 0)   // fin del archivo: no queda nada que procesar
+		// Se lee un bloque de 16 bytes justo detrás de los bytes arrastrados
+		unsigned int uLeidos = FileRead(pArchivo, pcBuffer + uArrastrados, s_uTamBloque);
+		if (uLeidos == 0) // El archivo se ha acabado
 		{
 			break;
 		}
 
-		// Bytes válidos en el buffer: los arrastrados + los recién leídos
-		const unsigned int total = carried + leidos;
+		// Bytes útiles del buffer: los arrastrados + los recién leídos
+		const unsigned int uTotal = uArrastrados + uLeidos;
 
-		// Prueba cada posición donde cabe el texto; i avanza de 1 en 1, así cuenta las solapadas
-		for (unsigned int i = 0; i + textSize <= total; ++i)
+		// Se prueba cada posición donde todavía cabe el texto. Avanza de 1 en 1 (no de uTamTexto en uTamTexto),
+		// por eso se cuentan también las apariciones solapadas: "aa" en "aaaa" aparece en 0, 1 y 2
+		for (unsigned int uPos = 0; uPos + uTamTexto <= uTotal; ++uPos)
 		{
-			if (memcmp(buffer + i, pszText, textSize) == 0) // compara la información guardada en ambos punteros y si es
-				// exactamente igual ( == 0), suma 1 a la cuenta de ocurrencias
+			// memcmp compara byte a byte dos zonas de memoria; devuelve 0 si son idénticas
+			if (memcmp(pcBuffer + uPos, pszText, uTamTexto) == 0)
 			{
-				++count;
+				++iCuenta;
 			}
 		}
-		// Conserva los últimos textSize-1 bytes: una aparición cortada por la frontera del bloque
-		// se completará con los primeros bytes del siguiente bloque
-		carried = (total >= textSize - 1) ? textSize - 1 : total;
-		memmove(buffer, buffer + total - carried, carried);  // memmove: origen y destino pueden solaparse
+
+		// Una aparición podría quedar cortada entre dos bloques (la mitad al final de uno y la mitad al principio
+		// del siguiente). Para no perderla, guardamos los últimos uTamTexto - 1 bytes y los movemos al inicio del buffer.
+		// Con uno menos no puede haber una aparición completa, así que nada se cuenta dos veces
+		uArrastrados = (uTotal >= uTamTexto - 1) ? uTamTexto - 1 : uTotal;
+		memmove(pcBuffer, pcBuffer + uTotal - uArrastrados, uArrastrados); // memmove permite que origen y destino se solapen
 	}
 
-	FileClose(archivo);
-	delete[]buffer;
-	buffer = nullptr;
-	return count;
+	FileClose(pArchivo);
+	delete[] pcBuffer;
+	pcBuffer = nullptr;
+	return iCuenta;
 }
 
 bool SumNumbers(const char* pszFileName, int& iSum_)
 {
-	if (pszFileName == nullptr) // Si no existe, devuelve
+	if (pszFileName == nullptr)
 	{
 		return false;
 	}
-	void* archivo = FileOpen(pszFileName, EFileMode::FILE_READ);
-	if (archivo == nullptr)
+	void* pArchivo = FileOpen(pszFileName, EFileMode::FILE_READ);
+	if (pArchivo == nullptr)
 	{
 		return false;
 	}
-	constexpr unsigned int BufferSize = 256; // Estándar
-	char buffer[BufferSize]; // No puntero porque no hace falta (es un iterador para leer todo el texto en bloques)
-	int suma = 0;
-	int actual = 0;
-	bool negativo = false;
-	bool hayDigitos = false;
-	unsigned int leidos;
-	while ((leidos = FileRead(archivo, buffer, BufferSize)) > 0) // Mientras que siga habiendo texto que leer
+
+	char acBuffer[s_uTamBloque]; // Array normal (no new): su tamaño es fijo y se libera solo al salir de la función
+
+	// El número se va construyendo carácter a carácter, y estas variables se conservan entre bloques por si un
+	// número queda cortado justo en la frontera entre dos lecturas (con bloques de 16 pasa a menudo)
+	int iSuma = 0; // Total acumulado
+	int iActual = 0; // Número que se está leyendo ahora mismo
+	bool bNegativo = false; // true si el número actual lleva un '-' delante
+	bool bHayDigitos = false; // true si ya se ha leído algún dígito del número actual
+	unsigned int uLeidos;
+
+	// Se asigna y se compara en la misma línea: lee un bloque y repite mientras haya leído algo
+	while ((uLeidos = FileRead(pArchivo, acBuffer, s_uTamBloque)) > 0)
 	{
-		for (unsigned int i = 0;i < leidos;++i)
+		for (unsigned int uPos = 0; uPos < uLeidos; ++uPos)
 		{
-			const char c = buffer[i];
-			switch (c)
+			const char cCaracter = acBuffer[uPos];
+			switch (cCaracter)
 			{
 			case '-':
 			{
-				negativo = true; // Si hay un -, el número que va delante es negativo
+				bNegativo = true; // El número que viene a continuación es negativo
 				break;
 			}
 			case '0': case '1': case '2': case '3':	case '4':
 			case '5': case '6':	case '7': case '8': case '9':
 			{
-				actual = actual * 10 + (c - '0'); // Todo número que viene se va poniendo hacia la izquierda.
-				// Ejemplo con 120: actual = 0 * 10 + ('1' - '0') = 1; actual = 1 * 10 + ('2' - '0') = 12;
-				// actual = 12 * 10 + ('0' - '0') = 120;
-				hayDigitos = true;
+				// Los caracteres '0'..'9' son números consecutivos en la tabla ASCII, así que restarle '0' a
+				// un dígito da su valor (por ejemplo '7' - '0' = 7).
+				// Cada dígito nuevo desplaza el número una posición a la izquierda (x10) y se suma al final.
+				// Ejemplo con 120: 0*10+1 = 1; 1*10+2 = 12; 12*10+0 = 120
+				iActual = iActual * 10 + (cCaracter - '0');
+				bHayDigitos = true;
 				break;
 			}
 			case ',':
 			{
-				if (hayDigitos)
+				// La coma indica que el número ha terminado: se suma al total y se prepara para el siguiente
+				if (bHayDigitos)
 				{
-					suma += negativo ? -actual : actual; // Creo que se entiende
+					iSuma += bNegativo ? -iActual : iActual;
 				}
-				actual = 0;
-				negativo = false;
-				hayDigitos = false;
+				iActual = 0;
+				bNegativo = false;
+				bHayDigitos = false;
 				break;
 			}
-			default:
+			default: // Espacios, saltos de línea y cualquier otra cosa se ignoran
 			{
 				break;
 			}
 			}
 		}
 	}
-	if (hayDigitos)
+	if (bHayDigitos)
 	{
-		suma += negativo ? -actual : actual; // OJO: El último dígito no va seguido de coma
+		iSuma += bNegativo ? -iActual : iActual; // El último número no va seguido de coma, así que se suma aquí
 	}
-	FileClose(archivo);
-	iSum_ = suma;
+	FileClose(pArchivo);
+	iSum_ = iSuma; // Se escribe el resultado en la variable del llamador
 	return true;
 }

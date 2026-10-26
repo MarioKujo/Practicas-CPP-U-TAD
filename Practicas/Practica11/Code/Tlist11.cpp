@@ -2,46 +2,51 @@
 #include <cstring>
 #include <cstdio>
 
-// Si tienes dudas de cómo funciona algo, lee los comentarios de la práctica 9
+// Es la TList de la práctica 9. Solo se comenta lo nuevo (constructor de copia, operator=, PushFront y
+// GetReverseList); para el resto, lee los comentarios de TList09.cpp
 
 namespace Practica11
 {
 	TList::TList()
 	{
-
 	}
 
-	TList::TList(const TList& other)
+	TList::TList(const TList& oOther)
 	{
-		printf("Constructor de copia de TList\n");
-		for (const TListNode* p = other.m_pFirst; p != nullptr; p = p->m_pNext)
+		printf("Constructor de copia de TList\n"); // Sirve para contar cuántas copias se hacen (punto 3)
+		// La lista nueva está vacía. Se recorre la otra y se hace Push de cada cadena; como Push crea un
+		// nodo nuevo con su propia copia de la cadena, las dos listas no comparten nada
+		for (const TListNode* pNodo = oOther.m_pFirst; pNodo != nullptr; pNodo = pNodo->m_pNext)
 		{
-			Push(p->m_sCadena); // Hace push a la lista vacía por cada nodo que tiene la otra lista de la que se copia.
+			Push(pNodo->m_pszCadena);
 		}
 	}
 
-	TList& TList::operator=(const TList& other)
+	TList& TList::operator=(const TList& oOther)
 	{
-		if (this != &other) // Si no es él mismo (porque sería una gilipollez lista1 = lista1)
+		if (this != &oOther) // Evita el caso oLista = oLista: si no, Reset borraría los datos antes de copiarlos
 		{
-			Reset(); // En esto se diferencia con el constructor de copia, que el objeto ya está creado. El resto es
-			// igual
-			for (const TListNode* p = other.m_pFirst; p != nullptr; p = p->m_pNext)
+			// Diferencia con el constructor de copia: aquí la lista ya existe y puede tener elementos,
+			// así que primero hay que vaciarla. El resto es igual
+			Reset();
+			for (const TListNode* pNodo = oOther.m_pFirst; pNodo != nullptr; pNodo = pNodo->m_pNext)
 			{
-				Push(p->m_sCadena);
+				Push(pNodo->m_pszCadena);
 			}
 		}
-		return *this;
+		return *this; // Se devuelve la propia lista para poder encadenar: oA = oB = oC;
 	}
 
-	TList GetReverseList(TList lstSrc)
+	TList GetReverseList(TList lstSrc) // Por valor: al llamarla se hace una copia entera de la lista (constructor de
+		// copia)
 	{
-		TList reversed;
-		for (const TList::TListNode* p = lstSrc.m_pFirst; p != nullptr; p = p->m_pNext)
+		TList oInvertida;
+		// Se recorre de principio a fin y cada elemento se mete AL PRINCIPIO de la nueva lista, así queda al revés
+		for (const TList::TListNode* pNodo = lstSrc.m_pFirst; pNodo != nullptr; pNodo = pNodo->m_pNext)
 		{
-			reversed.PushFront(p->m_sCadena);
+			oInvertida.PushFront(pNodo->m_pszCadena);
 		}
-		return reversed;
+		return oInvertida;
 	}
 
 	TList::~TList()
@@ -51,7 +56,7 @@ namespace Practica11
 
 	int TList::Size()
 	{
-		return m_iSize;
+		return m_uSize;
 	}
 
 	int TList::Push(const char* psz)
@@ -67,26 +72,26 @@ namespace Practica11
 			m_pLast->m_pNext = pNewNode;
 		}
 		m_pLast = pNewNode;
-		++m_iSize;
-		return m_iSize;
+		++m_uSize;
+		return m_uSize;
 	}
-	// Nueva función que me he tenido que inventar para invertir la cadena: un push que mete los nuevos nodos hacia la
-	// izquierda
-	int TList::PushFront(const char* psz) 
+
+	// NUEVO: igual que Push, pero el nodo nuevo se coloca el primero. Se añadió para poder invertir la lista
+	int TList::PushFront(const char* psz)
 	{
 		TListNode* pNewNode = new TListNode(psz);
 
-		pNewNode->m_pNext = m_pFirst; // Esto hace que por ejemplo m_pNext sea la posición 2 y pNewNode sea la 1)
-		m_pFirst = pNewNode; // El primero se mueve hacia la izquierda (PushFront(3);PushFront(2);PushFront(1); quedaría
-		// 1, 2, 3)
+		pNewNode->m_pNext = m_pFirst; // El nuevo apunta al que era primero (que pasa a ser el segundo)
+		m_pFirst = pNewNode; // y ahora el nuevo es el primero.
+		// Con PushFront(3); PushFront(2); PushFront(1); la lista queda 1, 2, 3
 
 		if (m_pLast == nullptr)
 		{
-			m_pLast = pNewNode; // Este solo se cambia con el primer nodo que entra (la última posición no se mueve)
+			m_pLast = pNewNode; // Solo cambia con el primer nodo que entra: el último no se mueve al añadir por delante
 		}
 
-		++m_iSize;
-		return m_iSize;
+		++m_uSize;
+		return m_uSize;
 	}
 
 	const char* TList::First()
@@ -94,7 +99,7 @@ namespace Practica11
 		m_pIter = m_pFirst;
 		if (m_pIter)
 		{
-			return m_pIter->m_sCadena;
+			return m_pIter->m_pszCadena;
 		}
 		return nullptr;
 	}
@@ -107,12 +112,12 @@ namespace Practica11
 		}
 		if (m_pIter)
 		{
-			return m_pIter->m_sCadena;
+			return m_pIter->m_pszCadena;
 		}
 		return nullptr;
 	}
 
-	// El puntero que devuelve Pop es válido hasta la siguiente llamada a Pop o hasta destruir la lista o hasta Reset.
+	// El puntero que devuelve Pop es válido hasta la siguiente llamada a Pop, a Reset o hasta destruir la lista.
 	const char* TList::Pop()
 	{
 		if (m_pFirst == nullptr)
@@ -121,70 +126,63 @@ namespace Practica11
 			return nullptr;
 		}
 
-		delete[]m_pLastPopped;
-		m_pLastPopped = nullptr;
+		delete[] m_pszLastPopped;
+		m_pszLastPopped = nullptr;
 
 		TListNode* pRemoved = m_pFirst;
 		m_pFirst = pRemoved->m_pNext;
-		--m_iSize;
+		--m_uSize;
 		if (m_pFirst == nullptr)
 		{
-			m_pLast = nullptr; // La lista se ha vaciado: la cola ya no existe
+			m_pLast = nullptr;
 		}
 		if (m_pIter == pRemoved)
 		{
 			m_pIter = nullptr;
 		}
 
-		m_pLastPopped = pRemoved->m_sCadena;
-		pRemoved->m_sCadena = nullptr;
+		m_pszLastPopped = pRemoved->m_pszCadena;
+		pRemoved->m_pszCadena = nullptr;
 		delete pRemoved;
 
-		return m_pLastPopped;
+		return m_pszLastPopped;
 	}
 
 	void TList::Reset()
 	{
-		TListNode* pTmp(m_pFirst);
+		TListNode* pTmp = m_pFirst;
 		while (pTmp)
 		{
-			TListNode* pToDelete(pTmp);
+			TListNode* pToDelete = pTmp;
 			pTmp = pTmp->m_pNext;
 			delete pToDelete;
 		}
 		m_pFirst = nullptr;
 		m_pLast = nullptr;
-		m_iSize = 0;
+		m_uSize = 0;
 		m_pIter = nullptr;
 
-		delete[] m_pLastPopped;
-		m_pLastPopped = nullptr;
-		/*
-		delete m_pFirst;
-		m_pFirst = nullptr; // Más elegante pero más peligroso
-		*/
+		delete[] m_pszLastPopped;
+		m_pszLastPopped = nullptr;
 	}
-	TList::TListNode::TListNode(const char* _sText)
+
+	TList::TListNode::TListNode(const char* _pszText)
 	{
-		if (_sText)
+		if (_pszText)
 		{
-			unsigned int uLen(static_cast<unsigned int>(strlen(_sText)));
-			char* pCopy = new char[uLen + 1];
-			strcpy_s(pCopy, uLen + 1, _sText);
-			m_sCadena = pCopy;
+			unsigned int uLen = static_cast<unsigned int>(strlen(_pszText));
+			char* pcCopia = new char[uLen + 1];
+			strcpy_s(pcCopia, uLen + 1, _pszText);
+			m_pszCadena = pcCopia;
 		}
 	}
+
 	TList::TListNode::~TListNode()
 	{
-		if (m_sCadena)
+		if (m_pszCadena)
 		{
-			delete[] m_sCadena;
-			m_sCadena = nullptr;
+			delete[] m_pszCadena;
+			m_pszCadena = nullptr;
 		}
-		/*if (m_pNext)
-		{
-			delete m_pNext;
-			m_pNext = nullptr;
-		}*/
 	}
 }

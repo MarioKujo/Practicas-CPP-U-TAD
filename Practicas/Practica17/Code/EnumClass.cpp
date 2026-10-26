@@ -1,7 +1,9 @@
 #include "EnumClass.h"
 #include <cstring>
 
-const char* s_tColorNames[] = // Es la única manera de transformar Enum a cadena
+// Tabla que relaciona cada número del enum con su texto: la posición 0 es Rojo, la 1 es Azul...
+// Tiene que estar en el MISMO ORDEN que el enum. "Invalido" no está: se trata aparte.
+const char* g_tpszNombresColor[] =
 {
 	"Rojo",
 	"Azul",
@@ -9,25 +11,32 @@ const char* s_tColorNames[] = // Es la única manera de transformar Enum a caden
 	"Amarillo"
 };
 
-const char* CEnum::AsStr(EColor _eEnum)
+const char* CEnum::AsStr(EColor _eColor)
 {
-	unsigned int uIndex = static_cast<unsigned int>(_eEnum); // Técnicamente un enum es un número por debajo, así que...
-	if (uIndex < sizeof(s_tColorNames) / sizeof(s_tColorNames[0]))
+	// Convertimos el enum a su número para usarlo como posición en la tabla
+	unsigned int uIndice = static_cast<unsigned int>(_eColor);
+	// Nº de elementos de la tabla = bytes totales de la tabla / bytes de un elemento
+	const size_t uNumNombres = sizeof(g_tpszNombresColor) / sizeof(g_tpszNombresColor[0]);
+	if (uIndice < uNumNombres) // Comprobamos que el índice existe antes de leer la tabla
 	{
-		return s_tColorNames[uIndex]; // Pilla el índice (el enum y el array de cadenas tiene que estar en el mismo orden)
+		return g_tpszNombresColor[uIndice];
 	}
-	return "Invalido";
+	return "Invalido"; // Para EColor::Invalido o cualquier número fuera de rango
 }
 
-EColor CEnum::AsEnum(const char* _sEnum)
+CEnum::EColor CEnum::AsEnum(const char* _pszNombre)
 {
-	if (_sEnum != nullptr)
+	if (_pszNombre != nullptr) // Un puntero nulo no apunta a ningún texto: no se puede comparar
 	{
-		for (size_t i = 0; i < sizeof(s_tColorNames) / sizeof(s_tColorNames[0]); i++) 
+		const size_t uNumNombres = sizeof(g_tpszNombresColor) / sizeof(g_tpszNombresColor[0]);
+		for (size_t uIndice = 0; uIndice < uNumNombres; uIndice++)
 		{
-			if (strcmp(_sEnum, s_tColorNames[i]) == 0) // Si las cadenas son exactamente iguales, devuelve el índice
+			// strcmp compara dos textos y devuelve 0 si son exactamente iguales (distingue mayúsculas: "azul" !=
+			// "Azul").
+			// No se puede usar == porque compararía direcciones de memoria, no el contenido del texto.
+			if (strcmp(_pszNombre, g_tpszNombresColor[uIndice]) == 0)
 			{
-				return static_cast<EColor>(i);
+				return static_cast<EColor>(uIndice); // El número de la posición es el valor del enum
 			}
 		}
 	}

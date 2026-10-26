@@ -1,10 +1,12 @@
 #include "CPlayer13.h"
 
-// Se explica solo, la verdad
-
 namespace Practica13
 {
-	CPlayer::CPlayer(const char* _nombre, int _iX, int _iY, unsigned int _uVida) :CEntity(_nombre, _iX, _iY, _uVida), puntos(0)
+	// Primero se construye la parte CEntity (la llamamos en la lista de inicialización) y luego el atributo propio,
+	// uPuntos
+	CPlayer::CPlayer(const char* _pszNombre, int _iX, int _iY, unsigned int _uVida)
+		: CEntity(_pszNombre, _iX, _iY, _uVida)
+		, uPuntos(0)
 	{
 		printf("Constructor de CPlayer\n");
 	}
@@ -16,14 +18,15 @@ namespace Practica13
 
 	void CPlayer::AddScore(int _iPuntos)
 	{
-		printf("%d puntos agregados a %s\n", _iPuntos, nombre);
-		puntos += _iPuntos;
+		printf("%d puntos agregados a %s\n", _iPuntos, pszNombre);
+		uPuntos += _iPuntos;
 	}
 
-	void CPlayer::Heal(int _iAmount)
+	void CPlayer::Heal(int _iCantidad)
 	{
-		printf("%d vida curada a %s\n", _iAmount, nombre);
-		uVida += _iAmount;
+		printf("%d vida curada a %s\n", _iCantidad, pszNombre);
+		uVida += _iCantidad;
+		// La vida máxima del jugador es 100
 		if (uVida > 100)
 		{
 			uVida = 100;

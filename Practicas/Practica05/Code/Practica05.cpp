@@ -5,26 +5,27 @@
 int main()
 {
 	// --- Escritura ---
-	void* archivo = FileOpen("Prueba.bin", EFileMode::FILE_WRITE);
-	if (archivo == nullptr)
+	void* pArchivo = FileOpen("Prueba.bin", EFileMode::FILE_WRITE);
+	if (pArchivo == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
 		return 1;
 	}
 	printf("Archivo abierto en modo de escritura.\n");
 
-	const char* numeros = "1 2 3 4 5 6 7 8 9 10";
-	unsigned int pedidos = static_cast<unsigned int>(strlen(numeros));
-	unsigned int escritos = FileWrite(archivo, numeros, pedidos);
-	if (pedidos != escritos) // Por fallos de disco, pueden llegar a ser distintos (caso muy límite)
+	const char* pszNumeros = "1 2 3 4 5 6 7 8 9 10";
+	unsigned int uPedidos = static_cast<unsigned int>(strlen(pszNumeros)); // Sin contar el '\0': en el archivo solo va
+	// el texto
+	unsigned int uEscritos = FileWrite(pArchivo, pszNumeros, uPedidos);
+	if (uPedidos != uEscritos) // Solo pasaría si falla el disco (por ejemplo, si está lleno)
 	{
-		fprintf(stderr, "Error: se escribieron %u de %u bytes\n", escritos, pedidos);
-		FileClose(archivo);
+		fprintf(stderr, "Error: se escribieron %u de %u bytes\n", uEscritos, uPedidos);
+		FileClose(pArchivo); // Aunque haya fallado, hay que cerrarlo igualmente
 		return 1;
 	}
-	printf("Correcto! Se escribieron %u de %u bytes\n", escritos, pedidos);
+	printf("Correcto! Se escribieron %u de %u bytes\n", uEscritos, uPedidos);
 
-	if (!FileClose(archivo))
+	if (!FileClose(pArchivo))
 	{
 		fprintf(stderr, "Error: no se ha cerrado el archivo.\n");
 		return 1;
@@ -32,25 +33,26 @@ int main()
 	printf("Cerrado correctamente.\n\n");
 
 	// --- Lectura ---
-	archivo = FileOpen("Prueba.bin", EFileMode::FILE_READ);
-	if (archivo == nullptr)
+	pArchivo = FileOpen("Prueba.bin", EFileMode::FILE_READ); // Reutilizamos la variable, ya cerrada
+	if (pArchivo == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
 		return 1;
 	}
 	printf("Archivo abierto en modo de lectura.\n");
 
-	char buffer[128];
-	unsigned int leidos = FileRead(archivo, buffer, static_cast<unsigned int>(sizeof(buffer) - 1));// Quita el '\0'
-	if (leidos != pedidos) // Por fallos de disco, pueden llegar a ser distintos (caso muy límite)
+	char acBuffer[128];
+	// Se piden 127 bytes y no 128 para dejar sitio al '\0' final: el archivo no lo guarda, hay que ponerlo a mano
+	unsigned int uLeidos = FileRead(pArchivo, acBuffer, static_cast<unsigned int>(sizeof(acBuffer) - 1));
+	if (uLeidos != uPedidos) // Tienen que coincidir: leemos el archivo entero, que es lo que escribimos antes
 	{
-		fprintf(stderr, "Error: se leyeron %u de %u bytes\n", leidos, pedidos);
-		FileClose(archivo);
+		fprintf(stderr, "Error: se leyeron %u de %u bytes\n", uLeidos, uPedidos);
+		FileClose(pArchivo);
 		return 1;
 	}
-	buffer[leidos] = '\0';
-	printf("Leidos: %s\n", buffer);
-	FileClose(archivo);
+	acBuffer[uLeidos] = '\0'; // Sin esto printf no sabría dónde termina el texto
+	printf("Leidos: %s\n", acBuffer);
+	FileClose(pArchivo);
 	printf("Cerrado correctamente.\n\n");
 
 	// --- Archivo inexistente ---

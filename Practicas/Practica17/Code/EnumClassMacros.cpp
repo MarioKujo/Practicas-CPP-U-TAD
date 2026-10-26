@@ -1,37 +1,40 @@
 #include "EnumClassMacros.h"
 #include <cstring>
-// Línea de código huérfana, igual que AS_ENUMERATOR en el .h
-// #name, deja AS_STRING(Rojo) como "Rojo, " (ahora sí con comillas, porque # lo transforma en cadena)
+
+// Macro auxiliar: el operador # convierte el nombre en texto entre comillas.
+// AS_STRING(Rojo) se convierte en: "Rojo",
 #define AS_STRING(name) #name,
 
-const char* s_tColorNamesM[] =
+// Misma tabla que en la versión sin macros, pero generada desde la misma COLOR_LIST que el enum,
+// así que siempre coinciden en orden y cantidad. Aquí "Invalido" sí se añade a mano porque en el enum también va el último.
+const char* g_tpszNombresColorM[] =
 {
-	//AS_STRING(Rojo) AS_STRING(Azul) AS_STRING(Verde) AS_STRING(Amarillo)
-	COLOR_LIST(AS_STRING)
+	COLOR_LIST(AS_STRING) // Se expande a "Rojo", "Azul", "Verde", "Amarillo", "Morado",
 	"Invalido"
 };
-// Borra la macro auxiliar para que no contamine el resto del código y para poder definirlo otra vez con otro significado
 #undef AS_STRING
 
-const char* CEnumM::AsStr(EColorM _eEnum)
+const char* CEnumM::AsStr(EColorM _eColor)
 {
-	unsigned int uIndex = static_cast<unsigned int>(_eEnum); // Técnicamente un enum es un número por debajo, así que...
-	if (uIndex < sizeof(s_tColorNamesM) / sizeof(s_tColorNamesM[0]))
+	unsigned int uIndice = static_cast<unsigned int>(_eColor);
+	const size_t uNumNombres = sizeof(g_tpszNombresColorM) / sizeof(g_tpszNombresColorM[0]);
+	if (uIndice < uNumNombres)
 	{
-		return s_tColorNamesM[uIndex];
+		return g_tpszNombresColorM[uIndice];
 	}
 	return "Invalido";
 }
 
-EColorM CEnumM::AsEnum(const char* _sEnum)
+CEnumM::EColorM CEnumM::AsEnum(const char* _pszNombre)
 {
-	if (_sEnum != nullptr)
+	if (_pszNombre != nullptr)
 	{
-		for (size_t i = 0; i < sizeof(s_tColorNamesM) / sizeof(s_tColorNamesM[0]);i++)
+		const size_t uNumNombres = sizeof(g_tpszNombresColorM) / sizeof(g_tpszNombresColorM[0]);
+		for (size_t uIndice = 0; uIndice < uNumNombres; uIndice++)
 		{
-			if (strcmp(_sEnum, s_tColorNamesM[i]) == 0)
+			if (strcmp(_pszNombre, g_tpszNombresColorM[uIndice]) == 0)
 			{
-				return static_cast<EColorM>(i);
+				return static_cast<EColorM>(uIndice);
 			}
 		}
 	}

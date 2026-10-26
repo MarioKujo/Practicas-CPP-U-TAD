@@ -1,45 +1,42 @@
 #include <cstdio>
 #include "EnumClass.h"
 #include "EnumClassMacros.h"
+// Función plantilla: una "receta" con huecos para tipos. TClase y TEnum son esos huecos, y al llamarla
+// el compilador genera una copia de la función con los tipos reales puestos (una para CEnum y otra para CEnumM).
+// Así las pruebas se escriben una sola vez y se aplican a las dos versiones del enumerado.
+// _eVerde se pasa de fuera porque cada enumerado tiene su propio tipo (CEnum::EColor, CEnumM::EColorM).
+template <typename TClase, typename TEnum>
+void RunTests(const char* _pszTitulo, TEnum _eVerde)
+{
+	printf("--- %s ---\n\n", _pszTitulo);
+
+	TClase oEnum;
+	printf("AsStr(Verde) = %s\n", oEnum.AsStr(_eVerde));
+
+	TEnum eLeido = oEnum.AsEnum("Azul");
+	// El enum class no se convierte solo a int: static_cast pide el número explícitamente
+	printf("AsEnum(\"Azul\") = %d (%s)\n", static_cast<int>(eLeido), oEnum.AsStr(eLeido));
+
+	// Prueba de ida y vuelta: número -> enum -> texto -> enum. Tiene que volver al mismo valor.
+	for (int iIndice = 0; iIndice < 3; iIndice++)
+	{
+		TEnum eColor = static_cast<TEnum>(iIndice);
+		const char* pszNombre = oEnum.AsStr(eColor);
+		bool bCoincide = (oEnum.AsEnum(pszNombre) == eColor);
+		printf("%d -> %s -> %d %s\n", iIndice, pszNombre, static_cast<int>(oEnum.AsEnum(pszNombre)), bCoincide ? "OK" : "FALLO");
+	}
+	// Casos límite: "Morado" solo existe en la versión con macros (está en COLOR_LIST); una mayúscula distinta,
+	// un puntero nulo y un número que no corresponde a ningún valor del enum dan siempre "Invalido"
+	printf("AsEnum(\"Morado\") = %s\n", oEnum.AsStr(oEnum.AsEnum("Morado")));
+	printf("AsEnum(\"azul\") = %s\n", oEnum.AsStr(oEnum.AsEnum("azul")));
+	printf("AsEnum(nullptr) = %s\n", oEnum.AsStr(oEnum.AsEnum(nullptr)));
+	printf("AsEnum(fuera de rango) = %s\n\n", oEnum.AsStr(static_cast<TEnum>(99)));
+}
 
 int main()
 {
-	CEnum cEnum;
-	printf("AsStr(Verde) = %s\n", cEnum.AsStr(EColor::Verde));
-
-	EColor eLeido = cEnum.AsEnum("Azul");
-	printf("AsEnum(\"Azul\") = %d (%s)\n", static_cast<int>(eLeido), cEnum.AsStr(eLeido));
-
-	for (int i = 0; i < 3; i++)
-	{
-		EColor e = static_cast<EColor>(i);
-		const char* sNombre = cEnum.AsStr(e);
-		bool bCoincide = (cEnum.AsEnum(sNombre) == e);
-		printf("%d -> %s -> %d %s\n", i, sNombre, static_cast<int>(cEnum.AsEnum(sNombre)), bCoincide ? "OK" : "FALLO");
-	}
-	printf("AsEnum(\"Morado\") = %s\n", cEnum.AsStr(cEnum.AsEnum("Morado")));
-	printf("AsEnum(\"azul\") = %s\n", cEnum.AsStr(cEnum.AsEnum("azul")));
-	printf("AsEnum(nullptr) = %s\n", cEnum.AsStr(cEnum.AsEnum(nullptr)));
-	printf("AsEnum(fuera de rango) = %s\n\n", cEnum.AsStr(static_cast<EColor>(99)));
-
-	printf("MACROS\n\n");
-
-	CEnumM cEnumM;
-	printf("AsStr(Verde) = %s\n", cEnumM.AsStr(EColorM::Verde));
-
-	EColorM eLeidoM = cEnumM.AsEnum("Azul");
-	printf("AsEnum(\"Azul\") = %d (%s)\n", static_cast<int>(eLeidoM), cEnumM.AsStr(eLeidoM));
-
-	for (int i = 0; i < 3; i++)
-	{
-		EColorM e = static_cast<EColorM>(i);
-		const char* sNombre = cEnumM.AsStr(e);
-		bool bCoincide = (cEnumM.AsEnum(sNombre) == e);
-		printf("%d -> %s -> %d %s\n", i, sNombre, static_cast<int>(cEnumM.AsEnum(sNombre)), bCoincide ? "OK" : "FALLO");
-	}
-	printf("AsEnum(\"Morado\") = %s\n", cEnumM.AsStr(cEnumM.AsEnum("Morado")));
-	printf("AsEnum(\"azul\") = %s\n", cEnumM.AsStr(cEnumM.AsEnum("azul")));
-	printf("AsEnum(nullptr) = %s\n", cEnumM.AsStr(cEnumM.AsEnum(nullptr)));
-	printf("AsEnum(fuera de rango) = %s\n", cEnumM.AsStr(static_cast<EColorM>(99)));
+	// Entre <> los tipos que ocupan los huecos TClase y TEnum (TEnum también se deduce solo del segundo argumento)
+	RunTests<CEnum, CEnum::EColor>("NO MACROS", CEnum::EColor::Verde);
+	RunTests<CEnumM, CEnumM::EColorM>("MACROS", CEnumM::EColorM::Verde);
 	return 0;
 }

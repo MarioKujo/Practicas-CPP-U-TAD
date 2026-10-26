@@ -1,8 +1,7 @@
 /*
-▸ Update() virtual en CEntity; Print() también virtual. Cada derivada los redefine con override.
+Update() virtual en CEntity; Print() también virtual. Cada derivada los redefine con override.
 Attack recibe un CEntity&: sirve para atacar a un CPlayer o a otro CEnemy.
- CEnemy empieza con 30 de vida y su propio daño.
-Los constructores llaman al de CEntity. Con un printf en constructores y destructores: ¿en qué orden salen?
+CEnemy empieza con 30 de vida y su propio daño.
 - daño
 Attack(CEntity&)
 */
@@ -14,14 +13,15 @@ namespace Practica15
 	class CEnemy :public CEntity
 	{
 	public:
-		CEnemy(const char* _nombre, int _iX, int _iY, int _iDamage, unsigned int _uVida = 30);
+		CEnemy(const char* _pszNombre, int _iX, int _iY, int _iDamage, unsigned int _uVida = 30);
 		virtual ~CEnemy() override;
-		void SetTarget(CEntity* other);
+		void SetTarget(CEntity* _pObjetivo); // Recibe un puntero: la dirección de memoria del objetivo
 		virtual void Update() override;
 		virtual void Print() const override;
-		void Attack(CEntity& other);
+		void Attack(CEntity& _oObjetivo);
 	protected:
-		CEntity* target = nullptr;
+		// protected (y no private) para que CTurret, que hereda de CEnemy, también pueda usarlos
+		CEntity* pObjetivo = nullptr; // nullptr = "no apunta a nada" hasta que se llame a SetTarget
 		int iDamage;
 	};
 }

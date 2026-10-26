@@ -1,6 +1,5 @@
 /*
 CPlayer empieza con 100 de vida y tiene Heal(iAmount) (máximo 100);
-Los constructores llaman al de CEntity. Con un printf en constructores y destructores: ¿en qué orden salen?
 - puntos
 AddScore() Heal()
 */
@@ -9,16 +8,18 @@ AddScore() Heal()
 #include <iostream>
 namespace Practica13
 {
-	// Gracias a que CEntity tiene sus miembros protected, CEnemy recibe nombre, iX, iY, uVida sin tener que declararlos
-	// aquí, además de las funciones públicas de CEntity (Move, TakeDamage, IsAlive, Print)
+	// ":public CEntity" significa que CPlayer hereda de CEntity. Gracias a que los miembros de CEntity
+	// son protected, CPlayer tiene pszNombre, iX, iY y uVida sin declararlos otra vez, además de las
+	// funciones públicas de CEntity (Move, TakeDamage, IsAlive, Print).
 	class CPlayer :public CEntity
 	{
 	public:
-		CPlayer(const char* _nombre, int _iX, int _iY, unsigned int _uVida = 100);
+		// El valor por defecto de _uVida (100) solo se escribe aquí, en el .h
+		CPlayer(const char* _pszNombre, int _iX, int _iY, unsigned int _uVida = 100);
 		~CPlayer();
-		void AddScore(int _puntos);
-		void Heal(int _iAmount);
+		void AddScore(int _iPuntos);
+		void Heal(int _iCantidad);
 	private:
-		unsigned int puntos;
+		unsigned int uPuntos;
 	};
 }

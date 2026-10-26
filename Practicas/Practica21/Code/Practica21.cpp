@@ -1,155 +1,247 @@
 #include <chrono>
 #include <vector>
+#include <list>
 #include <algorithm>
 #include <random>
-#include <list>
 #include <cstdio>
 #include "TEntity.h"
 
 const int NUM_ENTITIES = 1000000;
 const int FRAMES = 50;
-float dt = 0.016f; // 60fps
+const int REPETITIONS = 5; // Veces que se repite cada medida; nos quedamos con la mejor
+const int N = 4096;        // Lado de la matriz
+const float DT = 0.016f;   // Duración de un fotograma a 60 fps (aprox.)
 
-void SimularConList()
+// ---------------------------------------------------------------------------------------
+// CRONÓMETRO
+// ---------------------------------------------------------------------------------------
+using Clock = std::chrono::high_resolution_clock;
+using Ms = std::chrono::duration<double, std::milli>;
+
+// Mide cuánto tarda en ejecutarse lo que le pasemos. Se le pasa una lambda: una función sin nombre escrita
+// donde se necesita; los "[&]" significan que puede usar las variables de fuera.
+template <typename TFunc>
+double Measure(TFunc f)
 {
-	// std::list<TEntity>: primera forma de guardarlas
-	std::list<TEntity> entities(NUM_ENTITIES);
-
-	printf("Iniciando simulacion con std::list...\n");
-
-	auto start = std::chrono::high_resolution_clock::now();
-
-	for (int frame = 0; frame < FRAMES; ++frame)
-	{
-		for (auto& entity : entities)
-		{
-			entity.x += entity.vx * dt;
-			entity.y += entity.vy * dt;
-		}
-	}
-
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double, std::milli> elapsed = end - start;
-
-	printf("std::list completada en %.3f ms.\n", elapsed.count());
+	auto tStart = Clock::now();
+	f();
+	return Ms(Clock::now() - tStart).count();
 }
 
-void SimularConVectorPunterosDesordenado()
+// Repite la medida y devuelve la más baja, que es la menos afectada por "ruido" del sistema
+template <typename TFunc>
+double MeasureBest(TFunc f)
 {
-	// std::vector<TEntity*> desordenado con std::shuffle: segunda forma de guardarlas
-	std::vector<TEntity*>entities(NUM_ENTITIES);
-
-	for (int i = 0;i < NUM_ENTITIES;++i)
+	double tBest = Measure(f);
+	for (int iRepeticion = 1; iRepeticion < REPETITIONS; ++iRepeticion)
 	{
-		entities[i] = new TEntity();
-	}
-
-	std::random_device rd; // Generador de semillas
-	std::mt19937 g(rd()); // Número aleatorio (necesario para shuffle)
-	std::shuffle(entities.begin(), entities.end(), g); // Función shuffle barajea los punteros
-
-	printf("Iniciando simulacion con std::vector<TEntity*> desordenado...\n");
-
-	auto start = std::chrono::high_resolution_clock::now();
-
-	for (int frame = 0;frame < FRAMES;++frame)
-	{
-		for (int i = 0;i < NUM_ENTITIES;++i)
+		double tMs = Measure(f);
+		if (tMs < tBest)
 		{
-			entities[i]->x += entities[i]->vx * dt;
-			entities[i]->y += entities[i]->vy * dt;
+			tBest = tMs;
 		}
 	}
-
-	for (int i = 0;i < NUM_ENTITIES;++i)
-	{
-		delete entities[i];
-	}
-
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double, std::milli> elapsed = end - start;
-
-	printf("std::vector<TEntity*> completado en %.3f ms.\n", elapsed.count());
+	return tBest;
 }
 
-void SimularConVectorContiguo()
+void PrintResult(const char* pszTitulo, double tMs, double dChecksum)
 {
-	// std::vector<TEntity>: tercera forma de guardarlas
-	std::vector<TEntity> entities(NUM_ENTITIES);
-
-	printf("Iniciando simulacion con std::vector<TEntity> (AoA)...\n");
-
-	auto start = std::chrono::high_resolution_clock::now();
-
-	for (int frame = 0;frame < FRAMES;++frame)
-	{
-		for (int i = 0;i < NUM_ENTITIES;++i)
-		{
-			entities[i].x += entities[i].vx * dt;
-			entities[i].y += entities[i].vy * dt;
-		}
-	}
-
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double, std::milli> elapsed = end - start;
-
-	printf("std::vector<TEntity> completado en %.3f ms.\n", elapsed.count());
+	printf("%-24s %9.3f ms (checksum: %.2f)\n", pszTitulo, tMs, dChecksum);
 }
 
-void SimularConSoA()
+// ---------------------------------------------------------------------------------------
+// UN FOTOGRAMA DE CADA VERSIÓN: mueve todas las entidades una vez (x += vx * dt; y += vy * dt)
+// ---------------------------------------------------------------------------------------
+void UpdateList(std::list<TEntity>& lEntities, float dt)
 {
-	// SoA (un vector por campo: x, y, vx, vy): cuarta forma de guardarlas
-	TEntityManagerSoA entities(NUM_ENTITIES);
-
-	printf("Iniciando simulacion con SoA (Structure of Arrays)...\n");
-
-	auto start = std::chrono::high_resolution_clock::now();
-
-	for (int frame = 0;frame < FRAMES;++frame)
+	for (TEntity& oEntity : lEntities)
 	{
-		for (int i = 0;i < NUM_ENTITIES;++i)
-		{
-			entities.x[i] += entities.vx[i] * dt;
-			entities.y[i] += entities.vy[i] * dt;
-		}
+		oEntity.x += oEntity.vx * dt;
+		oEntity.y += oEntity.vy * dt;
 	}
-
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double, std::milli> elapsed = end - start;
-
-	printf("SoA completado en %.3f ms.\n", elapsed.count());
 }
 
-void SumarMatriz()
+void UpdatePointers(std::vector<TEntity*>& vEntities, float dt)
 {
-	std::vector<std::vector<int>> matriz(4096, std::vector<int>(4096, 0));
-
-	long long sumaFilas = 0;
-
-	printf("Iniciando suma de matriz 4096 x 4096...\n");
-
-	auto start = std::chrono::high_resolution_clock::now();
-
-	for (int i = 0; i < 4096; ++i)
+	for (TEntity* pEntity : vEntities) // pEntity es una dirección; con "->" accedemos a la entidad a la que apunta
 	{
-		for (int j = 0; j < 4096; ++j)
+		pEntity->x += pEntity->vx * dt;
+		pEntity->y += pEntity->vy * dt;
+	}
+}
+
+void UpdateAoS(std::vector<TEntity>& vEntities, float dt)
+{
+	for (TEntity& oEntity : vEntities)
+	{
+		oEntity.x += oEntity.vx * dt;
+		oEntity.y += oEntity.vy * dt;
+	}
+}
+
+void UpdateSoA(TEntities& oEntities, float dt)
+{
+	// Punteros locales a cada array: así el compilador sabe dónde están los datos durante todo el bucle
+	// y no tiene que volver a leerlos de oEntities en cada vuelta.
+	float* pX = oEntities.vX.data();
+	float* pY = oEntities.vY.data();
+	const float* pVX = oEntities.vVX.data();
+	const float* pVY = oEntities.vVY.data();
+	const int iCount = static_cast<int>(oEntities.vX.size());
+
+	for (int iIndice = 0; iIndice < iCount; ++iIndice)
+	{
+		pX[iIndice] += pVX[iIndice] * dt;
+		pY[iIndice] += pVY[iIndice] * dt;
+	}
+}
+
+// ---------------------------------------------------------------------------------------
+// MEDICIONES (el checksum se calcula DESPUÉS de medir, así que no cuenta en el tiempo)
+// ---------------------------------------------------------------------------------------
+void MedirList()
+{
+	// Lista enlazada: cada nodo está en su propia reserva de memoria, repartidos por el heap
+	std::list<TEntity> lEntities(NUM_ENTITIES);
+
+	double tMs = MeasureBest([&]
 		{
-			sumaFilas += matriz[i][j];
-		}
+			for (int iFrame = 0; iFrame < FRAMES; ++iFrame)
+			{
+				UpdateList(lEntities, DT);
+			}
+		});
+
+	double dChecksum = 0.0;
+	for (const TEntity& oEntity : lEntities)
+	{
+		dChecksum += oEntity.x;
+	}
+	PrintResult("std::list<TEntity>", tMs, dChecksum);
+}
+
+void MedirVectorPunteros()
+{
+	// El vector guarda solo direcciones; cada TEntity vive aparte en el heap (creado con new)
+	std::vector<TEntity*> vEntities(NUM_ENTITIES);
+	for (TEntity*& pEntity : vEntities)
+	{
+		pEntity = new TEntity();
 	}
 
-	auto end = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double, std::milli> elapsed = end - start;
+	// Barajamos las direcciones: ahora recorrer el vector es saltar por el heap sin ningún orden
+	std::random_device oRandomDevice;
+	std::mt19937 oGenerator(oRandomDevice());
+	std::shuffle(vEntities.begin(), vEntities.end(), oGenerator);
 
-	printf("Suma de matriz completada en %.3f ms. (Resultado: %lld)\n", elapsed.count(), sumaFilas);
+	double tMs = MeasureBest([&]
+		{
+			for (int iFrame = 0; iFrame < FRAMES; ++iFrame)
+			{
+				UpdatePointers(vEntities, DT);
+			}
+		});
+
+	double dChecksum = 0.0;
+	for (const TEntity* pEntity : vEntities)
+	{
+		dChecksum += pEntity->x;
+	}
+	PrintResult("vector<TEntity*>", tMs, dChecksum);
+
+	// Todo lo creado con new se libera con delete (después de medir, para que no cuente en el tiempo)
+	for (TEntity* pEntity : vEntities)
+	{
+		delete pEntity;
+	}
+}
+
+void MedirVectorContiguo()
+{
+	// Las entidades enteras, una detrás de otra, en un único bloque de memoria
+	std::vector<TEntity> vEntities(NUM_ENTITIES);
+
+	double tMs = MeasureBest([&]
+		{
+			for (int iFrame = 0; iFrame < FRAMES; ++iFrame)
+			{
+				UpdateAoS(vEntities, DT);
+			}
+		});
+
+	double dChecksum = 0.0;
+	for (const TEntity& oEntity : vEntities)
+	{
+		dChecksum += oEntity.x;
+	}
+	PrintResult("vector<TEntity> (AoS)", tMs, dChecksum);
+}
+
+void MedirSoA()
+{
+	TEntities oEntities(NUM_ENTITIES);
+
+	double tMs = MeasureBest([&]
+		{
+			for (int iFrame = 0; iFrame < FRAMES; ++iFrame)
+			{
+				UpdateSoA(oEntities, DT);
+			}
+		});
+
+	double dChecksum = 0.0;
+	for (float fX : oEntities.vX)
+	{
+		dChecksum += fX;
+	}
+	PrintResult("SoA", tMs, dChecksum);
+}
+
+void MedirMatriz()
+{
+	// Matriz de N x N ints, todos a 1: el resultado correcto de la suma es N * N = 16777216
+	std::vector<std::vector<int>> vviMatriz(N, std::vector<int>(N, 1));
+
+	// Por filas: el bucle interno recorre elementos vecinos en memoria (lo que más le gusta a la caché)
+	int iSumFilas = 0;
+	double tFilas = MeasureBest([&]
+		{
+			iSumFilas = 0;
+			for (int r = 0; r < N; ++r)
+			{
+				for (int c = 0; c < N; ++c)
+				{
+					iSumFilas += vviMatriz[r][c];
+				}
+			}
+		});
+
+	// Por columnas: mismos datos con los bucles intercambiados; cada acceso salta a otra fila
+	int iSumColumnas = 0;
+	double tColumnas = MeasureBest([&]
+		{
+			iSumColumnas = 0;
+			for (int c = 0; c < N; ++c)
+			{
+				for (int r = 0; r < N; ++r)
+				{
+					iSumColumnas += vviMatriz[r][c];
+				}
+			}
+		});
+
+	printf("Matriz por filas:        %9.3f ms (suma: %d)\n", tFilas, iSumFilas);
+	printf("Matriz por columnas:     %9.3f ms (suma: %d)\n", tColumnas, iSumColumnas);
 }
 
 int main()
 {
-	SimularConList();
-	SimularConVectorPunterosDesordenado();
-	SimularConVectorContiguo();
-	SimularConSoA();
-	SumarMatriz();
+	printf("Moviendo %d entidades durante %d fotogramas (mejor de %d medidas):\n\n", NUM_ENTITIES, FRAMES, REPETITIONS);
+	MedirList();
+	MedirVectorPunteros();
+	MedirVectorContiguo();
+	MedirSoA();
+	printf("\n");
+	MedirMatriz();
 	return 0;
 }

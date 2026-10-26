@@ -1,88 +1,88 @@
 /*
+Práctica 21 - Memoria y caché
 (compilar en Release x64; en Debug las medidas no sirven)
 
 a. Crear una struct TEntity con datos que se usan al moverse (float x, y, vx, vy) y datos que no (nombre de 32
 caracteres, vida, equipo y 8 floats de estadísticas). Mover 1.000.000 de entidades durante 50 fotogramas
 (x += vx * dt; y += vy * dt;).
 
-b. Hacerlo con cuatro formas de guardarlas: std::list<TEntity>, std::vector<TEntity*> desordenado con std::shuffle,
-std::vector<TEntity> y SoA (un vector por campo: x, y, vx, vy).
+b. Hacerlo con cuatro formas de guardarlas: std::list<TEntity>, std::vector<TEntity*> desordenado con
+std::shuffle, std::vector<TEntity> y SoA (un vector por campo: x, y, vx, vy).
 
-c. Sumar una matriz de 4096 × 4096 enteros recorriéndola por filas y por columnas.
+c. Sumar una matriz de 4096 x 4096 enteros recorriéndola por filas y por columnas.
 
-d. Medir cada versión con std::chrono y explicar las diferencias: ¿cuántos bytes útiles trae cada línea de caché
-(64 bytes) en cada versión?
+d. Medir cada versión con std::chrono y explicar las diferencias: ¿cuántos bytes útiles trae cada línea de
+caché (64 bytes) en cada versión?
 
- =====================================================================================
- ANÁLISIS DE EFICIENCIA DE CACHÉ (Línea de caché = 64 bytes | Datos útiles = 16 bytes: x, y, vx, vy)
- =====================================================================================
+Pista: usar el resultado de los cálculos (por ejemplo, imprimirlo): si no, el optimizador puede eliminar los
+bucles y las medidas saldrán a 0. Por eso se imprime un checksum (suma de todas las x).
 
- 1. SoA (Structure of Arrays):
-    > 100% útil (64/64 bytes). Vectores separados de floats puros. Cero desperdicio de caché.
+RESULTADOS MEDIDOS (Release x64, AMD Ryzen 9 3900X, mejor de 5 medidas):
+std::list<TEntity>      1662 ms
+vector<TEntity*>         558 ms
+vector<TEntity> (AoS)    348 ms
+SoA                       41 ms
+Matriz 4096x4096: por filas 8,4 ms | por columnas 88,9 ms (~11x más lenta)
 
- 2. Vector Contiguo (AoA - std::vector<TEntity>):
-    > ~25% útil (16/64 bytes). Entidades de 88 bytes cargan datos muertos (nombre, vida, stats).
+BYTES ÚTILES POR LÍNEA DE CACHÉ (línea = 64 bytes; el movimiento solo necesita x, y, vx, vy = 16 bytes)
 
- 3. Vector Punteros Desordenado (std::vector<TEntity*>):
-    > Eficiencia pésima. Saltos aleatorios masivos en el Heap que destruyen la caché (cache misses).
+1. SoA: 64 de 64 bytes (100%). Tiene los mismos campos que TEntity, pero cada uno en su vector, así que el
+bucle de movimiento solo trae floats que va a usar, y los datos fríos (nombre, vida, equipo, stats) no se tocan.
+2. vector<TEntity> (AoS): 16 de 64 bytes (25%). Cada entidad mide 88 bytes y solo se usan 16; el resto viaja a
+la caché sin hacer falta. Al menos están seguidas, y la CPU adivina lo siguiente (prefetcher).
+3. vector<TEntity*> desordenado: 16 de 64 bytes (25%) como mucho. Al estar barajado, casi cada entidad es un
+fallo de caché y la CPU no puede adivinar cuál toca después.
+4. std::list<TEntity>: 16 de 64 bytes (25%) como mucho. Cada nodo mide 104 bytes (88 de la entidad + 16 de los
+punteros anterior/siguiente) y están repartidos por el heap.
+5. Matriz por filas: 64 de 64 bytes (se usan los 16 ints de la línea). Por columnas: 4 de 64 bytes, porque
+cada acceso salta a otra fila y solo se usa 1 int de cada línea.
 
- 4. Lista Enlazada (std::list<TEntity>):
-    > Eficiencia muy baja. Nodos dispersos en memoria con sobrecarga extra de punteros (next/prev).
- =====================================================================================
-
-Aunque el SoA maximiza la eficiencia de caché al 100% al evitar datos muertos, en modo Release el AoA se vio
-beneficiado por la capacidad de auto-vectorización (SIMD) del compilador al empaquetar los structs contiguos de forma
-óptima en los registros de la CPU.
-
-Pista:
- Usar el resultado de los cálculos (por ejemplo, imprimirlo): si no, el optimizador puede eliminar los bucles y las
-medidas saldrán a 0.
+Prefijos: v = vector, a = array, sz = texto acabado en cero, i = int, t = tiempo, d = double.
 */
 #pragma once
 #include <vector>
-enum class EEquipo
-{
-	Neutral,
-	Player,
-	Enemy
-};
+#include <array> // Para guardar el nombre y las estadísticas de cada entidad en un bloque de tamaño fijo
 
+// AoS (Array of Structures): cada entidad es una struct con todo junto
 struct TEntity
 {
-	float x, y, vx, vy;
-	char nombre[32]; // nombre de 32 caracteres
-	unsigned int vida;
-	EEquipo equipo;
-	float stats[8];
-	TEntity()
-		:x(0.0f)
-		, y(0.0f)
-		, vx(0.0f)
-		, vy(0.0f)
-		, vida(100)
-		, equipo(EEquipo::Neutral)
-		, nombre('\0')
-	{
-		for (int i = 0;i < 8;i++)
-		{
-			stats[i] = 0.0f;
-		}
-	}
+	// Datos "calientes": se usan en cada fotograma
+	float x = 0.0f, y = 0.0f;
+	float vx = 1.0f, vy = 1.0f; // Velocidad a 1 para que el resultado no sea 0
+	// Datos "fríos": casi nunca se usan al moverse, pero ocupan sitio y viajan a la caché igualmente.
+	// En total una entidad ocupa 88 bytes: 16 calientes y 72 fríos.
+	char szName[32] = "";
+	int iLife = 100;
+	int iTeam = 0;
+	float aStats[8] = {};
 };
 
-struct TEntityManagerSoA
+/*
+SoA (Structure of Arrays): un único struct con un vector por campo, que guarda los datos de TODAS las
+entidades. Los de la primera son vX[0], vY[0], vVX[0], vVY[0], vName[0]...; los de la segunda, vX[1]...
+Tiene los mismos campos que TEntity, solo que cada uno en su propio vector: los calientes (vX, vY, vVX, vVY)
+son bloques de floats seguidos y sin nada en medio, y los fríos quedan aparte sin estorbar.
+*/
+struct TEntities
 {
-	std::vector<float> x;
-	std::vector<float> y;
-	std::vector<float> vx;
-	std::vector<float> vy;
+	// Datos "calientes": se usan en cada fotograma
+	std::vector<float> vX, vY;
+	std::vector<float> vVX, vVY;
+	// Datos "fríos": existen, pero el bucle de movimiento no los toca
+	std::vector<std::array<char, 32>> vName; // El nombre de cada entidad (32 caracteres)
+	std::vector<int> vLife;
+	std::vector<int> vTeam;
+	std::vector<std::array<float, 8>> vStats; // Las 8 estadísticas de cada entidad
 
-	TEntityManagerSoA(size_t size) // En vez de un struct por entidad, un único struct que guarda todos los valores de
-		// todas las entidades. Entonces, los valores de la primera entidad serán x[0], y[0], vx[0], vy[0]
-		:x(size, 0.0f)
-		, y(size, 0.0f)
-		, vx(size, 0.0f)
-		, vy(size, 0.0f)
+	TEntities(size_t uCount)
+		: vX(uCount, 0.0f) // Un vector con uCount elementos, todos con el mismo valor
+		, vY(uCount, 0.0f)
+		, vVX(uCount, 1.0f)
+		, vVY(uCount, 1.0f)
+		, vName(uCount) // Sin valor: se rellenan con ceros (nombre vacío)
+		, vLife(uCount, 100)
+		, vTeam(uCount, 0)
+		, vStats(uCount) // Sin valor: las 8 estadísticas de cada entidad empiezan en 0
 	{
 	}
 };
