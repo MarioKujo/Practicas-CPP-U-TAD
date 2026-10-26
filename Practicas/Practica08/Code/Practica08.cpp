@@ -8,7 +8,7 @@ int main()
 {
 	TFile oArchivo; // Ya no hay que cerrarlo a mano al final: el destructor lo hace
 	// --- Escritura ---
-	void* pArchivo = oArchivo.Open("Prueba.bin", TFileMode::FILE_WRITE);
+	void* pArchivo = oArchivo.Open("../../../Archivos de texto/Prueba08.bin", TFileMode::FILE_WRITE);
 	if (pArchivo == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
@@ -32,7 +32,7 @@ int main()
 	}
 
 	// --- Lectura ---
-	pArchivo = oArchivo.Open("Prueba.bin", TFileMode::FILE_READ);
+	pArchivo = oArchivo.Open("../../../Archivos de texto/Prueba08.bin", TFileMode::FILE_READ);
 	if (pArchivo == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
@@ -51,13 +51,13 @@ int main()
 	}
 
 	// --- Archivo inexistente ---
-	if (oArchivo.Open("Error.bin", TFileMode::FILE_READ) == nullptr)
+	if (oArchivo.Open("../../../Archivos de texto/Error.bin", TFileMode::FILE_READ) == nullptr)
 	{
-		printf("Correcto: el archivo inexistente 'Error.bin' devuelve nullptr.\n\n");
+		printf("Correcto: el archivo inexistente '../../../Archivos de texto/Error.bin' devuelve nullptr.\n\n");
 	}
 
 	// --- Doble liberación ---
-	oArchivo.Open("Prueba.bin", TFileMode::FILE_READ);
+	oArchivo.Open("../../../Archivos de texto/Prueba08.bin", TFileMode::FILE_READ);
 	TFile oCopia = oArchivo;
 	printf("Copia hecha. Ahora se destruyen los dos...\n\n");
 	return 0;

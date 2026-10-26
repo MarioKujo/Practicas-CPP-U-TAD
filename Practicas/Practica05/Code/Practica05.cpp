@@ -5,7 +5,7 @@
 int main()
 {
 	// --- Escritura ---
-	void* pArchivo = FileOpen("Prueba.bin", EFileMode::FILE_WRITE);
+	void* pArchivo = FileOpen("../../../Archivos de texto/Prueba05.bin", EFileMode::FILE_WRITE);
 	if (pArchivo == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
@@ -33,7 +33,7 @@ int main()
 	printf("Cerrado correctamente.\n\n");
 
 	// --- Lectura ---
-	pArchivo = FileOpen("Prueba.bin", EFileMode::FILE_READ); // Reutilizamos la variable, ya cerrada
+	pArchivo = FileOpen("../../../Archivos de texto/Prueba05.bin", EFileMode::FILE_READ); // Reutilizamos la variable, ya cerrada
 	if (pArchivo == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");

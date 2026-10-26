@@ -10,7 +10,7 @@ int main()
 
 	// --- Escritura ---
 	printf("--- FILE ---\n\n");
-	void* pArchivo = File::FileOpen("Prueba.bin", File::EFileMode::FILE_WRITE);
+	void* pArchivo = File::FileOpen("../../../Archivos de texto/Prueba07.bin", File::EFileMode::FILE_WRITE);
 	if (pArchivo == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
@@ -37,7 +37,7 @@ int main()
 	printf("Cerrado correctamente.\n\n");
 
 	// --- Lectura ---
-	pArchivo = File::FileOpen("Prueba.bin", File::EFileMode::FILE_READ);
+	pArchivo = File::FileOpen("../../../Archivos de texto/Prueba07.bin", File::EFileMode::FILE_READ);
 	if (pArchivo == nullptr)
 	{
 		fprintf(stderr, "Error: no se ha podido abrir el archivo.\n");
@@ -59,9 +59,9 @@ int main()
 	printf("Cerrado correctamente.\n\n");
 
 	// --- Archivo inexistente ---
-	if (File::FileOpen("Error.bin", File::EFileMode::FILE_READ) == nullptr)
+	if (File::FileOpen("../../../Archivos de texto/Error.bin", File::EFileMode::FILE_READ) == nullptr)
 	{
-		printf("Correcto: el archivo inexistente 'Error.bin' devuelve nullptr.\n\n");
+		printf("Correcto: el archivo inexistente '../../../Archivos de texto/Error.bin' devuelve nullptr.\n\n");
 	}
 #pragma endregion
 
@@ -74,14 +74,15 @@ int main()
 	}; // Array de cadenas a buscar
 	for (const char* pszTexto : apszTextos) // Recorre el array de uno en uno
 	{
-		const int iCuenta = Utils::CountOccurrences("texto.txt", pszTexto); // Se crea y se destruye en cada vuelta
+		const int iCuenta = Utils::CountOccurrences("../../../Archivos de texto/texto.txt", pszTexto); // Se crea y se
+		// destruye en cada vuelta
 		printf("'%s' aparece %d %s\n", pszTexto, iCuenta, iCuenta == 1 ? "vez" : "veces");
 	}
 
 	printf("\n");
 
 	int iSuma = 0;
-	if (Utils::SumNumbers("numeros.txt", iSuma))
+	if (Utils::SumNumbers("../../../Archivos de texto/numeros.txt", iSuma))
 	{
 		printf("La suma es %d\n", iSuma);
 	}

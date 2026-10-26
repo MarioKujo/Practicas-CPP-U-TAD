@@ -9,10 +9,10 @@ int main()
 	}; // Array de cadenas a buscar
 	for (const char* pszTexto : apszTextos) // Recorre el array de uno en uno
 	{
-		printf("'%s' aparece %d veces\n", pszTexto, CountOccurrences("texto.txt", pszTexto));
+		printf("'%s' aparece %d veces\n", pszTexto, CountOccurrences("../../../Archivos de texto/texto.txt", pszTexto));
 	}
 	int iSuma = 0;
-	if (SumNumbers("numeros.txt", iSuma)) // SumNumbers escribe el resultado en iSuma
+	if (SumNumbers("../../../Archivos de texto/numeros.txt", iSuma)) // SumNumbers escribe el resultado en iSuma
 	{
 		printf("La suma es %d\n", iSuma);
 	}

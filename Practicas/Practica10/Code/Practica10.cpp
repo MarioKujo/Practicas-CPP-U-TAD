@@ -6,7 +6,7 @@
 int main()
 {
 	Practica09::TList oNumeros;
-	if (Utils::ReadNumbers("numeros.txt", oNumeros)) // ReadNumbers rellena oNumeros
+	if (Utils::ReadNumbers("../../../Archivos de texto/numeros.txt", oNumeros)) // ReadNumbers rellena oNumeros
 	{
 		printf("Numeros leidos (%d):\n", oNumeros.Size());
 		// Recorre la lista: First() da el primero y Next() el siguiente, hasta que devuelve nullptr
