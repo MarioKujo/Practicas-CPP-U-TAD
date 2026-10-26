@@ -284,5 +284,6 @@ int main()
 		entities[i] = nullptr;  // Así no queda un puntero apuntando a memoria que ya no es nuestra
 	}
 	clear();
+	showcursor();
 	return 0;
 }

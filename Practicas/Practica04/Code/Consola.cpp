@@ -18,6 +18,14 @@ void hidecursor()
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
 }
 
+void showcursor()
+{
+	CONSOLE_CURSOR_INFO info;
+	info.dwSize = 1;       // hay que darle un valor válido (1..100) o la llamada falla
+	info.bVisible = TRUE;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+}
+
 void clear()
 {
 	// Rellena la pantalla con espacios. Es mucho más rápido que system("cls")

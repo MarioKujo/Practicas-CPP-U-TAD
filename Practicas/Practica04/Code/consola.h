@@ -10,5 +10,7 @@ void gotoxy(int x, int y);
 // Esconde el cursor parpadeante de la consola.
 void hidecursor();
 
+void showcursor();
+
 // Borra toda la pantalla y deja el cursor en (0,0).
 void clear();
