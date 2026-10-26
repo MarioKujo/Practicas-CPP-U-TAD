@@ -1,9 +1,10 @@
 #include "CEnemy15.h"
+#include <cstdio>
 namespace Practica15
 {
 	CEnemy::CEnemy(const char* _pszNombre, int _iX, int _iY, int _iDamage, unsigned int _uVida)
-		:CEntity(_pszNombre, _iX, _iY, _uVida)
-		, iDamage(_iDamage)
+		: CEntity(_pszNombre, _iX, _iY, _uVida)
+		, m_iDamage(_iDamage)
 	{
 	}
 
@@ -13,24 +14,28 @@ namespace Practica15
 
 	void CEnemy::SetTarget(CEntity* _pObjetivo)
 	{
-		pObjetivo = _pObjetivo; // Guardamos la dirección, no una copia: el objetivo sigue siendo el objeto original
+		m_pObjetivo = _pObjetivo;
 	}
 
 	void CEnemy::Update()
 	{
-		Move(iX - 1, 0); // Se mueve una casilla a la izquierda
-		// pObjetivo es un puntero (una dirección); con "*" accedemos al objeto al que apunta,
+		Move(m_iX - 1, m_iY); // Una casilla a la izquierda, en la misma fila
+		// m_pObjetivo es una dirección; el * de delante da el objeto al que apunta,
 		// que es lo que espera Attack (una referencia a un objeto, no una dirección)
-		Attack(*pObjetivo);
+		if (m_pObjetivo != nullptr)
+		{
+			Attack(*m_pObjetivo);
+		}
 	}
 
 	void CEnemy::Print() const
 	{
-		printf("%s en (%d, %d) con %u de vida, damage %d\n", pszNombre, iX, iY, uVida, iDamage);
+		printf("%s en (%d, %d) con %u de vida, damage %d\n", m_pszNombre, m_iX, m_iY, m_uVida, m_iDamage);
 	}
 
-	void CEnemy::Attack(CEntity& _oObjetivo)
+	// Ver práctica 13: se llama a TakeDamage y no se toca la vida del objetivo directamente
+	void CEnemy::Attack(CEntity& _oObjetivo) const
 	{
-		_oObjetivo.TakeDamage(iDamage);
+		_oObjetivo.TakeDamage(m_iDamage);
 	}
 }

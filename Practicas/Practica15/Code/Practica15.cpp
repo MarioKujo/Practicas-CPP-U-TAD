@@ -13,31 +13,35 @@ a la base ('~CTurret', '~CEnemy', '~CEntity').
 #include "CEnemy15.h"
 #include "CPlayer15.h"
 #include "CTurret.h"
-#include <crtdbg.h>
+#include <crtdbg.h> // Solo existe en Visual Studio
 int main()
 {
-	// Al terminar el programa, Visual Studio avisa en la ventana de salida si algún "new" se quedó sin su "delete"
+	// Al cerrar el programa, Visual Studio avisa en la ventana Salida si algún new se quedó sin su delete
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	// "new" crea el objeto en el heap y devuelve su dirección de memoria, que guardamos en un puntero
-	Practica15::CEnemy* pOrc = new Practica15::CEnemy("Orco", 10, 0, 10);
-	Practica15::CTurret* pTurret = new Practica15::CTurret("Torreta", 5, 2, 5);
-	Practica15::CPlayer* pPlayer = new Practica15::CPlayer("Heroe", 0, 0);
+	// new crea el objeto en el heap y devuelve su dirección, que se guarda en un puntero
+	Practica15::CEnemy* const pOrc = new Practica15::CEnemy("Orco", 10, 0, 10);
+	Practica15::CTurret* const pTurret = new Practica15::CTurret("Torreta", 5, 2, 5);
+	Practica15::CPlayer* const pPlayer = new Practica15::CPlayer("Heroe", 0, 0);
 
-	pOrc->SetTarget(pPlayer);    // "->" es como "." pero a través de un puntero
+	pOrc->SetTarget(pPlayer); // -> es como el punto, pero para acceder a través de un puntero
 	pTurret->SetTarget(pPlayer);
 
-	// Tabla de punteros a la clase base: guarda a la vez un CPlayer, un CEnemy y un CTurret
-	Practica15::CEntity* tpEntities[] = { pPlayer, pOrc, pTurret };
-	for (int iTurn = 1; iTurn <= 3; ++iTurn)
+	// Array de punteros a la clase base: guarda a la vez un CPlayer, un CEnemy y un CTurret.
+	// Un CPlayer* se convierte solo a CEntity* porque CPlayer ES una CEntity
+	Practica15::CEntity* const apEntities[] = { pPlayer, pOrc, pTurret };
+	for (int iTurno = 1; iTurno <= 3; ++iTurno)
 	{
-		// Recorre la tabla: pEntity va tomando cada dirección guardada en ella
-		for (Practica15::CEntity* pEntity : tpEntities)
-			pEntity->Update(); // ¿cuál? la de su tipo
-		for (Practica15::CEntity* pEntity : tpEntities)
+		// Aquí está el polimorfismo: el código no sabe de qué tipo es cada pEntity,
+		// y cada llamada ejecuta la versión de la clase real del objeto (consulta su vtable, ver práctica 14)
+		for (Practica15::CEntity* const pEntity : apEntities)
+			pEntity->Update();
+		for (Practica15::CEntity* const pEntity : apEntities)
 			pEntity->Print();
 	}
-	// Todo lo creado con "new" hay que liberarlo con "delete"
-	for (Practica15::CEntity* pEntity : tpEntities)
-		delete pEntity; // ¿destructor virtual?
+
+	// Todo lo creado con new se libera con delete. Como ~CEntity es virtual, cada delete
+	// ejecuta primero el destructor de la clase real y después el de sus bases
+	for (Practica15::CEntity* pEntity : apEntities)
+		delete pEntity;
 }

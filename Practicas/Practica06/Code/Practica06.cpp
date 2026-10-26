@@ -3,7 +3,7 @@
 // Probar con texto.txt y numeros.txt: "enemigo" → 3, "Enemigo" → 1, "aa" → 3, "xyz" → 0; la suma es 13245.
 int main()
 {
-	const char* apszTextos[] =
+	const char* const apszTextos[] =
 	{
 		"enemigo", "Enemigo", "aa", "xyz"
 	}; // Array de cadenas a buscar

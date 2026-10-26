@@ -427,7 +427,7 @@ private:
 class CCounter
 {
 public:
-	CCounter(){}
+	CCounter() {}
 
 	void operator--() { m_uCounter--; }
 	void operator--(int) { m_uCounter--; }
@@ -594,15 +594,15 @@ int main()
 #pragma endregion
 
 #pragma region Sesion NaN
-// Me cago en la puta me ha faltao el CUniquePtr
-{
-	/*
-	CSharedPtr<int> sp = new int(99);
+	 // Me cago en la puta me ha faltao el CUniquePtr
 	{
-		CSharedPtr<int>sp2 = sp;
+		/*
+		CSharedPtr<int> sp = new int(99);
+		{
+			CSharedPtr<int>sp2 = sp;
+		}
+		*/
 	}
-	*/
-}
 
 #pragma endregion
 	return 0;

@@ -1,9 +1,7 @@
-#include "File07.h"
 #include <cstdio>
 #include <cstring>
+#include "File07.h"
 #include "Utils07.h"
-#include "TList09.h"
-#include <iostream>
 // Si tienes dudas de este código, lee los comentarios de las prácticas 5 y 6, es exactamente lo mismo.
 // Lo único que cambia es que ahora hay que escribir File:: o Utils:: delante de cada función y del enum
 int main()
@@ -20,9 +18,9 @@ int main()
 	}
 	printf("Archivo abierto en modo de escritura.\n");
 
-	const char* pszNumeros = "1 2 3 4 5 6 7 8 9 10";
-	unsigned int uPedidos = static_cast<unsigned int>(strlen(pszNumeros));
-	unsigned int uEscritos = File::FileWrite(pArchivo, pszNumeros, uPedidos);
+	const char* const pszNumeros = "1 2 3 4 5 6 7 8 9 10";
+	const unsigned int uPedidos = static_cast<unsigned int>(strlen(pszNumeros));
+	const unsigned int uEscritos = File::FileWrite(pArchivo, pszNumeros, uPedidos);
 	if (uPedidos != uEscritos)
 	{
 		fprintf(stderr, "Error: se escribieron %u de %u bytes\n", uEscritos, uPedidos);
@@ -48,7 +46,7 @@ int main()
 	printf("Archivo abierto en modo de lectura.\n");
 
 	char acBuffer[128];
-	unsigned int uLeidos = File::FileRead(pArchivo, acBuffer, static_cast<unsigned int>(sizeof(acBuffer) - 1));
+	const unsigned int uLeidos = File::FileRead(pArchivo, acBuffer, static_cast<unsigned int>(sizeof(acBuffer) - 1));
 	if (uLeidos != uPedidos)
 	{
 		fprintf(stderr, "Error: se leyeron %u de %u bytes\n", uLeidos, uPedidos);
@@ -70,13 +68,14 @@ int main()
 #pragma region Utils
 
 	printf("--- UTILS ---\n\n");
-	const char* apszTextos[] =
+	const char* const apszTextos[] =
 	{
 		"enemigo", "Enemigo", "aa", "xyz"
 	}; // Array de cadenas a buscar
 	for (const char* pszTexto : apszTextos) // Recorre el array de uno en uno
 	{
-		printf("'%s' aparece %d veces\n", pszTexto, Utils::CountOccurrences("texto.txt", pszTexto));
+		const int iCuenta = Utils::CountOccurrences("texto.txt", pszTexto); // Se crea y se destruye en cada vuelta
+		printf("'%s' aparece %d %s\n", pszTexto, iCuenta, iCuenta == 1 ? "vez" : "veces");
 	}
 
 	printf("\n");

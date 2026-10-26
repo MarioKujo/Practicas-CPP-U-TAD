@@ -22,60 +22,65 @@
 namespace Practica09
 {
 
-    class TList
-    {
-    public:
-        // Crea una lista vacía.
-        TList();
+	class TList
+	{
+	public:
+		// Crea una lista vacía.
+		TList();
 
-        // Libera toda la memoria que haya reservado la lista.
-        ~TList();
+		TList(const TList&) = delete;            // hasta la P11 copiar una lista = doble delete
+		TList& operator=(const TList&) = delete;
 
-        // Número de elementos de la lista (0 si está vacía).
-        int Size();
+		// Libera toda la memoria que haya reservado la lista.
+		~TList();
 
-        // Añade la cadena AL FINAL de la lista.
-        // Retorna el número de elementos que tiene la lista después de añadirla.
-        int Push(const char* psz);
+		// Número de elementos de la lista (0 si está vacía).
+		int Size() const;
 
-        // Retorna el primer elemento de la lista, o nullptr si está vacía.
-        // Además, deja la lista preparada para que Next() devuelva el segundo.
-        const char* First();
+		// Añade la cadena AL FINAL de la lista.
+		// Retorna el número de elementos que tiene la lista después de añadirla.
+		int Push(const char* psz);
 
-        // Retorna el elemento siguiente al último devuelto por First() o Next().
-        // Retorna nullptr cuando ya no quedan más elementos (o si no se ha llamado a First()).
-        const char* Next();
+		// Retorna el primer elemento de la lista, o nullptr si está vacía.
+		// Además, deja la lista preparada para que Next() devuelva el segundo.
+		const char* First();
 
-        // Quita el primer elemento de la lista y lo retorna.
-        // Retorna nullptr si la lista está vacía.
-        const char* Pop();
+		// Retorna el elemento siguiente al último devuelto por First() o Next().
+		// Retorna nullptr cuando ya no quedan más elementos (o si no se ha llamado a First()).
+		const char* Next();
 
-        // Elimina todos los elementos. La lista queda vacía (Size() == 0) y se puede seguir usando.
-        void Reset();
+		// Quita el primer elemento de la lista y lo retorna.
+		// Retorna nullptr si la lista está vacía.
+		const char* Pop();
 
-    private:
-        // Una lista enlazada es una cadena de "nodos": cada nodo guarda una cadena y la dirección del
-        // siguiente nodo. El último apunta a nullptr. Así la lista crece sin tener que reservar un array grande.
-        //
-        //   m_pFirst ──► [ "uno" | ●──]──► [ "dos" | ●──]──► [ "tres" | nullptr ] ◄── m_pLast
-        class TListNode // Clase anidada: vive dentro de TList y solo se puede usar desde ella
-        {
-        public:
-            TListNode(const char* _pszText); // Hace una COPIA propia de la cadena
-            ~TListNode(); // Libera esa copia
-            const char* m_pszCadena = nullptr; // La copia de la cadena (el nodo es su dueño)
-            TListNode* m_pNext = nullptr; // Siguiente nodo (nullptr si es el último)
-        };
+		// Elimina todos los elementos. La lista queda vacía (Size() == 0) y se puede seguir usando.
+		void Reset();
 
-        TListNode* m_pFirst = nullptr; // Primer nodo de la lista
-        TListNode* m_pIter = nullptr; // Nodo por el que va el recorrido de First()/Next()
-        TListNode* m_pLast = nullptr; // Último nodo: así Push añade al final sin recorrer toda la lista
+	private:
+		// Una lista enlazada es una cadena de "nodos": cada nodo guarda una cadena y la dirección del
+		// siguiente nodo. El último apunta a nullptr. Así la lista crece sin tener que reservar un array grande.
+		//
+		//   m_pFirst ──► [ "uno" | ●──]──► [ "dos" | ●──]──► [ "tres" | nullptr ] ◄── m_pLast
+		class TListNode // Clase anidada: vive dentro de TList y solo se puede usar desde ella
+		{
+		public:
+			TListNode(const char* _pszText); // Hace una COPIA propia de la cadena
+			~TListNode(); // Libera esa copia
+			TListNode(const TListNode&) = delete;
+			TListNode& operator=(const TListNode&) = delete;
+			const char* m_pszCadena = nullptr; // La copia de la cadena (el nodo es su dueño)
+			TListNode* m_pNext = nullptr; // Siguiente nodo (nullptr si es el último)
+		};
 
-        // Pop saca la cadena del nodo y borra el nodo, pero la cadena tiene que seguir viva para que el
-        // llamador la lea. Se guarda aquí, y se libera en el siguiente Pop o en Reset
-        const char* m_pszLastPopped = nullptr;
+		TListNode* m_pFirst = nullptr; // Primer nodo de la lista
+		TListNode* m_pIter = nullptr; // Nodo por el que va el recorrido de First()/Next()
+		TListNode* m_pLast = nullptr; // Último nodo: así Push añade al final sin recorrer toda la lista
 
-        unsigned int m_uSize = 0; // Número de elementos
+		// Pop saca la cadena del nodo y borra el nodo, pero la cadena tiene que seguir viva para que el
+		// llamador la lea. Se guarda aquí, y se libera en el siguiente Pop o en Reset
+		const char* m_pszLastPopped = nullptr;
 
-    };
+		unsigned int m_uSize = 0; // Número de elementos
+
+	};
 }

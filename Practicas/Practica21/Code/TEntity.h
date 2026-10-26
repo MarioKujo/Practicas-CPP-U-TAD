@@ -37,52 +37,50 @@ punteros anterior/siguiente) y están repartidos por el heap.
 5. Matriz por filas: 64 de 64 bytes (se usan los 16 ints de la línea). Por columnas: 4 de 64 bytes, porque
 cada acceso salta a otra fila y solo se usa 1 int de cada línea.
 
-Prefijos: v = vector, a = array, sz = texto acabado en cero, i = int, t = tiempo, d = double.
+Prefijos: v = vector, a = array, sz = texto acabado en cero, i = int, f = float, t = tiempo, d = double,
+lst = lista, p = puntero, o = objeto.
 */
 #pragma once
 #include <vector>
 #include <array> // Para guardar el nombre y las estadísticas de cada entidad en un bloque de tamaño fijo
 
-// AoS (Array of Structures): cada entidad es una struct con todo junto
+// AoS (Array of Structures): cada entidad es una struct con todo junto, y las entidades van una detrás de otra
 struct TEntity
 {
 	// Datos "calientes": se usan en cada fotograma
 	float x = 0.0f, y = 0.0f;
 	float vx = 1.0f, vy = 1.0f; // Velocidad a 1 para que el resultado no sea 0
 	// Datos "fríos": casi nunca se usan al moverse, pero ocupan sitio y viajan a la caché igualmente.
-	// En total una entidad ocupa 88 bytes: 16 calientes y 72 fríos.
+	// En total una entidad ocupa 88 bytes: 16 calientes y 72 fríos
 	char szName[32] = "";
 	int iLife = 100;
 	int iTeam = 0;
 	float aStats[8] = {};
 };
 
-/*
-SoA (Structure of Arrays): un único struct con un vector por campo, que guarda los datos de TODAS las
-entidades. Los de la primera son vX[0], vY[0], vVX[0], vVY[0], vName[0]...; los de la segunda, vX[1]...
-Tiene los mismos campos que TEntity, solo que cada uno en su propio vector: los calientes (vX, vY, vVX, vVY)
-son bloques de floats seguidos y sin nada en medio, y los fríos quedan aparte sin estorbar.
-*/
+// SoA (Structure of Arrays): un vector por campo, que guarda los datos de TODAS las entidades. Los de la
+// primera son vX[0], vY[0], vVX[0]...; los de la segunda, vX[1]... Tiene los mismos campos que TEntity, pero
+// los calientes (vX, vY, vVX, vVY) quedan en bloques de floats seguidos y los fríos aparte, sin estorbar
 struct TEntities
 {
 	// Datos "calientes": se usan en cada fotograma
 	std::vector<float> vX, vY;
 	std::vector<float> vVX, vVY;
 	// Datos "fríos": existen, pero el bucle de movimiento no los toca
-	std::vector<std::array<char, 32>> vName; // El nombre de cada entidad (32 caracteres)
+	std::vector<std::array<char, 32>> vName;
 	std::vector<int> vLife;
 	std::vector<int> vTeam;
-	std::vector<std::array<float, 8>> vStats; // Las 8 estadísticas de cada entidad
+	std::vector<std::array<float, 8>> vStats;
 
-	TEntities(size_t uCount)
-		: vX(uCount, 0.0f) // Un vector con uCount elementos, todos con el mismo valor
-		, vY(uCount, 0.0f)
-		, vVX(uCount, 1.0f)
-		, vVY(uCount, 1.0f)
-		, vName(uCount) // Sin valor: se rellenan con ceros (nombre vacío)
-		, vLife(uCount, 100)
-		, vTeam(uCount, 0)
-		, vStats(uCount) // Sin valor: las 8 estadísticas de cada entidad empiezan en 0
+	explicit TEntities(size_t _uCount)
+		: vX(_uCount, 0.0f) // Un vector con _uCount elementos, todos con el mismo valor
+		, vY(_uCount, 0.0f)
+		, vVX(_uCount, 1.0f)
+		, vVY(_uCount, 1.0f)
+		, vName(_uCount) // Sin valor: se rellenan con ceros (nombre vacío)
+		, vLife(_uCount, 100)
+		, vTeam(_uCount, 0)
+		, vStats(_uCount) // Sin valor: las 8 estadísticas de cada entidad empiezan en 0
 	{
 	}
 };

@@ -8,17 +8,21 @@ AddScore() Heal()
 #include <iostream>
 namespace Practica15
 {
-	class CPlayer :public CEntity
+	class CPlayer : public CEntity
 	{
 	public:
 		CPlayer(const char* _pszNombre, int _iX, int _iY, unsigned int _uVida = 100);
-		virtual ~CPlayer() override; // "virtual" aquí no hace falta (con override basta), pero el profe recomienda
-		// ponerlo. Ojo: override solo se escribe en el .h; en el .cpp la función se define como una normal.
+
+		// "override" le dice al compilador que esta función sustituye a una virtual de la base: si la firma
+		// no coincide, da error en vez de crear una función distinta sin avisar. Con override el "virtual"
+		// sobra, pero se deja porque el profe lo recomienda. Solo se escribe en el .h, no en el .cpp
+		virtual ~CPlayer() override;
 		virtual void Update() override;
 		virtual void Print() const override;
+
 		void AddScore(int _iPuntos);
 		void Heal(int _iCantidad);
 	private:
-		unsigned int uPuntos;
+		unsigned int m_uPuntos;
 	};
 }

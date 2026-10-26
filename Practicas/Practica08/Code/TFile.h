@@ -24,7 +24,7 @@ class TFile
 {
 public:	// Lo que está en "public" se puede usar desde fuera de la clase
 	TFile(); // Constructor: se ejecuta solo al crear el objeto
-	TFile(TFile& oOther); // Constructor de copia: se ejecuta con TFile oCopia = oOriginal; o TFile oCopia(oOriginal);
+	TFile(const TFile& oOther); // Constructor de copia: se ejecuta con TFile oCopia = oOriginal; o TFile oCopia(oOriginal);
 	~TFile(); // Destructor: se ejecuta solo cuando el objeto se destruye (aquí, al salir de main)
 	void* Open(const char* pszName, TFileMode eMode); // nullptr si falla
 	bool Close();

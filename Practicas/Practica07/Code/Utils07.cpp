@@ -1,7 +1,6 @@
 // 2 Organizar el código de la práctica 6 usando un namespace.
 #include "Utils07.h"
 #include "File07.h"
-#include <cstdio>
 #include <cstring>
 
 // Si tienes dudas de este código, lee los comentarios de las prácticas 5 y 6, es exactamente lo mismo.
@@ -17,7 +16,7 @@ namespace Utils
 		{
 			return -1;
 		}
-		FILE* pArchivo = static_cast<FILE*>(File::FileOpen(pszFileName, File::EFileMode::FILE_READ));
+		void* pArchivo = File::FileOpen(pszFileName, File::EFileMode::FILE_READ);
 		if (pArchivo == nullptr)
 		{
 			return -1;
@@ -31,7 +30,7 @@ namespace Utils
 			return 0;
 		}
 		const unsigned int uTamBuffer = uTamTexto + s_uTamBloque;
-		char* pcBuffer = new char[uTamBuffer];
+		char* const pcBuffer = new char[uTamBuffer];
 
 		int iCuenta = 0;
 		unsigned int uArrastrados = 0;
@@ -60,7 +59,6 @@ namespace Utils
 
 		File::FileClose(pArchivo);
 		delete[] pcBuffer;
-		pcBuffer = nullptr;
 		return iCuenta;
 	}
 
@@ -70,7 +68,7 @@ namespace Utils
 		{
 			return false;
 		}
-		FILE* pArchivo = static_cast<FILE*>(File::FileOpen(pszFileName, File::EFileMode::FILE_READ));
+		void* pArchivo = File::FileOpen(pszFileName, File::EFileMode::FILE_READ);
 		if (pArchivo == nullptr)
 		{
 			return false;

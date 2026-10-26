@@ -5,13 +5,10 @@ AddScore() Heal()
 */
 #pragma once
 #include "CEntity13.h"
-#include <iostream>
 namespace Practica13
 {
-	// ":public CEntity" significa que CPlayer hereda de CEntity. Gracias a que los miembros de CEntity
-	// son protected, CPlayer tiene pszNombre, iX, iY y uVida sin declararlos otra vez, además de las
-	// funciones públicas de CEntity (Move, TakeDamage, IsAlive, Print).
-	class CPlayer :public CEntity
+	// Hereda de CEntity igual que CEnemy (ver CEnemy13.h para la explicación)
+	class CPlayer : public CEntity
 	{
 	public:
 		// El valor por defecto de _uVida (100) solo se escribe aquí, en el .h
@@ -20,6 +17,6 @@ namespace Practica13
 		void AddScore(int _iPuntos);
 		void Heal(int _iCantidad);
 	private:
-		unsigned int uPuntos;
+		unsigned int m_uPuntos; // Puntuación del jugador
 	};
 }

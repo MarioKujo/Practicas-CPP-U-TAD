@@ -32,12 +32,17 @@ Prefijo nuevo: t = valor cuyo tipo es el genérico T (no sabemos si será int, f
 */
 #pragma once
 #include <type_traits>
+
 /*
-Si el valor es menor que el mínimo, lo iguala al mínimo; si es mayor que el máximo, lo iguala al máximo;
-y si está entre ambos (inclusive), se queda como está.
-T es un hueco para un tipo: el compilador lo rellena mirando los argumentos con los que se llama. Los tres
-argumentos tienen que ser del mismo tipo, y por eso Clamp(5, 0.0f, 10) no compila.
+Los templates se explican en las prácticas 17 y 19. Lo nuevo aquí: funciones plantilla y un número
+(SIZE) como parámetro de plantilla. Como siempre con templates, todo el código va en el .h
+
+Si el valor es menor que el mínimo devuelve el mínimo, si es mayor que el máximo devuelve el máximo,
+y si está entre los dos (inclusive) lo devuelve tal cual.
+T es un hueco para un tipo que el compilador rellena mirando los argumentos de la llamada. Los tres
+deben dar el mismo T, y por eso Clamp(5, 0.0f, 10) no compila
 */
+
 template <typename T>
 T Clamp(T _tValue, T _tMin, T _tMax)
 {
@@ -53,16 +58,17 @@ T Clamp(T _tValue, T _tMin, T _tMax)
 }
 
 // Igual que Clamp, pero cada argumento puede tener un tipo distinto (TValue, TMin y TMax son tres huecos).
-// "auto" en el retorno deja que el compilador deduzca el tipo que se devuelve.
+// "auto" en el retorno deja que el compilador deduzca el tipo que se devuelve
 template <typename TValue, typename TMin, typename TMax>
 auto ClampValues(TValue _tValue, TMin _tMin, TMax _tMax)
 {
-	// Tipo común: el tipo al que se pueden convertir los tres sin perder información.
-	// Por ejemplo, de (int, float, int) sale float, y de (int, float, double) sale double.
+	// common_type_t da el tipo al que el lenguaje convertiría los tres en una operación mezclada:
+	// de (int, float, int) sale float, y de (int, float, double) sale double.
+	// Ojo: "común" no garantiza no perder información (un int muy grande puede perder precisión en un float)
 	using TCommon = std::common_type_t<TValue, TMin, TMax>;
-	TCommon tCommonValue = static_cast<TCommon>(_tValue);
-	TCommon tCommonMin = static_cast<TCommon>(_tMin);
-	TCommon tCommonMax = static_cast<TCommon>(_tMax);
+	const TCommon tCommonValue = static_cast<TCommon>(_tValue);
+	const TCommon tCommonMin = static_cast<TCommon>(_tMin);
+	const TCommon tCommonMax = static_cast<TCommon>(_tMax);
 	if (tCommonValue < tCommonMin)
 	{
 		return tCommonMin;
@@ -76,36 +82,41 @@ auto ClampValues(TValue _tValue, TMin _tMin, TMax _tMax)
 
 // Pila: el último elemento que entra es el primero que sale (como una pila de platos).
 // Ojo: es la estructura de datos "pila", no la zona de memoria llamada "pila" (stack).
-// SIZE es un número que se fija al escribir TStack<int, 4> y forma parte del tipo, por eso el array puede
-// tener tamaño fijo, vivir dentro del propio objeto y no necesitar new.
+// SIZE es un número que se fija al escribir TStack<int, 4> y forma parte del tipo. Por eso el array tiene
+// tamaño fijo, vive dentro del propio objeto y no necesita new (ni destructor: no hay nada que liberar)
 template <typename T, int SIZE>
 class TStack
 {
 public:
-	TStack() : m_iTop(0) {}
+	TStack() {}
+
+	static_assert(SIZE > 0, "SIZE debe ser positivo");
 
 	bool Push(const T& _tValue)
 	{
-		if (m_iTop >= SIZE) // Si ya está llena, no entra nada más
+		if (m_iTop >= SIZE) // Ya está llena
 		{
 			return false;
 		}
 
-		m_aValues[m_iTop] = _tValue; // Lo guarda en la primera posición libre
-		m_iTop++; // Ahora hay un elemento más
+		m_aValues[m_iTop] = _tValue; // Se guarda en la primera posición libre
+		m_iTop++;
 
 		return true;
 	}
 
-	bool Pop(T& _tValue_) // Parámetro de salida: por ser referencia, escribe en la variable original de quien llama
+	// tValue_ es un parámetro de salida: al ser una referencia, escribe en la variable de quien llama
+	// (igual que Pop de la práctica 19)
+	bool Pop(T& tValue_)
 	{
-		if (m_iTop == 0) // No hay elementos, no hay nada que sacar
+		if (m_iTop == 0) // No hay nada que sacar
 		{
 			return false;
 		}
 		--m_iTop; // Retrocede hasta el último elemento guardado
-		_tValue_ = m_aValues[m_iTop]; // Lo copia fuera
-		m_aValues[m_iTop] = T{}; // Lo pisa con un valor por defecto (0 para un int) para no dejar datos antiguos
+		tValue_ = m_aValues[m_iTop]; // Se copia fuera
+		m_aValues[m_iTop] = T{}; // Se pisa con el valor por defecto (0 en un int) para no dejar el dato antiguo.
+		// No es imprescindible: ese hueco ya cuenta como libre y se sobrescribirá en el siguiente Push
 		return true;
 	}
 
@@ -123,5 +134,5 @@ private:
 	// El array crea SIZE objetos de golpe al construir la pila, así que T necesita un constructor sin
 	// argumentos (los tipos básicos y TVector2 lo tienen)
 	T m_aValues[SIZE];
-	int m_iTop = 0; // Índice de la siguiente posición libre (con un elemento guardado, vale 1)
+	int m_iTop = 0; // Posición de la siguiente casilla libre, que a la vez es cuántos elementos hay
 };

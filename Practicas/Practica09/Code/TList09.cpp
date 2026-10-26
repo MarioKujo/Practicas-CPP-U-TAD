@@ -7,11 +7,6 @@
 namespace Practica09
 {
 	TList::TList()
-		: m_pFirst(nullptr)
-		, m_pIter(nullptr)
-		, m_pLast(nullptr)
-		, m_pszLastPopped(nullptr)
-		, m_uSize(0)
 	{
 	}
 
@@ -20,7 +15,7 @@ namespace Practica09
 		Reset(); // Libera todos los nodos y la última cadena de Pop
 	}
 
-	int TList::Size()
+	int TList::Size() const
 	{
 		return m_uSize;
 	}
@@ -121,8 +116,8 @@ namespace Practica09
 	{
 		if (_pszText)
 		{
-			unsigned int uLen = static_cast<unsigned int>(strlen(_pszText));
-			char* pcCopia = new char[uLen + 1]; // +1 para el '\0'
+			const unsigned int uLen = static_cast<unsigned int>(strlen(_pszText));
+			char* const pcCopia = new char[uLen + 1]; // +1 para el '\0'
 			strcpy_s(pcCopia, uLen + 1, _pszText);
 			m_pszCadena = pcCopia;
 		}

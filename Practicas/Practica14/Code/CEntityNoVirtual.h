@@ -1,26 +1,27 @@
 #pragma once
 #include <iostream>
+
+// Copia de CEntityVirtual sin nada virtual. Solo existe para comparar (sizeof, desensamblado)
 class CEntityNoVirtual
 {
 public:
-    int m_iX, m_iY;         // posición
-    int m_iDX, m_iDY;       // dirección de movimiento (-1, 0 o 1)
-    int m_iWidth, m_iHeight;
+  int m_iX, m_iY;
+  int m_iDX, m_iDY;
+  int m_iWidth, m_iHeight;
 
-    CEntityNoVirtual(int _iX, int _iY, int _iDX = 0, int _iDY = 0, int _iWidth = 1, int _iHeight = 1)
-    {
-        m_iX = _iX;   m_iY = _iY;
-        m_iDX = _iDX; m_iDY = _iDY;
-        m_iWidth = _iWidth;
-        m_iHeight = _iHeight;
-    }
+  CEntityNoVirtual(int _iX, int _iY, int _iDX = 0, int _iDY = 0, int _iWidth = 1, int _iHeight = 1)
+  {
+    m_iX = _iX;   m_iY = _iY;
+    m_iDX = _iDX; m_iDY = _iDY;
+    m_iWidth = _iWidth;
+    m_iHeight = _iHeight;
+  }
 
-    // Destructor NO virtual a propósito: esta clase solo existe para comparar con la versión virtual.
-    // El problema: si borráramos un objeto hijo a través de un puntero a esta clase, solo se ejecutaría
-    // este destructor y no el de la hija (se quedaría sin destruir bien).
-    ~CEntityNoVirtual() {}
+  // Sin virtual a propósito: si se borrara un objeto hijo a través de un puntero a esta clase, solo se
+  // ejecutaría este destructor y el de la hija no (la hija quedaría mal destruida)
+  ~CEntityNoVirtual() {}
 
-    // Funciones normales (sin virtual): la llamada se decide al compilar
-    void Move();
-    void Draw();
+  // Sin virtual, el compilador decide a qué función llamar al compilar. Aquí solo se declaran (sin cuerpo)
+  void Move();
+  void Draw() const;
 };

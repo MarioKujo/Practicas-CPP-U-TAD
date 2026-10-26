@@ -6,36 +6,41 @@
 #include <cstdio>
 #include "TEntity.h"
 
-const int NUM_ENTITIES = 1000000;
-const int FRAMES = 50;
-const int REPETITIONS = 5; // Veces que se repite cada medida; nos quedamos con la mejor
-const int N = 4096;        // Lado de la matriz
-const float DT = 0.016f;   // Duración de un fotograma a 60 fps (aprox.)
+constexpr int NUM_ENTITIES = 1000000;
+constexpr int FRAMES = 50;
+constexpr int REPETITIONS = 5; // Veces que se repite cada medida; nos quedamos con la mejor
+constexpr int N = 4096;        // Lado de la matriz
+constexpr float DT = 0.016f;   // Duración de un fotograma a 60 fps (aprox.)
 
-// ---------------------------------------------------------------------------------------
-// CRONÓMETRO
-// ---------------------------------------------------------------------------------------
+/*
+---------------------------------------------------------------------------------------
+CRONÓMETRO
+---------------------------------------------------------------------------------------
+*/
+
 using Clock = std::chrono::high_resolution_clock;
-using Ms = std::chrono::duration<double, std::milli>;
+using Ms = std::chrono::duration<double, std::milli>; // Duración medida en milisegundos, con decimales
 
-// Mide cuánto tarda en ejecutarse lo que le pasemos. Se le pasa una lambda: una función sin nombre escrita
-// donde se necesita; los "[&]" significan que puede usar las variables de fuera.
+// Mide cuánto tarda en ejecutarse lo que se le pase (una lambda, como en la práctica 19; los [&] dejan
+// que use las variables de fuera)
 template <typename TFunc>
-double Measure(TFunc f)
+double Measure(const TFunc& _fnFunc)
 {
-	auto tStart = Clock::now();
-	f();
+	const auto tStart = Clock::now();
+	_fnFunc();
 	return Ms(Clock::now() - tStart).count();
 }
 
-// Repite la medida y devuelve la más baja, que es la menos afectada por "ruido" del sistema
+// Repite la medida y devuelve la más baja, que es la menos afectada por "ruido" del sistema.
+// Ojo: cada repetición sigue moviendo las MISMAS entidades, así que el checksum final corresponde a
+// FRAMES * REPETITIONS fotogramas. No afecta al tiempo, solo al valor que se imprime
 template <typename TFunc>
-double MeasureBest(TFunc f)
+double MeasureBest(const TFunc& _fnFunc)
 {
-	double tBest = Measure(f);
+	double tBest = Measure(_fnFunc);
 	for (int iRepeticion = 1; iRepeticion < REPETITIONS; ++iRepeticion)
 	{
-		double tMs = Measure(f);
+		double tMs = Measure(_fnFunc);
 		if (tMs < tBest)
 		{
 			tBest = tMs;
@@ -49,40 +54,44 @@ void PrintResult(const char* pszTitulo, double tMs, double dChecksum)
 	printf("%-24s %9.3f ms (checksum: %.2f)\n", pszTitulo, tMs, dChecksum);
 }
 
-// ---------------------------------------------------------------------------------------
-// UN FOTOGRAMA DE CADA VERSIÓN: mueve todas las entidades una vez (x += vx * dt; y += vy * dt)
-// ---------------------------------------------------------------------------------------
-void UpdateList(std::list<TEntity>& lEntities, float dt)
+/*
+---------------------------------------------------------------------------------------
+UN FOTOGRAMA DE CADA VERSIÓN: mueve todas las entidades una vez (x += vx * dt; y += vy * dt).
+La cuenta es la misma en las cuatro; lo único que cambia es cómo están guardados los datos
+---------------------------------------------------------------------------------------
+*/
+
+void UpdateList(std::list<TEntity>& lstEntities, float _fDt)
 {
-	for (TEntity& oEntity : lEntities)
+	for (TEntity& oEntity : lstEntities)
 	{
-		oEntity.x += oEntity.vx * dt;
-		oEntity.y += oEntity.vy * dt;
+		oEntity.x += oEntity.vx * _fDt;
+		oEntity.y += oEntity.vy * _fDt;
 	}
 }
 
-void UpdatePointers(std::vector<TEntity*>& vEntities, float dt)
+void UpdatePointers(std::vector<TEntity*>& vEntities, float _fDt)
 {
-	for (TEntity* pEntity : vEntities) // pEntity es una dirección; con "->" accedemos a la entidad a la que apunta
+	for (TEntity* pEntity : vEntities) // pEntity es una dirección; con -> se accede a la entidad a la que apunta
 	{
-		pEntity->x += pEntity->vx * dt;
-		pEntity->y += pEntity->vy * dt;
+		pEntity->x += pEntity->vx * _fDt;
+		pEntity->y += pEntity->vy * _fDt;
 	}
 }
 
-void UpdateAoS(std::vector<TEntity>& vEntities, float dt)
+void UpdateAoS(std::vector<TEntity>& vEntities, float _fDt)
 {
 	for (TEntity& oEntity : vEntities)
 	{
-		oEntity.x += oEntity.vx * dt;
-		oEntity.y += oEntity.vy * dt;
+		oEntity.x += oEntity.vx * _fDt;
+		oEntity.y += oEntity.vy * _fDt;
 	}
 }
 
-void UpdateSoA(TEntities& oEntities, float dt)
+void UpdateSoA(TEntities& oEntities, float _fDt)
 {
 	// Punteros locales a cada array: así el compilador sabe dónde están los datos durante todo el bucle
-	// y no tiene que volver a leerlos de oEntities en cada vuelta.
+	// y no tiene que volver a leerlos de oEntities en cada vuelta
 	float* pX = oEntities.vX.data();
 	float* pY = oEntities.vY.data();
 	const float* pVX = oEntities.vVX.data();
@@ -91,29 +100,32 @@ void UpdateSoA(TEntities& oEntities, float dt)
 
 	for (int iIndice = 0; iIndice < iCount; ++iIndice)
 	{
-		pX[iIndice] += pVX[iIndice] * dt;
-		pY[iIndice] += pVY[iIndice] * dt;
+		pX[iIndice] += pVX[iIndice] * _fDt;
+		pY[iIndice] += pVY[iIndice] * _fDt;
 	}
 }
 
-// ---------------------------------------------------------------------------------------
-// MEDICIONES (el checksum se calcula DESPUÉS de medir, así que no cuenta en el tiempo)
-// ---------------------------------------------------------------------------------------
+/*
+---------------------------------------------------------------------------------------
+MEDICIONES (el checksum se calcula DESPUÉS de medir, así que no cuenta en el tiempo)
+---------------------------------------------------------------------------------------
+*/
+
 void MedirList()
 {
-	// Lista enlazada: cada nodo está en su propia reserva de memoria, repartidos por el heap
-	std::list<TEntity> lEntities(NUM_ENTITIES);
+	// Lista enlazada: cada nodo es una reserva de memoria aparte, repartidos por el heap
+	std::list<TEntity> lstEntities(NUM_ENTITIES);
 
-	double tMs = MeasureBest([&]
+	const double tMs = MeasureBest([&]
 		{
 			for (int iFrame = 0; iFrame < FRAMES; ++iFrame)
 			{
-				UpdateList(lEntities, DT);
+				UpdateList(lstEntities, DT);
 			}
 		});
 
 	double dChecksum = 0.0;
-	for (const TEntity& oEntity : lEntities)
+	for (const TEntity& oEntity : lstEntities)
 	{
 		dChecksum += oEntity.x;
 	}
@@ -129,12 +141,12 @@ void MedirVectorPunteros()
 		pEntity = new TEntity();
 	}
 
-	// Barajamos las direcciones: ahora recorrer el vector es saltar por el heap sin ningún orden
+	// Se barajan las direcciones: ahora recorrer el vector es saltar por el heap sin ningún orden
 	std::random_device oRandomDevice;
 	std::mt19937 oGenerator(oRandomDevice());
 	std::shuffle(vEntities.begin(), vEntities.end(), oGenerator);
 
-	double tMs = MeasureBest([&]
+	const double tMs = MeasureBest([&]
 		{
 			for (int iFrame = 0; iFrame < FRAMES; ++iFrame)
 			{
@@ -143,14 +155,14 @@ void MedirVectorPunteros()
 		});
 
 	double dChecksum = 0.0;
-	for (const TEntity* pEntity : vEntities)
+	for (const TEntity* const pEntity : vEntities)
 	{
 		dChecksum += pEntity->x;
 	}
 	PrintResult("vector<TEntity*>", tMs, dChecksum);
 
 	// Todo lo creado con new se libera con delete (después de medir, para que no cuente en el tiempo)
-	for (TEntity* pEntity : vEntities)
+	for (const TEntity* const pEntity : vEntities)
 	{
 		delete pEntity;
 	}
@@ -161,7 +173,7 @@ void MedirVectorContiguo()
 	// Las entidades enteras, una detrás de otra, en un único bloque de memoria
 	std::vector<TEntity> vEntities(NUM_ENTITIES);
 
-	double tMs = MeasureBest([&]
+	const double tMs = MeasureBest([&]
 		{
 			for (int iFrame = 0; iFrame < FRAMES; ++iFrame)
 			{
@@ -181,7 +193,7 @@ void MedirSoA()
 {
 	TEntities oEntities(NUM_ENTITIES);
 
-	double tMs = MeasureBest([&]
+	const double tMs = MeasureBest([&]
 		{
 			for (int iFrame = 0; iFrame < FRAMES; ++iFrame)
 			{
@@ -190,7 +202,7 @@ void MedirSoA()
 		});
 
 	double dChecksum = 0.0;
-	for (float fX : oEntities.vX)
+	for (const float fX : oEntities.vX)
 	{
 		dChecksum += fX;
 	}
@@ -204,32 +216,33 @@ void MedirMatriz()
 
 	// Por filas: el bucle interno recorre elementos vecinos en memoria (lo que más le gusta a la caché)
 	int iSumFilas = 0;
-	double tFilas = MeasureBest([&]
+	const double tFilas = MeasureBest([&]
 		{
 			iSumFilas = 0;
-			for (int r = 0; r < N; ++r)
+			for (int iFila = 0; iFila < N; ++iFila)
 			{
-				for (int c = 0; c < N; ++c)
+				for (int iColumna = 0; iColumna < N; ++iColumna)
 				{
-					iSumFilas += vviMatriz[r][c];
+					iSumFilas += vviMatriz[iFila][iColumna];
 				}
 			}
 		});
 
 	// Por columnas: mismos datos con los bucles intercambiados; cada acceso salta a otra fila
 	int iSumColumnas = 0;
-	double tColumnas = MeasureBest([&]
+	const double tColumnas = MeasureBest([&]
 		{
 			iSumColumnas = 0;
-			for (int c = 0; c < N; ++c)
+			for (int iColumna = 0; iColumna < N; ++iColumna)
 			{
-				for (int r = 0; r < N; ++r)
+				for (int iFila = 0; iFila < N; ++iFila)
 				{
-					iSumColumnas += vviMatriz[r][c];
+					iSumColumnas += vviMatriz[iFila][iColumna];
 				}
 			}
 		});
 
+	// Imprimir las sumas también evita que el optimizador elimine los bucles
 	printf("Matriz por filas:        %9.3f ms (suma: %d)\n", tFilas, iSumFilas);
 	printf("Matriz por columnas:     %9.3f ms (suma: %d)\n", tColumnas, iSumColumnas);
 }

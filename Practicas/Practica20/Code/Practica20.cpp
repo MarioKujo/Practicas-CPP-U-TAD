@@ -1,6 +1,7 @@
+#include <cstdio>
 #include "Templates.h"
-#include "TVector2.h"
-#include <iostream>
+#include "TVector2.h" // El de la práctica 12
+
 int main()
 {
 	printf("Clamp(150, 0, 100) -> %d\n", Clamp(150, 0, 100)); // Los tres son int: T = int
@@ -17,14 +18,14 @@ int main()
 	printf("Push 4: %s\n", oStackInts.Push(4) ? "Exito" : "Fallo");
 
 	// El quinto Push tiene que fallar: la pila solo tiene sitio para 4
-	bool bQuintoPush = oStackInts.Push(5);
+	const bool bQuintoPush = oStackInts.Push(5);
 	printf("Push 5 (Esperado: Fallo): %s\n", bQuintoPush ? "Exito" : "Fallo");
 
 	printf("\n--- PRUEBA DE POP (Vaciando la pila) ---\n");
 	printf("Elementos extraidos: ");
 
 	int iValorExtraido = 0;
-	// Pop devuelve true mientras queden elementos, así que el bucle termina solo al vaciarla (salen 4 3 2 1)
+	// Pop devuelve true mientras queden elementos, así que el bucle acaba solo al vaciarla (salen 4 3 2 1)
 	while (oStackInts.Pop(iValorExtraido))
 	{
 		printf("%d ", iValorExtraido);
@@ -32,7 +33,7 @@ int main()
 
 	printf("\n\n");
 
-	TStack<TVector2, 8> oStackVectores; // Misma plantilla, otro tipo y otro tamaño: es un tipo distinto
+	TStack<TVector2, 8> oStackVectores; // Misma plantilla con otro tipo y otro tamaño: es un tipo distinto
 
 	printf("--- PRUEBA DE PUSH (Vectores) ---\n");
 	printf("Push (1.0, 2.0): %s\n", oStackVectores.Push(TVector2(1.0f, 2.0f)) ? "Exito" : "Fallo");
@@ -41,12 +42,13 @@ int main()
 
 	printf("\n--- PRUEBA DE POP (Vectores) ---\n");
 	TVector2 oVectorLeido(0.0f, 0.0f);
-	while (oStackVectores.Pop(oVectorLeido))
+	while (oStackVectores.Pop(oVectorLeido)) // Salen en orden inverso: (5, 6), (3, 4), (1, 2)
 	{
 		printf("(%.1f, %.1f)\n", oVectorLeido.x, oVectorLeido.y);
 	}
 	printf("\n");
 
+	// Apartado e: los tamaños son distintos porque son tipos distintos, cada uno con su propio array
 	printf("sizeof(TStack<int, 4>) = %zu\n", sizeof(TStack<int, 4>));
 	printf("sizeof(TStack<int, 100>) = %zu\n", sizeof(TStack<int, 100>));
 	return 0;

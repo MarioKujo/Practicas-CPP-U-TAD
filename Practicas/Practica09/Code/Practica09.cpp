@@ -12,7 +12,7 @@ elementos → nullptr.
 5 Añadir una cadena desde un buffer local y modificar después el buffer: ¿qué devuelve la lista? ¿Por qué?
 
 Devuelve lo que le hemos pasado al push, ya que TList hace una copia propia reservando memoria con new char[] y luego
-con strcpy_s. No guarda la dirección del buffer, guarda la dirección de su propia copia, así que da igual si modificas 
+con strcpy_s. No guarda la dirección del buffer, guarda la dirección de su propia copia, así que da igual si modificas
 la variable local en el main.
 */
 
@@ -45,7 +45,7 @@ int main()
 	// Pop hasta vaciar. La cadena se imprime ANTES del siguiente Pop, porque ese Pop la liberaría
 	while (oLista.Size() > 0)
 	{
-		const char* pszCadena = oLista.Pop();
+		const char* const pszCadena = oLista.Pop();
 		printf("Pop: %s (quedan %d)\n", pszCadena, oLista.Size());
 	}
 	printf("Pop con la lista ya vacia: %s\n", oLista.Pop() ? "algo" : "nullptr");

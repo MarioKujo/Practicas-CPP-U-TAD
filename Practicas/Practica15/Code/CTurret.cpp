@@ -12,6 +12,9 @@ namespace Practica15
 
 	void CTurret::Update()
 	{
-		Attack(*pObjetivo); // A diferencia de CEnemy, no se mueve: solo ataca
+		if (m_pObjetivo != nullptr)
+		{
+			Attack(*m_pObjetivo); // A diferencia de CEnemy, no se mueve: solo ataca
+		}
 	}
 }

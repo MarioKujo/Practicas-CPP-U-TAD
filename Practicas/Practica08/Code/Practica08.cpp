@@ -16,9 +16,9 @@ int main()
 	}
 	printf("Archivo abierto en modo de escritura.\n");
 
-	const char* pszNumeros = "1 2 3 4 5 6 7 8 9 10";
-	unsigned int uPedidos = static_cast<unsigned int>(strlen(pszNumeros));
-	unsigned int uEscritos = oArchivo.Write(pszNumeros, uPedidos);
+	const char* const pszNumeros = "1 2 3 4 5 6 7 8 9 10";
+	const unsigned int uPedidos = static_cast<unsigned int>(strlen(pszNumeros));
+	const unsigned int uEscritos = oArchivo.Write(pszNumeros, uPedidos);
 	if (uPedidos != uEscritos)
 	{
 		fprintf(stderr, "Error: se escribieron %u de %u bytes\n", uEscritos, uPedidos);
@@ -42,7 +42,7 @@ int main()
 
 	char acBuffer[128];
 	// Se piden 127 bytes y no 128 para dejar sitio al '\0' final
-	unsigned int uLeidos = oArchivo.Read(acBuffer, static_cast<unsigned int>(sizeof(acBuffer) - 1));
+	const unsigned int uLeidos = oArchivo.Read(acBuffer, static_cast<unsigned int>(sizeof(acBuffer) - 1));
 	acBuffer[uLeidos] = '\0';
 	printf("Leidos: %s\n", acBuffer);
 	if (oArchivo.Close())

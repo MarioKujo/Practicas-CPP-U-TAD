@@ -37,7 +37,7 @@ namespace Practica11
 		return *this; // Se devuelve la propia lista para poder encadenar: oA = oB = oC;
 	}
 
-	TList GetReverseList(TList lstSrc) // Por valor: al llamarla se hace una copia entera de la lista (constructor de
+	TList GetReverseList(const TList& lstSrc) // Por valor: al llamarla se hace una copia entera de la lista (constructor de
 		// copia)
 	{
 		TList oInvertida;
@@ -54,7 +54,7 @@ namespace Practica11
 		Reset();
 	}
 
-	int TList::Size()
+	int TList::Size() const
 	{
 		return m_uSize;
 	}

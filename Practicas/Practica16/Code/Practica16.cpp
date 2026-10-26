@@ -1,21 +1,26 @@
+#include <cstdio>
 #include <iostream>
 #include "TList16.h"
-#include <crtdbg.h>
+#include <crtdbg.h> // Solo existe en Visual Studio
 
-// Una interfaz no se puede instanciar, así que las clases que la implementan heredan de ella
-// y están obligadas a hacer override de todas sus funciones virtuales puras.
+// Una interfaz no se puede instanciar: se crean clases que la heredan y que están obligadas a hacer
+// override de todas sus funciones virtuales puras (ver práctica 15)
 class CText : public Practica16::IListItem
 {
 public:
 	virtual void Print() const override
 	{
-		printf("%s\n", pszText);
+		printf("%s\n", m_pszText);
 	}
 	virtual Practica16::IListItem* Clone() const override
 	{
-		return new CText(*this); // new: la copia vive en el heap hasta que alguien le haga delete (la lista, en Reset)
+		// new CText(*this) crea en el heap un CText nuevo copiando este (usa el constructor de copia que el
+		// compilador genera solo). Vive hasta que alguien haga delete: la lista, en Reset
+		return new CText(*this);
 	}
-	const char* pszText = "";
+	// Ojo: la copia solo copia el puntero, no el texto. Aquí vale porque apunta a literales ("uno", "dos"...),
+	// que existen durante todo el programa. Con un buffer local, la copia quedaría apuntando a memoria inválida
+	const char* m_pszText = "";
 };
 
 class CNumber : public Practica16::IListItem
@@ -23,21 +28,20 @@ class CNumber : public Practica16::IListItem
 public:
 	virtual void Print() const override
 	{
-		printf("%d\n", iValue);
+		printf("%d\n", m_iValue);
 	}
 	virtual Practica16::IListItem* Clone() const override
 	{
 		return new CNumber(*this);
 	}
-	int iValue = 0;
+	int m_iValue = 0;
 };
 
 int main()
 {
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // Avisa de fugas al cerrar (ver práctica 15)
 
-	// Los textos van en una tabla; los números salen del propio contador del bucle (1, 2, 3...)
-	const char* tpszTextos[] =
+	const char* const apszTextos[] =
 	{
 		"uno",
 		"dos",
@@ -45,32 +49,31 @@ int main()
 		"cuatro",
 		"cinco"
 	};
-	const int NUM_PARES = 5; // Cuántos pares texto + número metemos (tiene que coincidir con el tamaño de la tabla)
+	constexpr int NUM_PARES = 5; // Cuántos pares texto + número se meten (tiene que coincidir con el tamaño de la tabla)
 
-	// Textos y números mezclados en la misma lista: Push guarda una copia de cada uno
+	// Textos y números mezclados en la misma lista
 	Practica16::TList lstItems;
 	for (int iIndex = 0; iIndex < NUM_PARES; ++iIndex)
 	{
-		// Estos dos objetos solo viven durante esta vuelta del bucle; no pasa nada
-		// porque la lista ya tiene sus propias copias hechas con Clone()
+		// Estos dos objetos se destruyen al acabar cada vuelta, y no pasa nada: Push ya guardó copias
 		CText oText;
-		oText.pszText = tpszTextos[iIndex];
+		oText.m_pszText = apszTextos[iIndex];
 		CNumber oNumber;
-		oNumber.iValue = iIndex + 1;
+		oNumber.m_iValue = iIndex + 1;
 
 		lstItems.Push(oText);
 		lstItems.Push(oNumber);
 	}
 
 	printf("Numeros leidos (%d):\n", lstItems.Size());
-	// Recorrido con First/Next; Print() es el de cada tipo (CText o CNumber) sin que main sepa cuál es
+	// main no sabe si pItem es un CText o un CNumber: cada Print() hace lo suyo
 	for (Practica16::IListItem* pItem = lstItems.First(); pItem != nullptr; pItem = lstItems.Next())
 	{
 		pItem->Print();
 	}
 	printf("\n");
 
-	Practica16::TList lstCopia(lstItems);
+	Practica16::TList lstCopia(lstItems); // Constructor de copia
 	printf("Numeros leidos (copia) (%d):\n", lstCopia.Size());
 	lstCopia.Print();
 	printf("\n");
@@ -81,16 +84,19 @@ int main()
 	printf("\n");
 
 	Practica16::TList lstAsignada;
-	lstAsignada = lstInvertida;
+	lstAsignada = lstInvertida; // operator=
 	printf("Numeros leidos (operator=) (%d):\n", lstAsignada.Size());
 	lstAsignada.Print();
 	printf("\n");
 
-	// Pop saca el primer elemento de la lista y nos lo entrega: ahora es responsabilidad nuestra hacer delete
-	Practica16::IListItem* pItemQuitado = lstAsignada.Pop();
-	printf("Pop: ");
-	pItemQuitado->Print();
-	delete pItemQuitado;
+	// Pop saca el primer elemento y lo entrega: ahora es responsabilidad de main hacer delete
+	Practica16::IListItem* const pItemQuitado = lstAsignada.Pop();
+	if (pItemQuitado != nullptr)
+	{
+		printf("Pop: ");
+		pItemQuitado->Print();
+		delete pItemQuitado; // Borra el objeto de verdad gracias al destructor virtual de IListItem
+	}
 
 	return 0;
 }

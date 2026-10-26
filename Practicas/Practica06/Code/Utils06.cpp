@@ -33,7 +33,7 @@ int CountOccurrences(const char* pszFileName, const char* pszText)
 	// Su tamaño es lo máximo que puede haber a la vez: hasta (uTamTexto - 1) bytes arrastrados del bloque
 	// anterior + un bloque nuevo de 16. Con uTamTexto + s_uTamBloque sobra un byte, pero así es más fácil de leer
 	const unsigned int uTamBuffer = uTamTexto + s_uTamBloque;
-	char* pcBuffer = new char[uTamBuffer]; // Memoria dinámica: hay que liberarla con delete[]
+	char* const pcBuffer = new char[uTamBuffer]; // Memoria dinámica: hay que liberarla con delete[]
 
 	int iCuenta = 0;
 	unsigned int uArrastrados = 0; // Bytes del bloque anterior que se conservan al principio del buffer
@@ -70,7 +70,6 @@ int CountOccurrences(const char* pszFileName, const char* pszText)
 
 	FileClose(pArchivo);
 	delete[] pcBuffer;
-	pcBuffer = nullptr;
 	return iCuenta;
 }
 

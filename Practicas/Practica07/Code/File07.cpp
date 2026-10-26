@@ -11,6 +11,10 @@ namespace File
 {
 	void* FileOpen(const char* pszName, EFileMode eMode)
 	{
+		if (pszName == nullptr)
+		{
+			return nullptr;
+		}
 		return fopen(pszName, eMode == EFileMode::FILE_READ ? "rb" : "wb");
 	}
 

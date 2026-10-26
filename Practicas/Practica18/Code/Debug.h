@@ -23,41 +23,51 @@ e. Pista: para que las macros funcionen bien dentro de un if sin llaves, envolve
 #include <cstdio>
 #include <cstdlib>
 
-// #ifdef: "si está definido". El código entre #ifdef y #else solo se compila si existe _DEBUG,
-// que Visual Studio define por sí solo en la configuración Debug.
+/*
+Una macro es texto que el preprocesador sustituye por otro ANTES de compilar (no es una función).
+#ifdef significa "si está definido": lo que hay hasta el #else solo se compila si existe _DEBUG,
+que Visual Studio define solo en la configuración Debug. En Release se compila la parte del #else
+*/
+
 #ifdef _DEBUG
 
-// Los "..." de LOG(...) significan "cualquier cantidad de argumentos", y __VA_ARGS__ es el lugar donde se
-// pegan tal cual. Con LOG("vida = %d", iVida); __VA_ARGS__ se sustituye por: "vida = %d", iVida
-// __FILE__ y __LINE__ los rellena el preprocesador con el fichero y la línea donde se escribe la llamada a LOG.
-// La "\" del final de cada línea significa "la macro sigue en la línea siguiente".
-// do { ... } while (0): se ejecuta una sola vez y hace que la macro se comporte como UNA sola instrucción,
-// así funciona bien dentro de un if sin llaves (sin esto, solo la primera línea de la macro quedaría dentro del if).
-#define LOG(...)                                     \
-do                                                   \
-{                                                    \
-	printf("%s(%d): ", __FILE__, __LINE__);          \
-	printf(__VA_ARGS__);                             \
-	printf("\n");                                    \
+/*
+Los "..." significan "cualquier cantidad de argumentos", y __VA_ARGS__ es donde se pegan tal cual:
+LOG("vida = %d", iVida); convierte __VA_ARGS__ en  "vida = %d", iVida
+__FILE__ y __LINE__ los rellena el preprocesador con el fichero y la línea donde se ESCRIBE la llamada a LOG
+(por eso es una macro y no una función: una función daría siempre el fichero y la línea de su propia definición).
+La "\" tiene que ser lo último de cada línea: significa "la macro sigue en la línea siguiente".
+do { ... } while (0) se ejecuta una sola vez y hace que la macro cuente como UNA sola instrucción.
+Sin él, en un if sin llaves solo la primera línea de la macro quedaría dentro del if
+*/
+
+#define LOG(...)                                          \
+do                                                        \
+{                                                         \
+	printf("%s(%d): ", __FILE__, __LINE__);                 \
+	printf(__VA_ARGS__);                                    \
+	printf("\n");                                           \
 } while (0)
 
-// El operador # delante de un parámetro de macro lo convierte en texto: #condicion con ASSERT(iVida > 200)
-// da "iVida > 200". Por eso se puede mostrar la condición escrita tal cual.
-// abort() detiene el programa de golpe.
-#define ASSERT(condicion)                            \
-do                                                   \
-{                                                    \
-	if (!(condicion))                                \
-	{                                                \
-		printf("ASSERT fallido: %s\n%s(%d)\n",       \
-		#condicion, __FILE__, __LINE__);             \
-		abort();                                     \
-	}                                                \
+// El operador # delante de un parámetro de macro lo convierte en texto entre comillas:
+// con ASSERT(iVida > 200), #condicion es "iVida > 200", y así se puede mostrar la condición tal cual está escrita.
+// Los paréntesis de (condicion) evitan problemas de prioridad de operadores al negarla con !.
+// abort() detiene el programa de golpe
+#define ASSERT(condicion)                                 \
+do                                                        \
+{                                                         \
+	if (!(condicion))                                       \
+	{                                                       \
+		fprintf(stderr, "ASSERT fallido: %s\n%s(%d)\n",       \
+		#condicion, __FILE__, __LINE__);                      \
+		abort();                                              \
+	}                                                       \
 } while (0)
 
 #else
 
-// En Release las macros se expanden a "nada": los argumentos ni siquiera se compilan
+// En Release las macros se expanden a "nada": lo que se escriba entre paréntesis ni se compila.
+// Por eso un ++ dentro de un ASSERT desaparece en Release (pregunta d)
 #define LOG(...)             do { } while (0)
 #define ASSERT(condicion)    do { } while (0)
 

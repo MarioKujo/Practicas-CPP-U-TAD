@@ -10,18 +10,22 @@ Attack(CEntity&)
 #include <iostream>
 namespace Practica15
 {
-	class CEnemy :public CEntity
+	class CEnemy : public CEntity
 	{
 	public:
 		CEnemy(const char* _pszNombre, int _iX, int _iY, int _iDamage, unsigned int _uVida = 30);
 		virtual ~CEnemy() override;
-		void SetTarget(CEntity* _pObjetivo); // Recibe un puntero: la dirección de memoria del objetivo
+
+		// Recibe un puntero (la dirección del objetivo) y no una copia: así el enemigo ataca al objeto
+		// original y ve cómo le baja la vida
+		void SetTarget(CEntity* _pObjetivo);
+
 		virtual void Update() override;
 		virtual void Print() const override;
-		void Attack(CEntity& _oObjetivo);
+		void Attack(CEntity& _oObjetivo)  const;
 	protected:
 		// protected (y no private) para que CTurret, que hereda de CEnemy, también pueda usarlos
-		CEntity* pObjetivo = nullptr; // nullptr = "no apunta a nada" hasta que se llame a SetTarget
-		int iDamage;
+		CEntity* m_pObjetivo = nullptr; // nullptr = "no apunta a nada" hasta que se llame a SetTarget
+		const int m_iDamage;
 	};
 }

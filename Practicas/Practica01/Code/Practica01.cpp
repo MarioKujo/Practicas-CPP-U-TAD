@@ -10,10 +10,10 @@ Realizar funciones que, dado ese entero(unsigned int):
 
 // Una máscara es un número que vale 1 solo en los bits que nos interesan y 0 en el resto.
 // Con ella podemos leer o modificar esos bits sin tocar los demás.
-#define MASK_BALAS 0x00FF0000 // 0000 0000 1111 1111 0000 0000 0000 0000 <-- los 8 bits donde están las balas
-#define MASK_2     0x00000002 // 0000 0000 0000 0000 0000 0000 0000 0010 <-- el bit del modo "balas infinitas"
+constexpr unsigned int MASK_BALAS = 0x00FF0000; // 0000 0000 1111 1111 0000 0000 0000 0000 <-- los 8 bits donde están las balas
+constexpr unsigned int MASK_2 = 0x00000002; // 0000 0000 0000 0000 0000 0000 0000 0010 <-- el bit del modo "balas infinitas"
 
-unsigned int NumBalas(unsigned int _uData)
+unsigned int NumBalas(const unsigned int _uData)
 {
 	// Las balas están en el "medio" del número, pero para leerlas como un número normal
 	// tienen que acabar pegadas a la derecha. Lo conseguimos con dos desplazamientos (<< y >>).
@@ -38,7 +38,7 @@ unsigned int NumBalas(unsigned int _uData)
 	return uTemp;
 }
 
-unsigned int AddBalas(unsigned int _uMask, int _balasToAdd)
+unsigned int AddBalas(const unsigned int _uMask, const int _balasToAdd)
 {
 	// Primero leemos las balas actuales con la función de arriba (aquí valen 0x25 = 37)
 	unsigned int uNumBalas = NumBalas(_uMask);
@@ -75,7 +75,7 @@ unsigned int AddBalas(unsigned int _uMask, int _balasToAdd)
 	return newMask;
 }
 
-bool BalasInfinitas(unsigned int _uMask)
+bool BalasInfinitas(const unsigned int _uMask)
 {
 	// Con un AND solo sobrevive el bit que queremos mirar; todos los demás se ponen a cero.
 	// Si el resultado es 0, el bit estaba apagado; si no es 0, estaba encendido.
@@ -95,7 +95,7 @@ bool BalasInfinitas(unsigned int _uMask)
 	return _uMask & MASK_2;
 }
 
-unsigned int ActivarBalasInfinitas(unsigned int _uMask)
+unsigned int ActivarBalasInfinitas(const unsigned int _uMask)
 {
 	// Con un OR se enciende el bit que queremos y el resto se queda como estaba
 	// (si ya estaba encendido, no pasa nada)

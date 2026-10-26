@@ -1,33 +1,38 @@
 #pragma once
 #include <iostream>
-// Convención de nombres: m_ = atributo de la clase, _ = parámetro que llega de fuera,
-// i = int. Así _iX (parámetro) y m_iX (atributo) no se confunden.
+
+// Convención de nombres: m_ = atributo de la clase, _ = parámetro que llega de fuera, i = int.
+// Así _iX (parámetro) y m_iX (atributo) no se confunden.
+
+// Es la TEntity de la práctica 4, pero con funciones virtuales en vez de la tabla m_funcs[] de punteros a función
+// (el propio enunciado de la práctica 4 ya lo anunciaba). Los campos son los mismos
 class CEntityVirtual
 {
 public:
-    int m_iX, m_iY;         // posición
-    int m_iDX, m_iDY;       // dirección de movimiento (-1, 0 o 1)
-    int m_iWidth, m_iHeight;
+  int m_iX, m_iY;
+  int m_iDX, m_iDY;
+  int m_iWidth, m_iHeight;
 
-    CEntityVirtual(int _iX, int _iY, int _iDX = 0, int _iDY = 0, int _iWidth = 1, int _iHeight = 1)
-    {
-        //Move(); // Pregunta 3: descomentar para probar a llamar a una virtual desde el constructor
-        m_iX = _iX;   m_iY = _iY;
-        m_iDX = _iDX; m_iDY = _iDY;
-        m_iWidth = _iWidth;
-        m_iHeight = _iHeight;
-    }
+  CEntityVirtual(int _iX, int _iY, int _iDX = 0, int _iDY = 0, int _iWidth = 1, int _iHeight = 1)
+    : m_iX(_iX)
+    , m_iY(_iY)
+    , m_iDX(_iDX)
+    , m_iDY(_iDY)
+    , m_iWidth(_iWidth)
+    , m_iHeight(_iHeight)
+  {
+    // Move(); // Pregunta 3: descomentar para probar una llamada virtual desde el constructor
+  }
 
-    // Destructor virtual: así, si hacemos delete a través de un puntero a la base,
-    // también se ejecuta el destructor de la clase hija y se destruye todo bien.
-    virtual ~CEntityVirtual()
-    {
-        //Move(); // Pregunta 3: descomentar para probar a llamar a una virtual desde el destructor
-    }
+  // virtual: al hacer delete a través de un puntero a la base (CEntityVirtual*), se ejecuta primero el
+  // destructor de la clase hija y después este. Sin virtual, solo se ejecutaría este
+  virtual ~CEntityVirtual()
+  {
+    // Move(); // Pregunta 3: descomentar para probar una llamada virtual desde el destructor
+  }
 
-    // Funciones virtuales (sustituyen a la tabla m_funcs[] de punteros a función).
-    // "= 0" las hace virtuales puras: no tienen cuerpo, las hijas están obligadas a implementarlas
-    // y por eso no se pueden crear objetos de CEntityVirtual directamente (es una clase abstracta).
-    virtual void Move() = 0;
-    virtual void Draw() = 0;
+  // "= 0" las hace virtuales PURAS: no tienen cuerpo y cada hija está obligada a escribir el suyo.
+  // Una clase con alguna función pura es abstracta: no se pueden crear objetos de ella, solo de sus hijas
+  virtual void Move() = 0;
+  virtual void Draw() const = 0;
 };

@@ -10,7 +10,7 @@ TFile::TFile() {}
 
 // Copia solo el VALOR del puntero (la dirección), no el archivo: los dos objetos acaban apuntando al mismo FILE*.
 // Es justo lo que provoca el problema del punto 3 del enunciado
-TFile::TFile(TFile& oOther)
+TFile::TFile(const TFile& oOther)
 {
 	m_pFile = oOther.m_pFile;
 }

@@ -11,7 +11,7 @@
 
 // Un array de punteros: cada elemento guarda la dirección donde empieza una cadena ("Hola", "Adios"...).
 // Los [] después del nombre son los que dicen que es un array (al profe se le olvidaron en el enunciado).
-const char* s_apcCadenas[] =
+const char* const s_apcCadenas[] =
 {
 	"Hola",
 	"Adios",
@@ -21,10 +21,10 @@ const char* s_apcCadenas[] =
 
 // Número de cadenas de la tabla: tamaño total del array entre tamaño de un elemento.
 // Es mejor que escribir sizeof(const char*) porque, si cambia el tipo de la tabla, esto se ajusta solo.
-size_t s_nCadenas = sizeof(s_apcCadenas) / sizeof(s_apcCadenas[0]);
+constexpr size_t s_nCadenas = sizeof(s_apcCadenas) / sizeof(s_apcCadenas[0]);
 
 // Devuelve la cadena que está en esa posición (0 sería "Hola", 1 sería "Adios", etc.)
-const char* GetCadena(unsigned int _uIndice)
+const char* GetCadena(const unsigned int _uIndice)
 {
 	if (_uIndice < s_nCadenas) // Comprueba que el índice existe (si no, leeríamos memoria que no es de la tabla)
 	{
@@ -66,13 +66,19 @@ char* GetCadenaInvertida(unsigned int _uIndice)
 }
  */
 
-// Versión buena: no reserva memoria. Quien la llama pone el sitio donde guardar el resultado (_pcBuffer)
-// y su tamaño (_uBufferSize). Devuelve true si ha podido hacerlo y false si no.
-bool GetCadenaInvertida(unsigned int _uIndice, char* _pcBuffer, unsigned int _uBufferSize)
+ // Versión buena: no reserva memoria. Quien la llama pone el sitio donde guardar el resultado (_pcBuffer)
+ // y su tamaño (_uBufferSize). Devuelve true si ha podido hacerlo y false si no.
+bool GetCadenaInvertida(const unsigned int _uIndice, char* _pcBuffer, const unsigned int _uBufferSize)
 {
+	if (_pcBuffer == nullptr)
+	{
+		return false;
+	}
+
 	if (_uIndice < s_nCadenas) // Comprueba que el índice existe
 	{
-		size_t nLongitud = strlen(s_apcCadenas[_uIndice]); // Longitud de la cadena, sin contar el '\0' final
+		const char* const pcCadena = s_apcCadenas[_uIndice]; // Se busca en la tabla una sola vez
+		const size_t nLongitud = strlen(pcCadena); // Longitud de la cadena, sin contar el '\0' final
 
 		// Tiene que caber la cadena y además el '\0', por eso el buffer debe ser MAYOR que la longitud
 		if (_uBufferSize > nLongitud)
@@ -81,7 +87,7 @@ bool GetCadenaInvertida(unsigned int _uIndice, char* _pcBuffer, unsigned int _uB
 			{
 				// Copia el carácter de atrás hacia delante. Con uPosicion = 0 queremos el último carácter
 				// (el de la posición nLongitud - 1), porque la posición nLongitud es el '\0'
-				_pcBuffer[uPosicion] = s_apcCadenas[_uIndice][nLongitud - 1 - uPosicion];
+				_pcBuffer[uPosicion] = pcCadena[nLongitud - 1 - uPosicion];
 			}
 			_pcBuffer[nLongitud] = '\0'; // Marca el final de la cadena; sin esto printf no sabría dónde parar
 			return true;
@@ -107,7 +113,7 @@ int main()
 	//}
 
 	char acBuffer[128]; // El sitio donde se guardará la cadena invertida (vive en main, se libera sola)
-	if (GetCadenaInvertida(3, acBuffer, 128))
+	if (GetCadenaInvertida(3, acBuffer, static_cast<unsigned int>(sizeof(acBuffer))))
 	{
 		printf("Cadena %d invertida es: %s\n\n", 3, acBuffer);
 	}
