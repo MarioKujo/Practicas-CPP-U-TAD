@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source\Tanks">
+      <UniqueIdentifier>{d22708b1-ce63-466f-bf5a-cef58bed3889}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Tanks.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="TanksManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Tanks\PlayerTank.cpp">
+      <Filter>Source\Tanks</Filter>
+    </ClCompile>
+    <ClCompile Include="Tanks\Tank.cpp">
+      <Filter>Source\Tanks</Filter>
+    </ClCompile>
+    <ClCompile Include="Tanks\RandTank.cpp">
+      <Filter>Source\Tanks</Filter>
+    </ClCompile>
+    <ClCompile Include="Tanks\MakuTank.cpp">
+      <Filter>Source\Tanks</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ISingleton.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="TanksManager.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Direction.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Tanks\PlayerTank.h">
+      <Filter>Source\Tanks</Filter>
+    </ClInclude>
+    <ClInclude Include="Tanks\Tank.h">
+      <Filter>Source\Tanks</Filter>
+    </ClInclude>
+    <ClInclude Include="TankInfo.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Action.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Tanks\RandTank.h">
+      <Filter>Source\Tanks</Filter>
+    </ClInclude>
+    <ClInclude Include="Tanks\MakuTank.h">
+      <Filter>Source\Tanks</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
